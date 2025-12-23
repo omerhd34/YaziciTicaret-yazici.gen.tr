@@ -968,9 +968,14 @@ export default function Hesabim() {
   }
  };
 
- const handleReturnOrder = async (orderId) => {
+ const handleReturnOrder = async (orderId, reason) => {
   const targetOrderId = orderId || returnOrderConfirm.orderId;
   if (!targetOrderId) return;
+
+  if (!reason || !reason.trim()) {
+   showToast("Lütfen iade nedeninizi belirtin.", "error");
+   return;
+  }
 
   try {
    const res = await fetch(`/api/user/orders/${targetOrderId}/return`, {
@@ -978,7 +983,7 @@ export default function Hesabim() {
     headers: { "Content-Type": "application/json" },
     credentials: 'include',
     body: JSON.stringify({
-     note: "",
+     note: reason.trim(),
     }),
    });
 

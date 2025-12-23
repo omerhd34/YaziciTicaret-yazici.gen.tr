@@ -134,6 +134,24 @@ export default function OrderDetailModal({ show, order, user, onClose }) {
       )}
      </div>
 
+     {/* İade Bilgisi */}
+     {order?.returnRequest?.status || order?.returnRequest?.note ? (
+      <div className="grid md:grid-cols-2 gap-4">
+       {order?.returnRequest?.note ? (
+        <div className="bg-white border rounded-xl p-4">
+         <div className="text-xs text-gray-500 mb-1">İade Nedeni</div>
+         <div className="font-bold text-gray-900">{order.returnRequest.note}</div>
+        </div>
+       ) : null}
+       {order?.returnRequest?.status ? (
+        <div className="bg-white border rounded-xl p-4">
+         <div className="text-xs text-gray-500 mb-1">İade Durumu</div>
+         <div className="font-bold text-gray-900">{order.returnRequest.status}</div>
+        </div>
+       ) : null}
+      </div>
+     ) : null}
+
      {/* Ürünler */}
      <div>
       <div className="text-sm font-bold text-gray-900 mb-3">Sipariş Ürünleri</div>
@@ -166,7 +184,6 @@ export default function OrderDetailModal({ show, order, user, onClose }) {
          if (color) {
           g.colorCounts.set(color, (g.colorCounts.get(color) || 0) + qty);
          }
-         // Seri numarasını ilk bulunan değerle set et (eğer yoksa)
          if (serialNumber && !g.serialNumber) {
           g.serialNumber = serialNumber;
          }

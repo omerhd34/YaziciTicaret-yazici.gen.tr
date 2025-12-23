@@ -5,7 +5,7 @@ import FeaturesSection from "@/app/components/home/FeaturesSection";
 import ProductSection from "@/app/components/home/ProductSection";
 import BannerSection from "@/app/components/home/BannerSection";
 import CategoryGrid from "@/app/components/home/CategoryGrid";
-import NewsletterSection from "@/app/components/home/NewsletterSection";
+import WhyChooseUsSection from "@/app/components/home/WhyChooseUsSection";
 
 export default function AnaSayfa() {
  const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -46,15 +46,8 @@ export default function AnaSayfa() {
     viewAllLink="/kategori"
    />
    <BannerSection />
-   <ProductSection
-    title="Yeni Gelenler"
-    description="Sezonun en yeni ürünleri"
-    products={newProducts}
-    loading={false}
-    viewAllLink="/kategori/yeni"
-   />
    <CategoryGrid />
-   <NewsletterSection />
+   <WhyChooseUsSection />
   </div>
  );
 }

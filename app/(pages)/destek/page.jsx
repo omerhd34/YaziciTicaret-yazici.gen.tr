@@ -7,7 +7,7 @@ import StoreCard from "@/app/components/support/StoreCard";
 
 const magaza1 = {
  title: "Mağaza 1 - Profilo",
- adres: "Kemalpaşa, Atatürk Blv. No:54/E, İnegöl/Bursa",
+ adres: "Kemalpaşa mahallesi, Atatürk bulvarı, no:54/E, İnegöl/Bursa",
  telefon: "0544 796 77 70",
  whatsappLink: "https://wa.me/905447967770",
  email: "info@yazici.gen.tr",
@@ -20,7 +20,7 @@ const magaza1 = {
 
 const magaza2 = {
  title: "Mağaza 2 - Profilo",
- adres: "Cuma mah. Atatürk Blv. No:51, İnegöl/Bursa",
+ adres: "Cuma mahallesi, Atatürk bulvarı, no:51, İnegöl/Bursa",
  telefon: "0501 349 69 91",
  whatsappLink: "https://wa.me/905013496991",
  email: "info@yazici.gen.tr",

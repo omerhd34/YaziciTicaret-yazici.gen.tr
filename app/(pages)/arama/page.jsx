@@ -55,7 +55,7 @@ export default function AramaPage() {
 
     {/* Sonuçlar */}
     {loading ? (
-     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
       {[...Array(9)].map((_, i) => (
        <div
         key={i}
@@ -87,7 +87,7 @@ export default function AramaPage() {
       </p>
      </div>
     ) : (
-     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
       {products.map((product) => (
        <ProductCard key={product._id} product={product} />
       ))}

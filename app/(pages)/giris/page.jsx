@@ -107,7 +107,7 @@ export default function GirisPage() {
      <div className="text-center mb-8">
       <Link href="/" className="inline-block">
        <h1 className="text-4xl font-black text-gray-900 mb-2">
-        SHOP<span className="text-indigo-600">.CO</span>
+        YAZICI TİCARET
        </h1>
       </Link>
       <p className="text-gray-600">Hesabınıza Giriş Yapın veya yeni hesap oluşturun</p>

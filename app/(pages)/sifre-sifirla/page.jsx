@@ -81,7 +81,7 @@ export default function SifreSifirlaPage() {
      <div className="text-center mb-8">
       <Link href="/" className="inline-block">
        <h1 className="text-4xl font-black text-gray-900 mb-2">
-        SHOP<span className="text-indigo-600">.CO</span>
+        YAZICI TİCARET
        </h1>
       </Link>
       <p className="text-gray-600">Yeni şifrenizi belirleyin</p>
@@ -114,7 +114,7 @@ export default function SifreSifirlaPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
        <div>
         <label className="block text-sm font-bold text-gray-700 mb-2">
-         Yeni Şifre * (En az 6 karakter)
+         Yeni Şifre *
         </label>
         <div className="relative">
          <HiLockClosed

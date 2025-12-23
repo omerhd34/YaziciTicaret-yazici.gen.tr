@@ -1,14 +1,10 @@
 "use client";
 import { MdInventory2, MdTrendingUp } from "react-icons/md";
 
-/**
- * @param {number} totalProducts - Toplam ürün sayısı
- * @param {number} inStockProducts - Stokta olan ürün sayısı
- */
-export default function AdminProductsStats({ totalProducts, inStockProducts }) {
+export default function AdminProductsStats({ totalProducts, outOfStockProducts }) {
  const stats = [
   { icon: MdInventory2, label: "Toplam Ürün", value: totalProducts, color: "bg-blue-500" },
-  { icon: MdTrendingUp, label: "Stokta Ürün", value: inStockProducts, color: "bg-purple-500" },
+  { icon: MdTrendingUp, label: "Stokta Olmayan Ürünler", value: outOfStockProducts, color: "bg-red-500" },
  ];
 
  return (

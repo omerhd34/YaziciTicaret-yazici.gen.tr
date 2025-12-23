@@ -8,8 +8,7 @@ import AdminHomeLoading from "@/app/components/admin/AdminHomeLoading";
 import AdminHomeHeader from "@/app/components/admin/AdminHomeHeader";
 import QuickAccessCards from "@/app/components/admin/QuickAccessCards";
 import AdminStatsCards from "@/app/components/admin/AdminStatsCards";
-import OrderStatusSummary from "@/app/components/admin/OrderStatusSummary";
-import RecentOrdersTable from "@/app/components/admin/RecentOrdersTable";
+
 
 export default function AdminHomePage() {
  const router = useRouter();
@@ -25,7 +24,6 @@ export default function AdminHomePage() {
     const checkRes = await axiosInstance.get("/api/auth/check");
     const checkData = checkRes.data;
 
-    // Debug bilgisi
     console.log('🔐 Auth check response:', checkData);
 
     if (!checkData?.authenticated) {
@@ -96,7 +94,7 @@ export default function AdminHomePage() {
  }
 
  return (
-  <div className="min-h-screen bg-gray-50 px-4 py-10">
+  <div className="min-h-screen bg-gray-50 px-4 py-35">
    <div className="w-full max-w-5xl mx-auto">
     <Toast toast={toast} setToast={setToast} />
 
@@ -106,8 +104,6 @@ export default function AdminHomePage() {
      <div className="p-6 space-y-6">
       <QuickAccessCards />
       <AdminStatsCards stats={stats} loading={dashboardLoading} />
-      <OrderStatusSummary stats={stats} loading={dashboardLoading} />
-      <RecentOrdersTable recentOrders={recentOrders} loading={dashboardLoading} />
      </div>
     </div>
    </div>

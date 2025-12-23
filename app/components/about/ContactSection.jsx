@@ -9,7 +9,7 @@ export default function ContactSection() {
      Sorularınız, önerileriniz veya geri bildirimleriniz için bizimle iletişime geçebilirsiniz:
     </p>
     <div className="space-y-2 text-gray-700">
-     <p className="font-semibold text-gray-900">PROFILO</p>
+     <p className="font-semibold text-gray-900">YAZICI TİCARET</p>
      <p>
       <strong>E-posta:</strong> info@yazici.gen.tr
      </p>

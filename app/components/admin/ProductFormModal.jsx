@@ -62,7 +62,7 @@ const categoryBrands = {
  "Çamaşır Makinesi": ["Profilo", "Electrolux", "Grundig"],
  "Fırın": ["Profilo", "Simfer"],
 
- "Televizyon": ["Samsung", "LG", "Philips", "Grundig"],
+ "Televizyon": ["Profilo", "Samsung", "LG", "Philips", "Grundig"],
 
  "Elektrikli Süpürge": ["Profilo", "Philips", "Miele", "Arnica", "Karcher"],
 
@@ -1002,7 +1002,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
             </div>
            )}
 
-           <div className="mb-4">
+           <div className="mb-4 mt-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">Kullanım Kılavuzu Linki</label>
             <input
              type="url"

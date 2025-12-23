@@ -5,7 +5,7 @@ import ProductCard from "@/app/components/ui/ProductCard";
 
 /**
  * Product Section 
- * Ürün listesi bölümü (Öne Çıkan Ürünler veya Yeni Gelenler)
+ * Ürün listesi bölümü (Öne Çıkan Ürünler veya Yeniler)
  * 
  * @param {string} title - Bölüm başlığı
  * @param {string} description - Bölüm açıklaması
@@ -34,7 +34,7 @@ export default function ProductSection({ title, description, products, loading, 
    </div>
 
    {loading ? (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
      {[...Array(8)].map((_, i) => (
       <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm animate-pulse">
        <div className="aspect-3/4 bg-gray-200"></div>
@@ -46,7 +46,7 @@ export default function ProductSection({ title, description, products, loading, 
      ))}
     </div>
    ) : (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
      {products.map((product) => (
       <ProductCard key={product._id} product={product} />
      ))}

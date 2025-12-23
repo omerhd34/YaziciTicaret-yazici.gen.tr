@@ -18,6 +18,9 @@ export default function AdminProductsHeader({ onLogout }) {
       <Link href="/admin/son-siparisler" className="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-semibold transition inline-flex items-center justify-center min-w-[150px]">
        Son Siparişler
       </Link>
+      <Link href="/admin/mesajlar" className="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-semibold transition inline-flex items-center justify-center min-w-[150px]">
+       Mesajlar
+      </Link>
       <button onClick={onLogout} className="bg-white/30 hover:bg-white/40 px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center gap-2 transition min-w-[150px]">
        <HiLogout size={20} />
        Çıkış Yap

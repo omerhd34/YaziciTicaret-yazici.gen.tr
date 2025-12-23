@@ -36,36 +36,31 @@ export default function CategoryProducts({ loading, products, sortBy, onClearFil
   );
  }
 
- // Her ürün için tüm renk varyantlarını ayrı kartlar olarak göster
- const expandedProducts = [];
- products.forEach((product, originalIndex) => {
+ // Her ürünü tek bir kart olarak göster (renk varyantları kart içinde gösterilecek)
+ const expandedProducts = products.map((product, originalIndex) => {
+  // En düşük fiyatı bul (sıralama için)
+  let finalPrice = (product.discountPrice && product.discountPrice < product.price) ? product.discountPrice : product.price;
+  
   if (product.colors && product.colors.length > 0) {
-   // Her renk varyantı için ayrı bir kart oluştur
-   product.colors.forEach((color) => {
-    if (typeof color === 'object' && color.serialNumber) {
-     // Renk bazlı fiyatı hesapla
+   // Tüm renk varyantları arasından en düşük fiyatı bul
+   const colorPrices = product.colors
+    .filter(color => typeof color === 'object' && color.serialNumber)
+    .map(color => {
      const colorPrice = color.price || product.price;
      const colorDiscountPrice = color.discountPrice !== undefined ? color.discountPrice : product.discountPrice;
-     const finalPrice = (colorDiscountPrice && colorDiscountPrice < colorPrice) ? colorDiscountPrice : colorPrice;
-
-     expandedProducts.push({
-      ...product,
-      _colorVariantId: `${product._id}-${color.serialNumber}`, // Unique key için
-      _selectedColor: color,
-      _finalPrice: finalPrice, // Sıralama için kullanılacak fiyat
-      _originalIndex: originalIndex, // Orijinal sıralamayı korumak için
-     });
-    }
-   });
-  } else {
-   // Renk yoksa normal ürünü ekle
-   const finalPrice = (product.discountPrice && product.discountPrice < product.price) ? product.discountPrice : product.price;
-   expandedProducts.push({
-    ...product,
-    _finalPrice: finalPrice, // Sıralama için kullanılacak fiyat
-    _originalIndex: originalIndex, // Orijinal sıralamayı korumak için
-   });
+     return (colorDiscountPrice && colorDiscountPrice < colorPrice) ? colorDiscountPrice : colorPrice;
+    });
+   
+   if (colorPrices.length > 0) {
+    finalPrice = Math.min(...colorPrices, finalPrice);
+   }
   }
+
+  return {
+   ...product,
+   _finalPrice: finalPrice, // Sıralama için kullanılacak fiyat
+   _originalIndex: originalIndex, // Orijinal sıralamayı korumak için
+  };
  });
 
  // Sıralama yap (eğer sortBy varsa)
@@ -110,23 +105,8 @@ export default function CategoryProducts({ loading, products, sortBy, onClearFil
  }
 
  return (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
    {sortedProducts.map((product) => {
-    // Eğer renk varyantı varsa, o renge özel bir product objesi oluştur
-    if (product._selectedColor) {
-     const colorVariant = {
-      ...product,
-      // Renk varyantına özel bilgileri ürün seviyesine kopyala
-      price: product._selectedColor.price || product.price,
-      discountPrice: product._selectedColor.discountPrice !== undefined ? product._selectedColor.discountPrice : product.discountPrice,
-      images: product._selectedColor.images && product._selectedColor.images.length > 0 ? product._selectedColor.images : product.images,
-      serialNumber: product._selectedColor.serialNumber || product.serialNumber,
-      stock: product._selectedColor.stock !== undefined ? product._selectedColor.stock : product.stock,
-      // colors array'ini sadece bu rengi içerecek şekilde ayarla (ProductCard ilk rengi kullanır)
-      colors: [product._selectedColor],
-     };
-     return <ProductCard key={product._colorVariantId} product={colorVariant} />;
-    }
     return <ProductCard key={product._id} product={product} />;
    })}
   </div>

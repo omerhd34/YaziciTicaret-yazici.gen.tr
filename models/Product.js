@@ -206,7 +206,6 @@ const ProductSchema = new mongoose.Schema({
 
 ProductSchema.index({ name: 'text', description: 'text', tags: 'text' });
 
-// Model'i cache'den temizle ve yeniden oluştur (Next.js hot reload için)
 if (mongoose.models.Product) {
  delete mongoose.models.Product;
 }

@@ -10,6 +10,7 @@ import AdminStats from "@/app/components/admin/AdminStats";
 import ActiveOrdersTable from "@/app/components/admin/ActiveOrdersTable";
 import CompletedOrdersTable from "@/app/components/admin/CompletedOrdersTable";
 import OrderDetailModal from "@/app/components/admin/OrderDetailModal";
+import ReturnStatusChangeModal from "@/app/components/admin/ReturnStatusChangeModal";
 
 export default function AdminSonSiparislerPage() {
  const router = useRouter();
@@ -23,6 +24,7 @@ export default function AdminSonSiparislerPage() {
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
  const [detailModal, setDetailModal] = useState({ show: false, row: null });
+ const [returnStatusModal, setReturnStatusModal] = useState({ show: false, orderId: null, currentStatus: "", newStatus: "" });
  const [completedFilter, setCompletedFilter] = useState("all");// all | cancelled | delivered | rr:*
  const [completedPage, setCompletedPage] = useState(0);
 
@@ -125,10 +127,30 @@ export default function AdminSonSiparislerPage() {
   }
  };
 
- const updateReturnStatus = async (orderId, returnRequestStatus) => {
+ const handleReturnStatusChangeRequest = (orderId, newStatus) => {
+  const row = recentOrders.find((r) => r?.order?.orderId === orderId);
+  const currentStatus = row?.order?.returnRequest?.status || "";
+  setReturnStatusModal({
+   show: true,
+   orderId,
+   currentStatus,
+   newStatus,
+  });
+ };
+
+ const updateReturnStatus = async (newStatus, adminMessage) => {
+  const orderId = returnStatusModal.orderId;
+  if (!orderId) return;
+
   try {
    setUpdatingReturnOrderId(orderId);
-   const res = await axiosInstance.patch(`/api/admin/orders/${orderId}`, { returnRequestStatus });
+   setReturnStatusModal({ show: false, orderId: null, currentStatus: "", newStatus: "" });
+
+   const res = await axiosInstance.patch(`/api/admin/orders/${orderId}`, {
+    returnRequestStatus: newStatus,
+    adminMessage: adminMessage || "",
+   });
+
    if (!res.data?.success) {
     setToast({ show: true, message: res.data?.message || "İade durumu güncellenemedi.", type: "error" });
     return;
@@ -141,7 +163,7 @@ export default function AdminSonSiparislerPage() {
       ...(r.order || {}),
       returnRequest: {
        ...(r.order?.returnRequest || {}),
-       status: returnRequestStatus,
+       status: newStatus,
       },
      };
      return { ...r, order: nextOrder };
@@ -157,7 +179,7 @@ export default function AdminSonSiparislerPage() {
        ...(prev.row?.order || {}),
        returnRequest: {
         ...(prev.row?.order?.returnRequest || {}),
-        status: returnRequestStatus,
+        status: newStatus,
        },
       },
      },
@@ -260,7 +282,7 @@ export default function AdminSonSiparislerPage() {
      orders={activeOrders}
      getRowBgClass={getRowBgClass}
      onStatusChange={updateOrderStatus}
-     onReturnStatusChange={updateReturnStatus}
+     onReturnStatusChange={handleReturnStatusChangeRequest}
      onDetailClick={openOrderDetail}
      updatingOrderId={updatingOrderId}
      updatingReturnOrderId={updatingReturnOrderId}
@@ -274,7 +296,7 @@ export default function AdminSonSiparislerPage() {
      filter={completedFilter}
      onFilterChange={setCompletedFilter}
      getRowBgClass={getRowBgClass}
-     onReturnStatusChange={updateReturnStatus}
+     onReturnStatusChange={handleReturnStatusChangeRequest}
      onDetailClick={openOrderDetail}
      updatingReturnOrderId={updatingReturnOrderId}
      currentPage={completedPage}
@@ -288,6 +310,15 @@ export default function AdminSonSiparislerPage() {
     order={selectedOrder}
     user={selectedUser}
     onClose={closeOrderDetail}
+   />
+
+   <ReturnStatusChangeModal
+    show={returnStatusModal.show}
+    currentStatus={returnStatusModal.currentStatus}
+    newStatus={returnStatusModal.newStatus}
+    orderId={returnStatusModal.orderId}
+    onConfirm={updateReturnStatus}
+    onCancel={() => setReturnStatusModal({ show: false, orderId: null, currentStatus: "", newStatus: "" })}
    />
   </div>
  );

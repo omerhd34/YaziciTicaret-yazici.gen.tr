@@ -5,51 +5,20 @@ import { MdDelete, MdEdit, MdInventory2 } from "react-icons/md";
 import { MENU_ITEMS } from "@/app/components/ui/Header";
 
 export default function ProductListTable({ products, onEdit, onDelete, onAddNew, selectedCategory, selectedSubCategory, selectedStockFilter, onCategoryChange, onSubCategoryChange, onStockFilterChange }) {
- // Ürünün toplam stokunu hesapla
- const getTotalStock = (product) => {
-  if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
-   return product.colors.reduce((sum, color) => {
-    if (typeof color === 'object' && color.stock !== undefined) {
-     return sum + (Number(color.stock) || 0);
-    }
-    return sum;
-   }, 0);
-  }
-  return product.stock || 0;
- };
-
- const filteredProducts = products.filter((product) => {
+ // Önce kategori filtresine göre ürünleri filtrele
+ const categoryFilteredProducts = products.filter((product) => {
   if (selectedCategory && product.category !== selectedCategory) {
    return false;
   }
   if (selectedSubCategory && product.subCategory !== selectedSubCategory) {
    return false;
   }
-
-  // Stok filtresi
-  if (selectedStockFilter) {
-   const totalStock = getTotalStock(product);
-   switch (selectedStockFilter) {
-    case 'inStock':
-     if (totalStock <= 0) return false;
-     break;
-    case 'outOfStock':
-     if (totalStock > 0) return false;
-     break;
-    case 'lowStock':
-     if (totalStock >= 10 || totalStock === 0) return false;
-     break;
-    default:
-     break;
-   }
-  }
-
   return true;
  });
 
  // Her ürün için renk varyantlarını ayrı satırlar olarak genişlet
  const expandedProducts = [];
- filteredProducts.forEach((product) => {
+ categoryFilteredProducts.forEach((product) => {
   if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
    // Her renk varyantı için ayrı bir satır oluştur
    product.colors.forEach((color) => {
@@ -67,7 +36,35 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
   }
  });
 
- // Toplam ürün sayısını hesapla (renk varyantları dahil - tüm ürünler için)
+ // Şimdi stok filtresini her bir varyantın kendi stokuna göre uygula
+ const filteredProducts = expandedProducts.filter((product) => {
+  if (!selectedStockFilter) {
+   return true;
+  }
+
+  // Her bir varyantın kendi stokunu kontrol et
+  const colorVariant = product._selectedColor;
+  const variantStock = colorVariant
+   ? (colorVariant.stock !== undefined ? Number(colorVariant.stock) || 0 : 0)
+   : (product.stock !== undefined ? Number(product.stock) || 0 : 0);
+
+  switch (selectedStockFilter) {
+   case 'inStock':
+    if (variantStock <= 0) return false;
+    break;
+   case 'outOfStock':
+    if (variantStock > 0) return false;
+    break;
+   case 'lowStock':
+    if (variantStock >= 10 || variantStock === 0) return false;
+    break;
+   default:
+    break;
+  }
+
+  return true;
+ });
+
  const totalProductCount = products.reduce((count, product) => {
   if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
    return count + product.colors.filter(c => typeof c === 'object' && c.serialNumber).length;
@@ -75,7 +72,6 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
   return count + 1;
  }, 0);
 
- // Seçili kategori için alt kategorileri bul
  const selectedMenuItem = MENU_ITEMS.find(item => item.name === selectedCategory);
  const availableSubCategories = selectedMenuItem?.subCategories || [];
 
@@ -87,7 +83,7 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
      <p className="text-sm text-gray-600 mt-2">
       {selectedCategory || selectedSubCategory || selectedStockFilter ? (
        <>
-        <span className="font-semibold text-indigo-600">{expandedProducts.length}</span> ürün bulundu
+        <span className="font-semibold text-indigo-600">{filteredProducts.length}</span> ürün bulundu
        </>
       ) : (
        <>
@@ -197,7 +193,7 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
     </div>
    </div>
 
-   {expandedProducts.length === 0 ? (
+   {filteredProducts.length === 0 ? (
     <div className="text-center py-12 text-gray-500">
      <MdInventory2 size={64} className="mx-auto mb-4 text-gray-300" />
      <p className="text-lg font-semibold">
@@ -221,7 +217,7 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
-       {expandedProducts.map((product) => {
+       {filteredProducts.map((product) => {
         // Eğer renk varyantı varsa, o renge özel bilgileri göster
         const colorVariant = product._selectedColor;
         const displayPrice = colorVariant ? (colorVariant.price || product.price) : product.price;
@@ -236,9 +232,9 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
          <tr key={product._colorVariantId || product._id} className="hover:bg-gray-50">
           <td className="px-4 py-4">
            <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-white shrink-0 flex items-center justify-center p-1">
              {displayImage ? (
-              <Image src={displayImage} alt={product.name} width={64} height={64} className="w-16 h-16 object-cover" />
+              <Image src={displayImage} alt={product.name} width={64} height={64} className="w-16 h-16 object-contain" />
              ) : (
               <div className="w-16 h-16 flex items-center justify-center text-gray-400">
                <MdInventory2 size={28} />
@@ -292,7 +288,15 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
              Düzenle
             </button>
             <button
-             onClick={() => onDelete(product._id)}
+             onClick={() => {
+              if (colorVariant && colorVariant.serialNumber) {
+               // Renk varyantı siliniyor
+               onDelete(product._id, colorVariant.serialNumber);
+              } else {
+               // Tüm ürün siliniyor
+               onDelete(product._id);
+              }
+             }}
              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition flex items-center gap-2"
             >
              <MdDelete size={16} />

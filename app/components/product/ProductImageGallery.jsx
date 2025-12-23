@@ -14,7 +14,6 @@ export default function ProductImageGallery({
  const [lightboxOpen, setLightboxOpen] = useState(false);
  const [lightboxIndex, setLightboxIndex] = useState(selectedImage);
 
- // selectedImage değiştiğinde lightboxIndex'i güncelle
  useEffect(() => {
   setLightboxIndex(selectedImage);
  }, [selectedImage]);
@@ -71,7 +70,7 @@ export default function ProductImageGallery({
       alt={productName}
       quality={95}
       priority={selectedImage === 0}
-      className="w-full h-full object-contain"
+      className="w-full h-full object-contain p-10"
      />
     </div>
 
@@ -81,7 +80,7 @@ export default function ProductImageGallery({
        <button
         key={idx}
         onClick={() => onImageSelect(idx)}
-        className={`aspect-square rounded-lg overflow-hidden border-2 transition cursor-pointer ${selectedImage === idx
+        className={`aspect-square rounded-lg overflow-hidden border-2 bg-white transition cursor-pointer ${selectedImage === idx
          ? "border-indigo-600"
          : "border-gray-200 hover:border-gray-300"
          }`}
@@ -92,7 +91,7 @@ export default function ProductImageGallery({
          src={img}
          alt={`${productName} ${idx + 1}`}
          quality={85}
-         className="w-full h-full object-cover"
+         className="w-full h-full object-cover "
         />
        </button>
       ))}
@@ -103,7 +102,7 @@ export default function ProductImageGallery({
    {/* Lightbox Modal */}
    {lightboxOpen && (
     <div
-     className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+     className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center p-4"
      onClick={closeLightbox}
     >
      <button

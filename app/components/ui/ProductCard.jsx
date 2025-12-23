@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { HiHeart, HiChevronLeft, HiChevronRight } from "react-icons/hi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { getProductUrl } from "@/app/utils/productUrl";
+import { getColorHex } from "@/app/utils/colorUtils";
 
 export default function ProductCard({ product }) {
  const [isImageHovered, setIsImageHovered] = useState(false);
@@ -12,17 +13,45 @@ export default function ProductCard({ product }) {
  const { addToCart, addToFavorites, removeFromFavorites, isFavorite: checkFavorite } = useCart();
  const isFavorite = checkFavorite(product._id);
 
- // Renk bazlı resim ve fiyat
- const firstColor = product.colors && product.colors.length > 0 && typeof product.colors[0] === 'object'
-  ? product.colors[0]
-  : null;
- const images = firstColor?.images && firstColor.images.length > 0
-  ? firstColor.images
+ // Tüm renkleri al (eğer _allColors varsa onu kullan, yoksa product.colors'u kullan)
+ const allColors = product._allColors || product.colors;
+ // Sadece object tipinde ve serialNumber'ı olan renkleri say
+ const validColors = allColors ? allColors.filter(c => typeof c === 'object' && c.serialNumber) : [];
+
+ // İlk rengi başlangıç olarak seç
+ const initialColor = validColors.length > 0 ? validColors[0] : null;
+
+ // Seçili rengi product._id ile birlikte sakla (product değiştiğinde otomatik sıfırlanır)
+ const [selectedColorState, setSelectedColorState] = useState({ productId: product._id, color: null });
+
+ // Product değiştiğinde seçili rengi sıfırla
+ const selectedColor = selectedColorState.productId === product._id ? selectedColorState.color : null;
+
+ // Seçili renge göre resim ve fiyat (seçili renk yoksa ilk rengi kullan)
+ const currentColor = selectedColor || initialColor;
+ const images = currentColor?.images && currentColor.images.length > 0
+  ? currentColor.images
   : (product.images && product.images.length > 0 ? product.images : ["/1.jpeg"]);
 
- const colorPrice = firstColor?.price || product.price;
- const colorDiscountPrice = firstColor?.discountPrice !== undefined ? firstColor.discountPrice : product.discountPrice;
- const colorSerialNumber = firstColor?.serialNumber || product.serialNumber;
+ const colorPrice = currentColor?.price || product.price;
+ const colorDiscountPrice = currentColor?.discountPrice !== undefined ? currentColor.discountPrice : product.discountPrice;
+ const colorSerialNumber = currentColor?.serialNumber || product.serialNumber;
+
+ // Renkleri orijinal sıralamada tut (seçili rengi başa taşıma)
+ const sortedColors = validColors;
+ const hasMultipleColors = sortedColors.length > 1;
+
+ // Renk değiştiğinde resmi değiştir (mevcut indeksi koru, ama yeni rengin resim sayısına göre ayarla)
+ const handleColorChange = (color) => {
+  setSelectedColorState({ productId: product._id, color });
+  // Yeni rengin resimlerini al
+  const newColorImages = color?.images && color.images.length > 0 ? color.images : (product.images || []);
+  // Mevcut indeksi yeni resim sayısına göre ayarla
+  if (currentImageIndex >= newColorImages.length) {
+   setCurrentImageIndex(Math.max(0, newColorImages.length - 1));
+  }
+  // Eğer indeks geçerliyse, aynı indekste kal
+ };
 
  const hasDiscount = colorDiscountPrice && colorDiscountPrice < colorPrice;
  const discountPercentage = hasDiscount
@@ -33,7 +62,7 @@ export default function ProductCard({ product }) {
  const productUrl = getProductUrl(product, colorSerialNumber);
 
  return (
-  <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative">
+  <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative h-full flex flex-col">
    <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
     {product.isNew && (
      <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
@@ -63,7 +92,7 @@ export default function ProductCard({ product }) {
    </button>
 
    <div
-    className="relative aspect-square overflow-hidden bg-gray-100 flex items-center justify-center p-4"
+    className="relative aspect-square overflow-hidden bg-white flex items-center justify-center p-4"
     onMouseEnter={() => setIsImageHovered(true)}
     onMouseLeave={() => setIsImageHovered(false)}
    >
@@ -108,37 +137,41 @@ export default function ProductCard({ product }) {
    </div>
 
    <div className="px-4 pt-3 pb-2 flex justify-center gap-2">
-    {images.map((_, index) => (
-     <button
-      key={index}
-      onClick={(e) => {
-       e.preventDefault();
-       e.stopPropagation();
-       setCurrentImageIndex(index);
-      }}
-      className={`transition-all ${currentImageIndex === index
-       ? "w-2.5 h-2.5 bg-indigo-600 rounded-full"
-       : "w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400"
-       }`}
-      aria-label={`Resim ${index + 1}`}
-     />
-    ))}
+    {images.length > 1 ? (
+     images.map((_, index) => (
+      <button
+       key={index}
+       onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentImageIndex(index);
+       }}
+       className={`transition-all ${currentImageIndex === index
+        ? "w-2.5 h-2.5 bg-indigo-600 rounded-full"
+        : "w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400"
+        }`}
+       aria-label={`Resim ${index + 1}`}
+      />
+     ))
+    ) : (
+     <div className="h-2.5" />
+    )}
    </div>
 
-   <div className="p-4">
-    {product.brand && (
-     <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-      {product.brand}
-      {colorSerialNumber && (
-       <span className="ml-2 font-mono text-gray-600 normal-case">- {colorSerialNumber}</span>
-      )}
-     </p>
-    )}
-    {!product.brand && colorSerialNumber && (
-     <p className="text-xs text-gray-500 mb-1">
-      <span className="font-mono text-gray-600">Seri No: {colorSerialNumber}</span>
-     </p>
-    )}
+   <div className="p-4 bg-gray-100 flex-1 flex flex-col">
+    <div className="flex items-center justify-between mb-2">
+     {product.brand && (
+      <p className="text-xs text-gray-500 uppercase tracking-wide">
+       {product.brand}
+      </p>
+     )}
+     {colorSerialNumber && (
+      <span className="inline-block bg-indigo-100 text-indigo-700 font-mono text-xs px-2 py-0.5 rounded-md font-semibold normal-case">
+       {colorSerialNumber}
+      </span>
+     )}
+     {!product.brand && !colorSerialNumber && <div />}
+    </div>
 
     <div className="flex items-center gap-2 mb-2">
      <h3 className="font-semibold text-gray-800 line-clamp-2 flex-1 min-w-0">
@@ -166,20 +199,48 @@ export default function ProductCard({ product }) {
     </div>
 
 
-    <div className="flex items-center gap-2">
-     {hasDiscount ? (
-      <>
-       <span className="text-lg font-bold text-indigo-600">
-        {colorDiscountPrice} ₺
-       </span>
-       <span className="text-sm text-gray-400 line-through">
+    <div className="flex items-center justify-between gap-3 mt-auto pt-3 border-t border-gray-200">
+     <div className="flex items-baseline gap-2">
+      {hasDiscount ? (
+       <>
+        <span className="text-xl font-bold text-indigo-600 ">
+         {colorDiscountPrice} ₺
+        </span>
+        <span className="text-sm text-gray-400 line-through">
+         {colorPrice} ₺
+        </span>
+       </>
+      ) : (
+       <span className="text-xl font-bold text-gray-900">
         {colorPrice} ₺
        </span>
-      </>
-     ) : (
-      <span className="text-lg font-bold text-gray-800">
-       {colorPrice} ₺
-      </span>
+      )}
+     </div>
+
+     {/* Renk seçenekleri - eğer birden fazla renk varsa göster */}
+     {hasMultipleColors && (
+      <div className="flex gap-2 flex-wrap shrink-0">
+       {sortedColors.map((color, idx) => {
+        const isSelected = currentColor && currentColor.serialNumber === color.serialNumber;
+        return (
+         <button
+          key={color.serialNumber || idx}
+          onClick={(e) => {
+           e.preventDefault();
+           e.stopPropagation();
+           handleColorChange(color);
+          }}
+          className={`w-8 h-8 rounded-full border-2 transition-all cursor-pointer hover:scale-110 ${isSelected
+           ? "border-indigo-600 scale-110 ring-2 ring-indigo-200"
+           : "border-gray-200 hover:border-gray-300"
+           }`}
+          style={{ backgroundColor: getColorHex(color) }}
+          title={color.name}
+          aria-label={`${color.name} rengini seç`}
+         />
+        );
+       })}
+      </div>
      )}
     </div>
    </div>

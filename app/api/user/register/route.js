@@ -80,7 +80,6 @@ export async function POST(request) {
   const codeString = String(verificationCode).trim();
   console.log('Kayıt - Doğrulama kodu oluşturuldu:', { codeString, codeLength: codeString.length });
 
-  // Kullanıcıyı kodu ile birlikte oluştur
   const user = await User.create({
    name,
    email: email.toLowerCase(),
@@ -89,6 +88,10 @@ export async function POST(request) {
    emailVerificationCode: codeString,
    emailVerificationCodeExpires: verificationCodeExpires,
    isEmailVerified: false,
+   notificationPreferences: {
+    emailNotifications: true,
+    campaignNotifications: true,
+   },
   });
 
   // Hemen kontrol et - fresh query ile

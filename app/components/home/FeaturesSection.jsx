@@ -12,7 +12,7 @@ export default function FeaturesSection() {
      </div>
      <div>
       <h3 className="font-bold text-lg mb-1">Hızlı Kargo</h3>
-      <p className="text-gray-600 text-sm">500 TL ve üzeri siparişlerde ücretsiz kargo</p>
+      <p className="text-gray-600 text-sm">2500 TL ve üzeri siparişlerde ücretsiz kargo</p>
      </div>
     </div>
 
@@ -31,8 +31,8 @@ export default function FeaturesSection() {
       <HiTrendingUp className="text-purple-600" size={28} />
      </div>
      <div>
-      <h3 className="font-bold text-lg mb-1">Kolay İade</h3>
-      <p className="text-gray-600 text-sm">14 gün içinde ücretsiz iade</p>
+      <h3 className="font-bold text-lg mb-1">Kolay İade ve Değişim</h3>
+      <p className="text-gray-600 text-sm">14 gün içinde iade ve değişim garantisi</p>
      </div>
     </div>
    </div>

@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import normalizeText from "@/lib/normalizeText";
+import { sendAdminOrderCancelledEmail } from "@/lib/notifications";
 
 function isCancellableStatus(status) {
  const s = String(status || "").toLowerCase();
@@ -71,6 +72,27 @@ export async function PATCH(request, { params }) {
   user.orders[idx].status = "İptal Edildi";
   user.orders[idx].updatedAt = new Date();
   await user.save();
+
+  // Admin'e e-posta bildirimi (best-effort)
+  try {
+   const adminEmail = process.env.EMAIL_USER;
+   const order = user.orders[idx];
+   
+   await sendAdminOrderCancelledEmail({
+    adminEmail,
+    orderId: String(orderId),
+    userName: user.name,
+    userEmail: user.email,
+    userPhone: user.phone,
+    total: order?.total || 0,
+    orderDate: order?.date || order?.createdAt,
+    items: order?.items || [],
+    addressSummary: order?.addressSummary || "",
+   });
+  } catch (e) {
+   console.error('[ORDER CANCEL] Admin email exception:', e);
+   // mail hatası sipariş iptalini bozmasın
+  }
 
   return NextResponse.json({ success: true, message: "Sipariş iptal edildi" });
  } catch (error) {

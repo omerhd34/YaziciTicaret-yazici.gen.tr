@@ -42,6 +42,7 @@ export default function OdemePage() {
 
  const [acceptedTerms, setAcceptedTerms] = useState(false);
  const [error, setError] = useState("");
+ const [isSubmitting, setIsSubmitting] = useState(false);
 
  const fetchAddresses = useCallback(async () => {
   try {
@@ -107,6 +108,8 @@ export default function OdemePage() {
  }, [acceptedTerms, cart, paymentMethod, selectedAddressId]);
 
  const handlePay = async () => {
+  if (isSubmitting) return; // Çift tıklamayı engelle
+
   if (!selectedAddressId) {
    setError("Lütfen teslimat adresi seçin.");
    return;
@@ -120,6 +123,7 @@ export default function OdemePage() {
    return;
   }
   setError("");
+  setIsSubmitting(true);
 
   if (paymentMethod.type === "cash") {
    try {
@@ -173,6 +177,7 @@ export default function OdemePage() {
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.success) {
      setError(data.message || "Sipariş oluşturulamadı.");
+     setIsSubmitting(false);
      return;
     }
 
@@ -180,9 +185,11 @@ export default function OdemePage() {
     router.push(`/hesabim?tab=siparisler`);
    } catch (e) {
     setError("Sipariş oluşturulurken bir hata oluştu.");
+    setIsSubmitting(false);
    }
   } else {
    setError("Kart ile ödeme henüz aktif değil. Şimdilik kapıda ödeme kullanın.");
+   setIsSubmitting(false);
   }
  };
 
@@ -225,9 +232,10 @@ export default function OdemePage() {
        acceptedTerms={acceptedTerms}
        onTermsChange={setAcceptedTerms}
        error={error}
-       canPay={canPay}
+       canPay={canPay && !isSubmitting}
        onPay={handlePay}
        paymentMethodType={paymentMethod.type}
+       isSubmitting={isSubmitting}
       />
      </div>
     </div>

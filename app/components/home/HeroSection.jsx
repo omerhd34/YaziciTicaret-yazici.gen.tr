@@ -24,27 +24,27 @@ export default function HeroSection() {
       </p>
       <div className="flex flex-wrap gap-4">
        <Link
-        href="/"
-        className="bg-white text-indigo-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 hover:text-gray-900 transition flex items-center gap-2 shadow-lg"
+        href="/kategori/kampanyalar"
+        className="bg-white text-indigo-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 hover:text-gray-900 transition-all duration-500 ease-in-out flex items-center gap-2 shadow-lg"
        >
-        Alışverişe Başla <HiArrowRight size={20} />
+        Kampanyalar <HiArrowRight size={20} />
        </Link>
        <Link
         href="/kategori/indirim"
-        className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-indigo-600 transition"
+        className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-indigo-600 transition-all duration-500 ease-in-out"
        >
         İndirimleri Keşfet
        </Link>
       </div>
      </div>
-     <div className="hidden lg:block flex-1 max-w-md ml-auto">
+     <div className="hidden lg:block flex-1 max-w-2xl ml-auto">
       <div className="relative flex justify-end">
        <Image
-        src="/prof.png"
+        src="/products/ankastre/ankastre.jpg"
         alt="PROFILO"
-        width={450}
-        height={450}
-        className="w-full h-auto object-contain"
+        width={1200}
+        height={800}
+        className="w-full h-auto object-contain border-4 rounded-4xl"
         priority
        />
       </div>

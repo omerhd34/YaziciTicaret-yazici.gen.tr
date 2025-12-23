@@ -53,6 +53,7 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
         }}
         className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.fullName ? 'border-red-500' : 'border-gray-300'
          }`}
+        placeholder="Ad Soyad"
         required
        />
        {addressErrors.fullName && (
@@ -96,6 +97,7 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
         }}
         className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.city ? 'border-red-500' : 'border-gray-300'
          }`}
+        placeholder="Şehir"
         required
        />
        {addressErrors.city && (
@@ -116,6 +118,7 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
         }}
         className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.district ? 'border-red-500' : 'border-gray-300'
          }`}
+        placeholder="İlçe"
         required
        />
        {addressErrors.district && (

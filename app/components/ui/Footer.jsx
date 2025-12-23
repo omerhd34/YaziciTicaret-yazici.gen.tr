@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { HiMail, HiPhone, HiLocationMarker } from "react-icons/hi";
 import { MdCreditCard, MdLocalShipping, MdSecurity, MdRefresh } from "react-icons/md";
@@ -13,7 +12,7 @@ const SOCIAL_LINKS = [
 
 const QUICK_LINKS = [
  { name: "Ana Sayfa", href: "/" },
- { name: "Yeni Gelenler", href: "/kategori/yeni" },
+ { name: "Yeniler", href: "/kategori/yeniler" },
  { name: "İndirimler", href: "/kategori/indirim" },
  { name: "Favorilerim", href: "/favoriler" },
  { name: "Sepetim", href: "/sepet" },
@@ -50,16 +49,12 @@ const Footer = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
      <div>
       <div className="mb-4">
-       <Image
-        src="/profilo-favicon.png"
-        alt="PROFILO"
-        width={180}
-        height={60}
-        className="h-14 w-auto"
-       />
+       <span className="text-xl sm:text-2xl font-extrabold tracking-[0.25em] text-white select-none">
+        YAZICI TİCARET
+       </span>
       </div>
       <p className="text-sm mb-4 leading-relaxed">
-       Beyaz eşya dünyasında en kaliteli ürünleri keşfedin. Modern teknoloji, güvenilir markalar ve müşteri memnuniyeti önceliğimizdir.
+       Beyaz eşyadan elektroniğe, ankastreden klimalara kadar geniş ürün yelpazemizde en kaliteli ürünleri keşfedin. Modern teknoloji, güvenilir markalar ve müşteri memnuniyeti önceliğimizdir.
       </p>
       <div className="flex gap-3 mt-6">
        {SOCIAL_LINKS.map((social) => {
@@ -92,7 +87,7 @@ const Footer = () => {
      </div>
 
      <div>
-      <h4 className="text-white font-bold mb-4">Müşteri Hizmetleri</h4>
+      <h4 className="text-white font-bold mb-4">Hesabım ve Destek</h4>
       <ul className="space-y-2">
        {CUSTOMER_SERVICE_LINKS.map((link) => (
         <li key={link.name}>
@@ -167,8 +162,8 @@ const Footer = () => {
     <div className="container mx-auto px-4 py-6">
      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
       <div className="flex flex-col gap-1">
-       <p className="text-sm text-gray-400">
-        © {currentYear} PROFILO. Tüm hakları saklıdır.
+       <p className="text-sm text-gray-400" suppressHydrationWarning>
+        © {currentYear} YAZICI TİCARET. Tüm hakları saklıdır.
        </p>
        <p className="text-xs text-gray-500">
         Site tasarımı ve geliştirme:{" "}

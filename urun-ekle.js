@@ -164,9 +164,7 @@ async function addMultipleProducts(productsArray) {
 }
 
 if (typeof require !== 'undefined' && require.main === module) {
- // products yüklenene kadar bekle (dinamik import için)
  (async () => {
-  // Maksimum 5 saniye bekle
   let attempts = 0;
   while (!products && attempts < 50) {
    await new Promise(resolve => setTimeout(resolve, 100));
@@ -189,7 +187,9 @@ if (typeof require !== 'undefined' && require.main === module) {
 
     results.forEach((result, index) => {
      if (result.success) {
+      console.log(`✓ ${index + 1}. ${result.product}`);
      } else {
+      console.error(`✗ ${index + 1}. ${result.product}: ${result.error || 'Bilinmeyen hata'}`);
      }
     });
 

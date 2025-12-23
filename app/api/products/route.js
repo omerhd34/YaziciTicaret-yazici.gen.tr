@@ -19,7 +19,6 @@ export async function GET(request) {
 
   let query = {};
 
-  // Arama parametresi varsa name, description, tags, brand, category, subCategory ve serialNumber'da ara
   if (search && search.trim()) {
    const searchTerm = search.trim();
    const searchRegex = new RegExp(searchTerm, 'i');
@@ -30,12 +29,13 @@ export async function GET(request) {
     { brand: searchRegex },
     { category: searchRegex },
     { subCategory: searchRegex },
-    { serialNumber: searchRegex }
+    { serialNumber: searchRegex },
+    { 'colors.serialNumber': searchRegex }
    ];
   }
 
   // Özel kategoriler için özel filtreleme
-  if (category === 'YENİ GELENLER' || category === 'Yeni Gelenler') {
+  if (category === 'Yeniler' || category === 'Yeniler') {
    // Yeni ürünler için isNew filtresi
    query.isNew = true;
   } else if (category === 'İndirimler') {

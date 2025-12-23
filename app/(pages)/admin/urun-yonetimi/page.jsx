@@ -91,21 +91,28 @@ export default function AdminUrunYonetimiPage() {
   setToast({ show: true, message, type: "error" });
  };
 
- const handleDeleteProduct = async (productId) => {
+ const handleDeleteProduct = async (productId, colorSerialNumber = null) => {
+  const isColorVariant = colorSerialNumber !== null;
   setConfirmDialog({
    show: true,
-   message: "Bu ürünü silmek istediğinize emin misiniz?",
+   message: isColorVariant
+    ? "Bu renk varyantını silmek istediğinize emin misiniz?"
+    : "Bu ürünü silmek istediğinize emin misiniz?",
    onConfirm: async () => {
     try {
-     const res = await axiosInstance.delete(`/api/products/${productId}`);
+     let url = `/api/products/${productId}`;
+     if (isColorVariant) {
+      url += `?colorSerialNumber=${encodeURIComponent(colorSerialNumber)}`;
+     }
+     const res = await axiosInstance.delete(url);
      if (!res.data?.success) {
-      setToast({ show: true, message: res.data?.message || "Ürün silinemedi", type: "error" });
+      setToast({ show: true, message: res.data?.message || (isColorVariant ? "Renk varyantı silinemedi" : "Ürün silinemedi"), type: "error" });
       return;
      }
-     setToast({ show: true, message: "Ürün silindi", type: "success" });
+     setToast({ show: true, message: isColorVariant ? "Renk varyantı silindi" : "Ürün silindi", type: "success" });
      fetchProducts();
     } catch {
-     setToast({ show: true, message: "Ürün silinemedi", type: "error" });
+     setToast({ show: true, message: isColorVariant ? "Renk varyantı silinemedi" : "Ürün silinemedi", type: "error" });
     } finally {
      setConfirmDialog({ show: false, message: "", onConfirm: null });
     }
@@ -161,19 +168,19 @@ export default function AdminUrunYonetimiPage() {
      });
      return count;
     })()}
-    inStockProducts={(() => {
-     // Stokta olan ürünleri say (renk varyantları dahil)
+    outOfStockProducts={(() => {
+     // Stokta olmayan ürünleri say (renk varyantları dahil)
      let count = 0;
      products.forEach((product) => {
       if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
        product.colors.forEach((color) => {
         if (typeof color === 'object' && color.serialNumber) {
          const stock = color.stock !== undefined ? color.stock : product.stock;
-         if (stock > 0) count++;
+         if (stock <= 0) count++;
         }
        });
       } else {
-       if (product.stock > 0) count++;
+       if (!product.stock || product.stock <= 0) count++;
       }
      });
      return count;

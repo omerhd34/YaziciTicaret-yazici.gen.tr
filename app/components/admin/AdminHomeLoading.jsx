@@ -6,7 +6,7 @@ export default function AdminHomeLoading() {
    <div className="w-full max-w-md">
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border">
      <div className="bg-linear-to-r from-indigo-600 to-purple-600 px-6 py-6 text-white">
-      <div className="text-sm font-semibold text-white/90">PROFILO</div>
+      <div className="text-sm font-semibold text-white/90">Yazıcı Ticaret</div>
       <h1 className="text-2xl font-black mt-1">Admin Paneli</h1>
       <p className="text-indigo-100 text-sm mt-1">Kontrol ediliyor…</p>
      </div>

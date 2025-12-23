@@ -181,7 +181,6 @@ npm install
 3. Ortam değişkenlerini ayarlayın (`.env.local` dosyası oluşturun):
 ```env
 MONGODB_URI=your_mongodb_connection_string
-ADMIN_EMAIL=your_admin_email
 EMAIL_USER=your_email
 EMAIL_PASSWORD=your_email_password
 EMAIL_FROM=your_email_from

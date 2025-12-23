@@ -11,6 +11,7 @@ export default function OrderSummary({
  canPay,
  onPay,
  paymentMethodType,
+ isSubmitting = false,
 }) {
  return (
   <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
@@ -58,14 +59,14 @@ export default function OrderSummary({
 
    <button
     type="button"
-    disabled={!canPay}
+    disabled={!canPay || isSubmitting}
     onClick={onPay}
-    className={`w-full py-4 rounded-lg font-bold text-lg transition ${canPay
+    className={`w-full py-4 rounded-lg font-bold text-lg transition ${canPay && !isSubmitting
      ? "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
      : "bg-gray-300 text-gray-600 cursor-not-allowed"
      }`}
    >
-    {paymentMethodType === "cash" ? "Satın Al" : "Ödemeye Geç"}
+    {isSubmitting ? "Sipariş oluşturuluyor..." : paymentMethodType === "cash" ? "Satın Al" : "Ödemeye Geç"}
    </button>
 
    <Link

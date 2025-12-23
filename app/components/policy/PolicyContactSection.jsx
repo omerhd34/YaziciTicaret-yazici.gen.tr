@@ -9,7 +9,7 @@ export default function PolicyContactSection({ description, email = "info@yazici
      {description || "Sorularınız için bizimle iletişime geçebilirsiniz:"}
     </p>
     <div className="bg-indigo-50 rounded-lg p-6 border border-indigo-100">
-     <p className="font-semibold text-gray-900 mb-2">PROFILO</p>
+     <p className="font-semibold text-gray-900 mb-2">Yazıcı Ticaret</p>
      <p className="text-gray-700 mb-1">
       <strong>E-posta:</strong> {email}
      </p>

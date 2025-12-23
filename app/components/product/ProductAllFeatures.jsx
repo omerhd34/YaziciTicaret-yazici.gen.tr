@@ -45,12 +45,6 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
  if (displaySerialNumber) {
   productFeaturesItems.push({ key: "Seri Numarası", value: displaySerialNumber });
  }
- if (product.category) {
-  productFeaturesItems.push({ key: "Kategori", value: product.category });
- }
- if (product.subCategory) {
-  productFeaturesItems.push({ key: "Alt Kategori", value: product.subCategory });
- }
  if (product.material) {
   productFeaturesItems.push({ key: "Materyal", value: product.material });
  }
@@ -64,10 +58,6 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
  if (product.tags && product.tags.length > 0) {
   productFeaturesItems.push({ key: "Etiketler", value: product.tags.join(", ") });
  }
- const stockStatus = product.stock > 0
-  ? `Stokta Var (${product.stock} adet)`
-  : "Stokta Yok";
- productFeaturesItems.push({ key: "Stok Durumu", value: stockStatus });
 
  // "Boyutlar" kategorisi için items hazırla
  const boyutlarItems = [];

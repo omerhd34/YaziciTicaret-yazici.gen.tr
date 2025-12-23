@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Product from "@/models/Product";
+import Contact from "@/models/Contact";
 
 async function requireAdmin() {
  const cookieStore = await cookies();
@@ -19,10 +20,12 @@ export async function GET() {
 
   await dbConnect();
 
-  const [userCount, productCount, inStockProductCount] = await Promise.all([
+  const [userCount, productCount, inStockProductCount, totalContacts, unreadContacts] = await Promise.all([
    User.countDocuments(),
    Product.countDocuments(),
    Product.countDocuments({ stock: { $gt: 0 } }),
+   Contact.countDocuments(),
+   Contact.countDocuments({ read: false }),
   ]);
 
   const agg = await User.aggregate([
@@ -93,6 +96,8 @@ export async function GET() {
     shippedOrders,
     deliveredOrders,
     cancelledOrders,
+    totalContacts,
+    unreadContacts,
    },
   });
  } catch (error) {

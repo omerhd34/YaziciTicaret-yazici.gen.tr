@@ -307,15 +307,30 @@ export async function PUT(request, { params }) {
  }
 }
 
-// DELETE - Ürün sil (Admin)
+// DELETE - Ürün sil (Admin) veya renk varyantı sil
 export async function DELETE(request, { params }) {
  try {
+  // Admin kontrolü
+  const cookieStore = await cookies();
+  const adminSession = cookieStore.get('admin-session');
+
+  if (!adminSession || adminSession.value !== 'authenticated') {
+   return NextResponse.json(
+    { success: false, error: 'Yetkisiz erişim. Admin girişi gereklidir.' },
+    { status: 401 }
+   );
+  }
+
   await dbConnect();
   // Next.js App Router'da params async olabilir
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  const product = await Product.findByIdAndDelete(id);
+  // Query parametrelerinden renk varyantı serialNumber'ını al
+  const { searchParams } = new URL(request.url);
+  const colorSerialNumber = searchParams.get('colorSerialNumber');
+
+  const product = await Product.findById(id);
 
   if (!product) {
    return NextResponse.json(
@@ -324,10 +339,54 @@ export async function DELETE(request, { params }) {
    );
   }
 
-  return NextResponse.json({ success: true, data: {} });
+  // Eğer renk varyantı siliniyorsa
+  if (colorSerialNumber && product.colors && product.colors.length > 0) {
+   // Renk varyantını bul
+   const colorIndex = product.colors.findIndex(
+    (color) => typeof color === 'object' && color.serialNumber === colorSerialNumber
+   );
+
+   if (colorIndex === -1) {
+    return NextResponse.json(
+     { success: false, error: 'Renk varyantı bulunamadı' },
+     { status: 404 }
+    );
+   }
+
+   // Eğer son renk varyantıysa, tüm ürünü sil
+   if (product.colors.length === 1) {
+    await Product.findByIdAndDelete(id);
+    return NextResponse.json({ success: true, data: { deleted: 'product' } });
+   }
+
+   // Renk varyantını colors array'inden çıkar
+   product.colors.splice(colorIndex, 1);
+
+   // Toplam stoku yeniden hesapla
+   const newTotalStock = product.colors.reduce((sum, color) => {
+    return sum + (Number(color.stock) || 0);
+   }, 0);
+   product.stock = newTotalStock;
+
+   // İlk rengin bilgilerini ana ürün bilgilerine güncelle
+   if (product.colors.length > 0) {
+    const firstColor = product.colors[0];
+    product.price = firstColor.price || product.price;
+    product.discountPrice = firstColor.discountPrice !== undefined ? firstColor.discountPrice : product.discountPrice;
+    product.images = firstColor.images && firstColor.images.length > 0 ? firstColor.images : product.images;
+    product.serialNumber = firstColor.serialNumber || product.serialNumber;
+   }
+
+   await product.save();
+   return NextResponse.json({ success: true, data: { deleted: 'colorVariant' } });
+  }
+
+  // Tüm ürünü sil
+  await Product.findByIdAndDelete(id);
+  return NextResponse.json({ success: true, data: { deleted: 'product' } });
  } catch (error) {
   return NextResponse.json(
-   { success: false, error: 'Ürün silinemedi' },
+   { success: false, error: 'Ürün silinemedi', details: process.env.NODE_ENV === 'development' ? error.message : undefined },
    { status: 500 }
   );
  }

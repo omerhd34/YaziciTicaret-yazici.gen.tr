@@ -1,8 +1,31 @@
 "use client";
 import { HiX } from "react-icons/hi";
 
-export default function CardModal({ show, editingCard, cardForm, setCardForm, cardErrors, setCardErrors, onSubmit, onClose }) {
+export default function CardModal({
+ show,
+ editingCard,
+ cardForm,
+ setCardForm,
+ cardErrors,
+ setCardErrors,
+ onSubmit,
+ onClose,
+}) {
  if (!show) return null;
+
+ const rawNumber = (cardForm.cardNumber || "").replace(/\s/g, "");
+ const paddedNumber = (rawNumber + "################").slice(0, 16);
+ const previewNumber = paddedNumber
+  ? paddedNumber
+   .match(/.{1,4}/g)
+   ?.join(" ")
+  : "#### #### #### ####";
+
+ const previewName = cardForm.cardHolderName
+  ? cardForm.cardHolderName.toUpperCase()
+  : "NAME ON CARD";
+
+ const previewExpiry = cardForm.expiryDate || "MM/YY";
 
  return (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -16,7 +39,49 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
      </button>
     </div>
 
-    <form onSubmit={onSubmit} className="p-6 space-y-4">
+    <form onSubmit={onSubmit} className="p-6 space-y-6">
+     {/* Kart Önizleme */}
+     <div className="flex justify-center">
+      <div className="relative w-full max-w-md rounded-2xl bg-linear-to-br from-slate-900 via-purple-700 to-indigo-600 text-white p-5 shadow-xl">
+       <div className="flex items-center justify-between text-xs font-semibold tracking-wide uppercase text-slate-200">
+        <span>Kredi Kartı</span>
+        <span className="flex items-center gap-1">
+         <span className="w-2 h-2 rounded-full bg-red-500" />
+         <span className="w-2 h-2 rounded-full bg-yellow-400" />
+        </span>
+       </div>
+
+       <div className="mt-6 mb-4">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-slate-300 mb-2">
+         Card Number
+        </div>
+        <div className="text-lg md:text-xl font-mono tracking-[0.18em] bg-white/10 rounded-xl px-4 py-2 flex items-center justify-between">
+         <span>{previewNumber}</span>
+        </div>
+       </div>
+
+       <div className="flex items-end justify-between text-[11px] md:text-xs mt-4">
+        <div>
+         <div className="uppercase tracking-widest text-slate-300 mb-1">
+          Card Holder
+         </div>
+         <div className="text-sm md:text-base font-semibold">
+          {previewName}
+         </div>
+        </div>
+        <div className="text-right">
+         <div className="uppercase tracking-widest text-slate-300 mb-1">
+          Expires
+         </div>
+         <div className="text-sm md:text-base font-semibold">
+          {previewExpiry}
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+
+     {/* Form Alanları */}
      <div className="grid md:grid-cols-2 gap-4">
       <div>
        <label className="block text-sm font-semibold mb-2">Kart Adı <span className="text-red-500">*</span></label>

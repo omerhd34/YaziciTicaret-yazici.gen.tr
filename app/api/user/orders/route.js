@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Product from '@/models/Product';
-import { sendAdminNewOrderEmail } from '@/lib/notifications';
+import { sendAdminNewOrderEmail, sendUserOrderConfirmationEmail } from '@/lib/notifications';
 
 // GET - Kullanıcının siparişlerini getir
 export async function GET() {
@@ -152,8 +152,6 @@ export async function POST(request) {
    return NextResponse.json({ success: false, message: 'Adres seçilmedi' }, { status: 400 });
   }
 
-  // Ürün fiyatları admin tarafından değişmiş olabilir.
-  // Sipariş toplamını server tarafında güncel ürün fiyatlarıyla tekrar hesapla.
   const normalizedItems = items.map((it) => ({
    ...it,
    productId: String(it?.productId || it?._id || it?.id || ""),
@@ -195,7 +193,24 @@ export async function POST(request) {
    return NextResponse.json({ success: false, message: 'Kullanıcı bulunamadı' }, { status: 404 });
   }
 
-  const orderId = `SHOPCO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+  // Çift sipariş koruması: Son 3 saniye içinde sipariş varsa reddet
+  if (Array.isArray(user.orders) && user.orders.length > 0) {
+   const lastOrder = user.orders[0];
+   const lastOrderDate = lastOrder?.createdAt || lastOrder?.date;
+   if (lastOrderDate) {
+    const now = new Date();
+    const lastOrderTime = new Date(lastOrderDate);
+    const diffSeconds = (now - lastOrderTime) / 1000;
+    if (diffSeconds < 3) {
+     return NextResponse.json(
+      { success: false, message: 'Lütfen birkaç saniye bekleyip tekrar deneyin.' },
+      { status: 429 }
+     );
+    }
+   }
+  }
+
+  const orderId = `YZT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
   const order = {
    orderId,
    date: new Date(),
@@ -234,7 +249,7 @@ export async function POST(request) {
   // Admin'e e-posta bildirimi (best-effort)
   let adminEmailResult = null;
   try {
-   const adminEmail = process.env.ADMIN_EMAIL;
+   const adminEmail = process.env.EMAIL_USER;
    const addrSummary = address.summary || '';
    const pmType = paymentMethod?.type || order.payment?.type || '';
    const pmText = pmType === 'cash' ? 'Kapıda Ödeme' : (pmType === 'card' ? 'Kart ile Ödeme' : (pmType || '-'));
@@ -247,24 +262,71 @@ export async function POST(request) {
     hasEmailPasswordEnv: Boolean(process.env.EMAIL_PASSWORD),
    });
 
-   adminEmailResult = await sendAdminNewOrderEmail({
-    adminEmail,
-    orderId,
-    userName: user.name,
-    userEmail: user.email,
-    userPhone: user.phone,
-    total: order.total,
-    paymentMethod: pmText,
-    addressSummary: addrSummary,
-   });
-
-   if (!adminEmailResult?.success) {
-    console.error('[ORDER] Admin email failed:', adminEmailResult);
+   if (!adminEmail) {
+    console.warn('[ORDER] Admin email skipped: EMAIL_USER not set');
    } else {
-    console.log('[ORDER] Admin email sent:', { messageId: adminEmailResult.messageId });
+    adminEmailResult = await sendAdminNewOrderEmail({
+     adminEmail,
+     orderId,
+     userName: user.name,
+     userEmail: user.email,
+     userPhone: user.phone,
+     total: order.total,
+     paymentMethod: pmText,
+     addressSummary: addrSummary,
+     items: repricedItems,
+    });
+
+    if (!adminEmailResult?.success) {
+     console.error('[ORDER] Admin email failed:', {
+      error: adminEmailResult?.error,
+      hasTransporter: Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD),
+     });
+    } else {
+     console.log('[ORDER] Admin email sent:', { messageId: adminEmailResult.messageId });
+    }
    }
   } catch (e) {
-   console.error('[ORDER] Admin email exception:', e);
+   console.error('[ORDER] Admin email exception:', {
+    error: e.message,
+    stack: e.stack,
+   });
+  }
+
+  // Müşteriye e-posta bildirimi (e-posta bildirimleri açıksa)
+  let userEmailResult = null;
+  try {
+   const emailNotificationsEnabled = user.notificationPreferences?.emailNotifications !== false; // default true
+
+   if (emailNotificationsEnabled && user.email) {
+    const addrSummary = address.summary || '';
+    const pmType = paymentMethod?.type || order.payment?.type || '';
+    const pmText = pmType === 'cash' ? 'Kapıda Ödeme' : (pmType === 'card' ? 'Kart ile Ödeme' : (pmType || '-'));
+
+    userEmailResult = await sendUserOrderConfirmationEmail({
+     userEmail: user.email,
+     userName: user.name,
+     orderId,
+     orderDate: order.date,
+     total: order.total,
+     paymentMethod: pmText,
+     addressSummary: addrSummary,
+     items: repricedItems,
+    });
+
+    if (!userEmailResult?.success) {
+     console.error('[ORDER] User email failed:', userEmailResult);
+    } else {
+     console.log('[ORDER] User email sent:', { messageId: userEmailResult.messageId });
+    }
+   } else {
+    console.log('[ORDER] User email skipped:', {
+     emailNotificationsEnabled,
+     hasEmail: Boolean(user.email)
+    });
+   }
+  } catch (e) {
+   console.error('[ORDER] User email exception:', e);
   }
 
   return NextResponse.json({

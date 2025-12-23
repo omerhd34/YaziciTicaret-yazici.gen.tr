@@ -40,7 +40,7 @@ export const getProductUrl = (product, colorSerialNumber = null) => {
   categoryPath = mainMenuItem.path.replace('/kategori/', '');
 
   // Alt kategoriyi bul
-  if (product.subCategory && mainMenuItem.subCategories) {
+  if (product.subCategory && product.subCategory.trim() && mainMenuItem.subCategories) {
    const subCat = mainMenuItem.subCategories.find(sub => sub.name === product.subCategory);
    if (subCat) {
     subCategoryPath = subCat.path.replace(`/kategori/${categoryPath}/`, '');
@@ -52,8 +52,13 @@ export const getProductUrl = (product, colorSerialNumber = null) => {
  if (!categoryPath) {
   categoryPath = categoryToSlug(product.category);
  }
- if (!subCategoryPath && product.subCategory) {
-  subCategoryPath = categoryToSlug(product.subCategory);
+ // Alt kategori path'i oluştur (sadece gerçekten alt kategori varsa ve kategori ile aynı değilse)
+ if (!subCategoryPath && product.subCategory && product.subCategory.trim()) {
+  const subCategorySlug = categoryToSlug(product.subCategory);
+  // Alt kategori slug'ı kategori slug'ı ile aynı değilse ekle
+  if (subCategorySlug && subCategorySlug !== categoryPath) {
+   subCategoryPath = subCategorySlug;
+  }
  }
 
  // URL oluştur

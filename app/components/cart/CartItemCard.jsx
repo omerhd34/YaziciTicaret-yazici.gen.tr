@@ -14,13 +14,13 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
 
  return (
   <div className="bg-white rounded-xl shadow-sm p-4 flex gap-4">
-   <Link href={productUrl} className="shrink-0">
+   <Link href={productUrl} className="shrink-0 bg-white rounded-lg p-2 flex items-center justify-center">
     <Image
      width={500}
      height={500}
      src={item.images[0]}
      alt={item.name}
-     className="w-24 h-24 object-cover rounded-lg"
+     className="w-24 h-24 object-contain rounded-lg"
     />
    </Link>
 

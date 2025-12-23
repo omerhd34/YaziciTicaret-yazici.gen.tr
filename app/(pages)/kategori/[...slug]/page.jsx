@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { MENU_ITEMS } from "@/app/components/ui/Header";
 import { useCart } from "@/context/CartContext";
 import CategoryHeader from "@/app/components/category/CategoryHeader";
@@ -18,6 +19,7 @@ import ProductQuantitySelector from "@/app/components/product/ProductQuantitySel
 import ProductActions from "@/app/components/product/ProductActions";
 import ProductFeatures from "@/app/components/product/ProductFeatures";
 import ProductAllFeatures from "@/app/components/product/ProductAllFeatures";
+import ProductImportantFeatures from "@/app/components/product/ProductImportantFeatures";
 import ProductLoading from "@/app/components/product/ProductLoading";
 import ProductNotFound from "@/app/components/product/ProductNotFound";
 import Toast from "@/app/components/ui/Toast";
@@ -63,8 +65,22 @@ export default function KategoriPage() {
 
  const slugString = useMemo(() => slug.join('/'), [slug]);
 
- // Eğer slug 3 parça ise (category/subcategory/serialNumber), ürün detayı göster
- const isProductDetailPage = slug.length === 3;
+ // Ürün detay sayfası kontrolü: 
+ // - 3 parça: category/subcategory/serialNumber
+ // - 2 parça: category/serialNumber (alt kategori yoksa)
+ const isProductDetailPage = useMemo(() => {
+  if (slug.length === 3) {
+   // category/subcategory/serialNumber formatı
+   return true;
+  } else if (slug.length === 2) {
+   // category/serialNumber formatı (alt kategori yoksa)
+   // Son parçanın seri numarası olup olmadığını kontrol et (büyük harfler ve sayılar içeriyorsa)
+   const lastPart = slug[1];
+   const serialNumberPattern = /^[A-Z0-9]+$/;
+   return serialNumberPattern.test(lastPart);
+  }
+  return false;
+ }, [slug]);
 
  const fetchProducts = useCallback(async () => {
   setLoading(true);
@@ -102,6 +118,7 @@ export default function KategoriPage() {
      if (!category) {
       const categoryMap = {
        yeni: "YENİ GELENLER",
+       yeniler: "YENİLER",
        indirim: "İndirimler"
       };
       category = categoryMap[categorySlug] || categorySlug;
@@ -110,7 +127,6 @@ export default function KategoriPage() {
 
     if (slug.length > 1) {
      const subCategorySlug = decodeURIComponent(slug[1]);
-     // Ana kategoriyi bul (eğer bulunamadıysa)
      if (!mainMenuItem) {
       mainMenuItem = MENU_ITEMS.find(item => {
        const itemPath = item.path.replace('/kategori/', '');
@@ -121,7 +137,6 @@ export default function KategoriPage() {
      if (mainMenuItem && mainMenuItem.subCategories) {
       const subCat = mainMenuItem.subCategories.find(
        sub => {
-        // Alt kategori path'inden ana kategoriyi çıkar ve karşılaştır
         const subPath = sub.path.replace(`/kategori/${categorySlug}/`, '').replace(/-/g, '');
         return subPath === subCategorySlug.replace(/-/g, '');
        }
@@ -129,13 +144,11 @@ export default function KategoriPage() {
       if (subCat) {
        subCategory = subCat.name;
       } else {
-       // Alt kategori bulunamadıysa, slug'dan oluştur
        subCategory = subCategorySlug
         .replace(/-/g, ' ')
         .replace(/\b\w/g, l => l.toUpperCase());
       }
      } else {
-      // Ana kategori bulunamadıysa veya alt kategorisi yoksa, slug'dan oluştur
       subCategory = subCategorySlug
        .replace(/-/g, ' ')
        .replace(/\b\w/g, l => l.toUpperCase());
@@ -145,7 +158,7 @@ export default function KategoriPage() {
 
    let url = "/api/products?limit=1000";
 
-   if (categorySlug === "yeni") {
+   if (categorySlug === "yeni" || categorySlug === "yeniler") {
     url += `&isNew=true`;
    } else if (categorySlug === "indirim") {
     url += `&category=${encodeURIComponent(category)}`;
@@ -383,9 +396,15 @@ export default function KategoriPage() {
   }
  };
 
+ // Sayfa yüklendiğinde veya slug değiştiğinde scroll'u en üste al
  useEffect(() => {
-  if (isProductDetailPage && slug.length === 3) {
-   const serialNumber = decodeURIComponent(slug[2]);
+  window.scrollTo({ top: 0, behavior: 'instant' });
+ }, [slug]);
+
+ useEffect(() => {
+  if (isProductDetailPage) {
+   // Seri numarası son parçada (2 veya 3 parça olabilir)
+   const serialNumber = decodeURIComponent(slug[slug.length - 1]);
    fetchProductBySerialNumber(serialNumber);
   } else {
    fetchProducts();
@@ -418,8 +437,9 @@ export default function KategoriPage() {
  };
 
  const categoryNames = {
-  yeni: "Yeni Gelenler",
+  yeni: "Yeniler",
   indirim: "İndirimler",
+  kampanyalar: "Kampanyalar",
  };
 
  const getCategoryName = () => {
@@ -538,11 +558,18 @@ export default function KategoriPage() {
 
    // URL'yi güncelle - yeni renk varyantının serialNumber'ı ile
    const newSerialNumber = color.serialNumber;
-   if (newSerialNumber && slug.length === 3) {
-    // Mevcut URL: /kategori/category/subcategory/oldSerialNumber
-    // Yeni URL: /kategori/category/subcategory/newSerialNumber
-    const newUrl = `/kategori/${slug[0]}/${slug[1]}/${newSerialNumber}`;
-    router.push(newUrl);
+   if (newSerialNumber) {
+    if (slug.length === 3) {
+     // Mevcut URL: /kategori/category/subcategory/oldSerialNumber
+     // Yeni URL: /kategori/category/subcategory/newSerialNumber
+     const newUrl = `/kategori/${slug[0]}/${slug[1]}/${newSerialNumber}`;
+     router.push(newUrl);
+    } else if (slug.length === 2) {
+     // Mevcut URL: /kategori/category/oldSerialNumber
+     // Yeni URL: /kategori/category/newSerialNumber
+     const newUrl = `/kategori/${slug[0]}/${newSerialNumber}`;
+     router.push(newUrl);
+    }
    }
   } else {
    setSelectedColorObj(null);
@@ -550,23 +577,9 @@ export default function KategoriPage() {
  };
 
  // Kategori listesi sayfası için ürün sayısı hesaplama
- // Her ürün için tüm renk varyantlarını ayrı ürünler olarak say
+ // Her ürünü tek bir ürün olarak say (renk varyantları ayrı sayılmaz)
  const expandedProductsCount = useMemo(() => {
-  let count = 0;
-  products.forEach((product) => {
-   if (product.colors && product.colors.length > 0) {
-    // Her renk varyantı için ayrı bir ürün say
-    product.colors.forEach((color) => {
-     if (typeof color === 'object' && color.serialNumber) {
-      count++;
-     }
-    });
-   } else {
-    // Renk yoksa normal ürünü say
-    count++;
-   }
-  });
-  return count;
+  return products.length;
  }, [products]);
 
  // Ürün detay sayfası göster
@@ -661,9 +674,41 @@ export default function KategoriPage() {
       </div>
      </div>
 
+     {/* Önemli Özellikler Bölümü */}
+     <ProductImportantFeatures product={product} selectedColor={selectedColor} />
+
      {/* Tüm Özellikler Bölümü */}
      <div className="mt-12">
       <ProductAllFeatures product={product} selectedColor={selectedColor} />
+     </div>
+    </div>
+   </div>
+  );
+ }
+
+ // Kampanyalar sayfası için özel görünüm
+ const isCampaignsPage = slug.length > 0 && decodeURIComponent(slug[0]) === "kampanyalar";
+
+ if (isCampaignsPage) {
+  return (
+   <div className="min-h-screen bg-gray-50">
+    <div className="bg-linear-to-r from-indigo-600 to-purple-600 text-white py-12">
+     <div className="container mx-auto px-4">
+      <h1 className="text-4xl font-black mb-2">Kampanyalar</h1>
+     </div>
+    </div>
+    <div className="container mx-auto px-4 py-8">
+     <div className="flex justify-center items-center">
+      <div className="w-full max-w-2xl">
+       <Image
+        src="/yilbasi_cekilisi.png"
+        alt="Yılbaşı Çekilişi"
+        width={600}
+        height={400}
+        className="w-full h-auto rounded-lg shadow-lg"
+        priority
+       />
+      </div>
      </div>
     </div>
    </div>

@@ -9,11 +9,11 @@ export default function WhyChooseUs() {
   },
   {
    title: "Hızlı ve Güvenli Teslimat",
-   description: "Türkiye'nin her yerine hızlı ve güvenli kargo hizmeti. 500 TL ve üzeri siparişlerde ücretsiz kargo."
+   description: "Türkiye'nin her yerine hızlı ve güvenli kargo hizmeti. 2500 TL ve üzeri siparişlerde ücretsiz kargo."
   },
   {
    title: "Kolay İade ve Değişim",
-   description: "14 gün içinde ücretsiz iade ve değişim garantisi. Müşteri memnuniyeti bizim önceliğimiz."
+   description: "14 gün içinde iade ve değişim garantisi. Müşteri memnuniyeti bizim önceliğimiz."
   },
   {
    title: "Güvenli Ödeme",

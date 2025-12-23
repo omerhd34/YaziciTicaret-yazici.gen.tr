@@ -1,15 +1,47 @@
 "use client";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MdPhone, MdEmail, MdLocationOn } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
-import { HiExternalLink } from "react-icons/hi";
+import { HiExternalLink, HiX, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 
 export default function StoreCard({ title, adres, telefon, whatsappLink, email, mapUrl, images }) {
+ const [lightboxOpen, setLightboxOpen] = useState(false);
+ const [lightboxIndex, setLightboxIndex] = useState(0);
+
  // Google Maps directions ve view URL'lerini oluştur
  const addressForMaps = encodeURIComponent(adres);
  const mapDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${addressForMaps}`;
  const mapViewUrl = `https://www.google.com/maps/search/?api=1&query=${addressForMaps}`;
+
+ // ESC tuşu ile lightbox'ı kapat
+ useEffect(() => {
+  const handleEscape = (e) => {
+   if (e.key === 'Escape' && lightboxOpen) {
+    setLightboxOpen(false);
+   }
+  };
+  window.addEventListener('keydown', handleEscape);
+  return () => window.removeEventListener('keydown', handleEscape);
+ }, [lightboxOpen]);
+
+ const openLightbox = (index) => {
+  setLightboxIndex(index);
+  setLightboxOpen(true);
+ };
+
+ const closeLightbox = () => {
+  setLightboxOpen(false);
+ };
+
+ const nextImage = () => {
+  setLightboxIndex((prev) => (prev + 1) % images.length);
+ };
+
+ const prevImage = () => {
+  setLightboxIndex((prev) => (prev - 1 + images.length) % images.length);
+ };
 
  return (
   <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -128,18 +160,71 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
     {images && images.length > 0 && (
      <div className="grid grid-cols-2 gap-3">
       {images.map((img, idx) => (
-       <div key={idx} className="relative aspect-video rounded-lg overflow-hidden">
+       <div
+        key={idx}
+        className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
+        onClick={() => openLightbox(idx)}
+       >
         <Image
          src={img.url}
          alt={img.alt || `${title} - Görsel ${idx + 1}`}
          fill
-         className="object-cover"
+         className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
        </div>
       ))}
      </div>
     )}
    </div>
+
+   {/* Lightbox */}
+   {lightboxOpen && images && images.length > 0 && (
+    <div className="fixed inset-0 bg-black/90 z-100 flex items-center justify-center p-4">
+     <button
+      onClick={closeLightbox}
+      className="absolute top-4 right-4 text-white hover:text-gray-300 transition z-10"
+      aria-label="Kapat"
+     >
+      <HiX size={32} />
+     </button>
+
+     {images.length > 1 && (
+      <>
+       <button
+        onClick={prevImage}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition z-10"
+        aria-label="Önceki"
+       >
+        <HiChevronLeft size={28} />
+       </button>
+       <button
+        onClick={nextImage}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition z-10"
+        aria-label="Sonraki"
+       >
+        <HiChevronRight size={28} />
+       </button>
+      </>
+     )}
+
+     <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
+      <Image
+       src={images[lightboxIndex].url}
+       alt={images[lightboxIndex].alt || `${title} - Görsel ${lightboxIndex + 1}`}
+       width={1200}
+       height={800}
+       className="max-w-full max-h-full object-contain"
+       priority
+      />
+      {images.length > 1 && (
+       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+        {lightboxIndex + 1} / {images.length}
+       </div>
+      )}
+     </div>
+    </div>
+   )}
   </div>
  );
 }

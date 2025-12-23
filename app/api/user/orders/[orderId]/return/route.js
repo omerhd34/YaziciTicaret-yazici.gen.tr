@@ -33,7 +33,14 @@ export async function POST(request, { params }) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const note = body?.note ? String(body.note).slice(0, 500) : "";
+  const note = body?.note ? String(body.note).trim().slice(0, 500) : "";
+
+  if (!note || !note.trim()) {
+   return NextResponse.json(
+    { success: false, message: "Lütfen iade nedeninizi belirtin." },
+    { status: 400 }
+   );
+  }
 
   const user = await User.findById(session.id);
   if (!user) {
@@ -120,7 +127,7 @@ export async function POST(request, { params }) {
 
   // Admin'e e-posta bildirimi (best-effort)
   try {
-   const adminEmail = process.env.ADMIN_EMAIL;
+   const adminEmail = process.env.EMAIL_USER;
    const order = user.orders[idx];
    await sendAdminReturnRequestEmail({
     adminEmail,

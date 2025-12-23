@@ -10,10 +10,12 @@ import axiosInstance from "@/lib/axios";
 import { getProductUrl } from "@/app/utils/productUrl";
 
 export const MENU_ITEMS = [
+ { name: "Yeniler", path: "/kategori/yeniler", isSpecial: true },
  {
   name: "Beyaz Eşya",
   path: "/kategori/beyaz-esya",
   isSpecial: false,
+  bannerImg: "/products/beyaz-esya.webp",
   subCategories: [
    { name: "Buzdolabı", path: "/kategori/beyaz-esya/buzdolabi" },
    { name: "Derin Dondurucu", path: "/kategori/beyaz-esya/derin-dondurucu" },
@@ -31,6 +33,7 @@ export const MENU_ITEMS = [
   name: "Ankastre",
   path: "/kategori/ankastre",
   isSpecial: false,
+  bannerImg: "/products/ankastre/ankastre.jpg",
   subCategories: [
    { name: "Ankastre Fırın", path: "/kategori/ankastre/ankastre-firin" },
    { name: "Ankastre Mikrodalga Fırın", path: "/kategori/ankastre/ankastre-mikrodalga-firin" },
@@ -44,8 +47,9 @@ export const MENU_ITEMS = [
  { name: "Klima", path: "/kategori/klima", isSpecial: false },
  {
   name: "Su Sebilleri ve Su Arıtma",
-  path: "/kategori/su-sebilleri-ve-su-aritma",
+  path: "/kategori/su-sebilleri-ve-su-aritma/SS1161-1.webp",
   isSpecial: false,
+  bannerImg: "/products/suSebiliSuAritma/",
   subCategories: [
    { name: "Su Sebili", path: "/kategori/su-sebilleri-ve-su-aritma/su-sebili" },
    { name: "Su Arıtma Cihazı", path: "/kategori/su-sebilleri-ve-su-aritma/su-aritma-cihazi" },
@@ -55,6 +59,7 @@ export const MENU_ITEMS = [
   name: "Aksesuarlar / Temizlik ve Bakım Ürünleri",
   path: "/kategori/aksesuarlar-temizlik-bakim",
   isSpecial: false,
+  bannerImg: "/products/",
   subCategories: [
    { name: "Aksesuarlar", path: "/kategori/aksesuarlar-temizlik-bakim/aksesuarlar" },
    { name: "Temizlik Bakım Ürünleri", path: "/kategori/aksesuarlar-temizlik-bakim/temizlik-bakim-urunleri" },
@@ -62,6 +67,7 @@ export const MENU_ITEMS = [
  },
  { name: "Türk Kahve Makineleri", path: "/kategori/turk-kahve-makineleri", isSpecial: false },
  { name: "İndirimler", path: "/kategori/indirim", isSpecial: true },
+ { name: "Kampanyalar", path: "/kategori/kampanyalar", isSpecial: true },
 ];
 
 const Header = () => {
@@ -233,15 +239,12 @@ const Header = () => {
 
    <div className="container mx-auto px-4 py-5">
     <div className="flex justify-between items-center gap-6">
-     <Link href="/" className="flex items-center" onClick={closeMenu}>
-      <Image
-       src="/profilo-favicon.png"
-       alt="PROFILO"
-       width={180}
-       height={60}
-       className="h-14 w-auto"
-       priority
-      />
+     <Link href="/" className="flex items-center group" onClick={closeMenu}>
+      <div className="flex flex-col leading-tight">
+       <span className="text-2xl sm:text-3xl font-extrabold tracking-[0.25em] text-indigo-600 transition-colors duration-500 ease-out group-hover:text-blue-900 select-none">
+        YAZICI TİCARET
+       </span>
+      </div>
      </Link>
      <div className="hidden md:flex flex-1 max-w-xl relative search-container">
       <form
@@ -258,7 +261,7 @@ const Header = () => {
        <input
         type="text"
         name="search"
-        value={searchTerm}
+        value={searchTerm || ""}
         onChange={handleSearchChange}
         onFocus={() => {
          if (searchResults.length > 0) {
@@ -288,14 +291,14 @@ const Header = () => {
             onClick={() => setShowSuggestions(false)}
             className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition cursor-pointer group"
            >
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-white shrink-0 relative flex items-center justify-center p-1">
              {product.images?.[0] && (
               <Image
                src={product.images[0]}
                alt={product.name}
                width={64}
                height={64}
-               className="w-full h-full object-cover"
+               className="w-full h-full object-contain"
               />
              )}
             </div>
@@ -417,14 +420,16 @@ const Header = () => {
          onClick={closeMenu}
          className={`flex items-center gap-1 transition-colors py-1 border-b-2 border-transparent ${item.isSpecial
           ? "text-red-600 hover:border-red-600"
-          : `hover:text-indigo-600 hover:border-indigo-600 ${activeMenu === item.name ? "text-indigo-600 border-indigo-600" : ""}`
-          }`}
+          : "hover:text-indigo-600 hover:border-indigo-600"
+          } ${activeMenu === item.name ? "text-indigo-600 border-indigo-600" : ""}`}
+         suppressHydrationWarning
         >
          {item.name}
          {item.subCategories && (
           <HiChevronDown
            size={14}
            className={`transition-transform duration-300 opacity-50 ${activeMenu === item.name ? "rotate-180 opacity-100" : ""}`}
+           suppressHydrationWarning
           />
          )}
         </Link>
@@ -433,6 +438,7 @@ const Header = () => {
          <div
           className={`absolute top-full left-0 w-full bg-white border-t border-slate-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out transform z-50 
                     ${activeMenu === item.name ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-2"}`}
+          suppressHydrationWarning
          >
           <div className="container mx-auto p-8">
            <div className="flex gap-12">
@@ -460,25 +466,33 @@ const Header = () => {
               href={item.path}
               onClick={closeMenu}
               className="inline-flex items-center gap-2 mt-8 text-xs font-bold text-indigo-600 uppercase hover:underline"
+              suppressHydrationWarning
              >
               Tüm {item.name} Ürünlerini Gör <HiArrowRight size={14} />
              </Link>
             </div>
 
             <div className="w-1/4 hidden lg:block">
-             <div className="relative h-full min-h-[250px] rounded-xl overflow-hidden group/card">
-              <Image
-               src="/6.webp"
-               alt="Yeni Sezon"
-               width={600}
-               height={400}
-               className="object-cover w-full h-full transition-transform duration-700 group-hover/card:scale-105"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
-               <span className="text-white text-xs font-bold uppercase mb-2 bg-indigo-600 w-fit px-2 py-1 rounded">Yeni Sezon</span>
-               <h4 className="text-white font-bold text-xl leading-tight">Yaz Koleksiyonunu Keşfet</h4>
-              </div>
-             </div>
+             {(() => {
+              const activeMenuItem = MENU_ITEMS.find(item => item.name === activeMenu);
+              const bannerImage = activeMenuItem?.bannerImg || "/products/beyaz-esya.webp";
+              return (
+               <div className="relative h-full min-h-[250px] rounded-xl overflow-hidden group/card">
+                <Image
+                 src={bannerImage}
+                 alt={activeMenu || "Yeni Sezon"}
+                 width={600}
+                 height={400}
+                 className="object-cover w-full h-full transition-transform duration-700 group-hover/card:scale-105"
+                 key={bannerImage}
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
+                 <span className="text-white text-xs font-bold uppercase mb-2 bg-indigo-600 w-fit px-2 py-1 rounded">Yeni Sezon</span>
+                 <h4 className="text-white font-bold text-xl leading-tight">Yaz Koleksiyonunu Keşfet</h4>
+                </div>
+               </div>
+              );
+             })()}
             </div>
 
            </div>

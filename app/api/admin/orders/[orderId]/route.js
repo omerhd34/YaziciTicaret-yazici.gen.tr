@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import normalizeText from "@/lib/normalizeText";
-import { sendUserReturnApprovedEmail } from "@/lib/notifications";
+import { sendUserReturnApprovedEmail, sendUserReturnRejectedEmail, sendUserOrderStatusUpdateEmail } from "@/lib/notifications";
 
 async function requireAdmin() {
  const cookieStore = await cookies();
@@ -22,7 +22,7 @@ export async function PATCH(request, { params }) {
   const resolvedParams = await params;
   const { orderId } = resolvedParams;
   const body = await request.json();
-  const { status, returnRequestStatus } = body || {};
+  const { status, returnRequestStatus, adminMessage } = body || {};
 
   if (!orderId) {
    return NextResponse.json({ success: false, message: "Sipariş bulunamadı" }, { status: 400 });
@@ -61,6 +61,9 @@ export async function PATCH(request, { params }) {
   if (idx === -1) {
    return NextResponse.json({ success: false, message: "Sipariş bulunamadı" }, { status: 404 });
   }
+
+  // Eski durumu kaydet (mail için)
+  const oldStatus = hasStatusUpdate ? (user.orders[idx]?.status || "") : "";
 
   // Teslim edildiyse admin bir daha status değiştiremesin (iade talebi güncellemesi hariç)
   const currentStatusNorm = normalizeText(user.orders[idx]?.status);
@@ -140,23 +143,69 @@ export async function PATCH(request, { params }) {
    );
   }
 
-  // Müşteriye e-posta: iade onayı (best-effort)
+  // Müşteriye e-posta: iade onayı/reddi (best-effort)
   if (hasReturnUpdate) {
    const nextReturn = String(returnRequestStatus).trim();
    const norm = normalizeText(nextReturn);
-   if (norm === normalizeText("Onaylandı")) {
+
+   const emailNotificationsEnabled = user.notificationPreferences?.emailNotifications !== false;
+
+   if (emailNotificationsEnabled && user.email) {
     try {
      const order = user.orders?.[idx] || {};
-     const explanation = order?.returnRequest?.note || process.env.RETURN_APPROVED_EXPLANATION || "";
-     await sendUserReturnApprovedEmail({
+
+     if (norm === normalizeText("Onaylandı")) {
+      const explanation = adminMessage && String(adminMessage).trim()
+       ? String(adminMessage).trim()
+       : order?.returnRequest?.note || process.env.RETURN_APPROVED_EXPLANATION || "";
+      await sendUserReturnApprovedEmail({
+       userEmail: user.email,
+       userName: user.name,
+       orderId: String(orderId),
+       explanation,
+      });
+     } else if (norm === normalizeText("Reddedildi")) {
+      const reason = adminMessage && String(adminMessage).trim()
+       ? String(adminMessage).trim()
+       : order?.returnRequest?.rejectionReason || process.env.RETURN_REJECTED_REASON || "İade talebiniz şartlarımıza uymadığı için reddedilmiştir.";
+      await sendUserReturnRejectedEmail({
+       userEmail: user.email,
+       userName: user.name,
+       orderId: String(orderId),
+       reason,
+      });
+     }
+    } catch (e) {
+     console.error('[RETURN STATUS UPDATE] User email exception:', e);
+    }
+   }
+  }
+
+  // Müşteriye e-posta: sipariş durumu güncellemesi (e-posta bildirimleri açıksa)
+  if (hasStatusUpdate && oldStatus) {
+   try {
+    const emailNotificationsEnabled = user.notificationPreferences?.emailNotifications !== false; // default true
+
+    if (emailNotificationsEnabled && user.email) {
+     // Güncellenmiş siparişi tekrar oku
+     const updatedUser = await User.findById(user._id);
+     const updatedOrder = updatedUser?.orders?.find((o) => o.orderId === String(orderId));
+
+     await sendUserOrderStatusUpdateEmail({
       userEmail: user.email,
       userName: user.name,
       orderId: String(orderId),
-      explanation,
+      oldStatus,
+      newStatus: nextStatus,
+      orderDate: updatedOrder?.date || updatedOrder?.createdAt,
+      total: updatedOrder?.total || 0,
+      items: updatedOrder?.items || [],
+      addressSummary: updatedOrder?.addressSummary || "",
      });
-    } catch {
-     // mail hatası sipariş güncellemesini bozmasın
     }
+   } catch (e) {
+    console.error('[ORDER STATUS UPDATE] User email exception:', e);
+    // mail hatası sipariş güncellemesini bozmasın
    }
   }
 
