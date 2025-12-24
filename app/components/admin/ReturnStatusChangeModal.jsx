@@ -27,7 +27,6 @@ export default function ReturnStatusChangeModal({
    await onConfirm(newStatus, message.trim());
    setMessage("");
   } catch (error) {
-   console.error("Return status change error:", error);
   } finally {
    setLoading(false);
   }

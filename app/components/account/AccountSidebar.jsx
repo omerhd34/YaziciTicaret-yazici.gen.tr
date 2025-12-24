@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { HiUser, HiLocationMarker, HiCog, HiCamera } from "react-icons/hi";
+import { HiUser, HiLocationMarker, HiCog, HiCamera, HiShoppingBag } from "react-icons/hi";
 import { MdInventory2, MdCreditCard } from "react-icons/md";
 import { FaHeart } from "react-icons/fa";
 
@@ -56,7 +56,7 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
     <nav className="space-y-2">
      <button
       onClick={() => onTabChange("profil")}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition ${activeTab === "profil"
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "profil"
        ? "bg-indigo-50 text-indigo-600"
        : "text-gray-700 hover:bg-gray-50"
        }`}
@@ -67,7 +67,7 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
 
      <button
       onClick={() => onTabChange("siparisler")}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition ${activeTab === "siparisler"
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "siparisler"
        ? "bg-indigo-50 text-indigo-600"
        : "text-gray-700 hover:bg-gray-50"
        }`}
@@ -78,7 +78,7 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
 
      <Link
       href="/favoriler"
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition"
+      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition cursor-pointer"
      >
       <FaHeart size={20} />
       Favorilerim
@@ -86,7 +86,7 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
 
      <button
       onClick={() => onTabChange("adresler")}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition ${activeTab === "adresler"
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "adresler"
        ? "bg-indigo-50 text-indigo-600"
        : "text-gray-700 hover:bg-gray-50"
        }`}
@@ -97,7 +97,7 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
 
      <button
       onClick={() => onTabChange("kartlar")}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition ${activeTab === "kartlar"
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "kartlar"
        ? "bg-indigo-50 text-indigo-600"
        : "text-gray-700 hover:bg-gray-50"
        }`}
@@ -107,8 +107,19 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
      </button>
 
      <button
+      onClick={() => onTabChange("urun-istekleri")}
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "urun-istekleri"
+       ? "bg-indigo-50 text-indigo-600"
+       : "text-gray-700 hover:bg-gray-50"
+       }`}
+     >
+      <HiShoppingBag size={20} />
+      Ürün İsteklerim
+     </button>
+
+     <button
       onClick={() => onTabChange("ayarlar")}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition ${activeTab === "ayarlar"
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "ayarlar"
        ? "bg-indigo-50 text-indigo-600"
        : "text-gray-700 hover:bg-gray-50"
        }`}

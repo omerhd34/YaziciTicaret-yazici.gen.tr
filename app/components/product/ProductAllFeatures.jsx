@@ -37,7 +37,6 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
  const colorSpecifications = selectedColorObj?.specifications || [];
  const displayManualLink = selectedColorObj?.manualLink || product.manualLink;
 
- // "Ürün Özellikleri" içeriğini hazırla
  const productFeaturesItems = [];
  if (product.brand) {
   productFeaturesItems.push({ key: "Marka", value: product.brand });
@@ -166,22 +165,6 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
    ];
   }
  }
-
- // Debug log
- if (process.env.NODE_ENV === 'development') {
-  console.log('ProductAllFeatures Debug:', {
-   selectedColor,
-   selectedColorObj: selectedColorObj ? {
-    name: selectedColorObj.name,
-    hasSpecs: !!selectedColorObj.specifications,
-    specsCount: selectedColorObj.specifications?.length || 0,
-   } : null,
-   productSpecifications: productSpecifications.length,
-   colorSpecifications: colorSpecifications.length,
-   processedSpecifications: processedSpecifications.length,
-  });
- }
-
 
  return (
   <div className="mt-12 pt-12 border-t">

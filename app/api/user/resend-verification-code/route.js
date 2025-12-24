@@ -49,13 +49,6 @@ export async function POST(request) {
   // Kodun kaydedildiğini kontrol et
   const verifyUser = await User.findById(userId);
   if (!verifyUser || !verifyUser.emailVerificationCode || verifyUser.emailVerificationCode !== codeString) {
-   console.error('Resend - Kod kaydedilemedi, findByIdAndUpdate ile deniyor...', {
-    userId: user._id,
-    hasCode: !!verifyUser?.emailVerificationCode,
-    savedCode: verifyUser?.emailVerificationCode,
-    expectedCode: codeString,
-   });
-
    // findByIdAndUpdate ile tekrar dene
    await User.findByIdAndUpdate(
     user._id,
@@ -67,11 +60,6 @@ export async function POST(request) {
     },
     { new: true, runValidators: false }
    );
-  } else {
-   console.log('Resend - Kod başarıyla kaydedildi:', {
-    userId: user._id,
-    code: codeString,
-   });
   }
 
   // Email doğrulama maili gönder
@@ -90,7 +78,6 @@ export async function POST(request) {
    { status: 200 }
   );
  } catch (error) {
-  console.error('Yeniden kod gönderme hatası:', error);
   return NextResponse.json(
    { success: false, message: 'Bir hata oluştu.' },
    { status: 500 }

@@ -18,6 +18,7 @@ import CardModal from "@/app/components/account/CardModal";
 import SettingsTab from "@/app/components/account/SettingsTab";
 import DeleteConfirmModal from "@/app/components/account/DeleteConfirmModal";
 import DeleteAccountModal from "@/app/components/account/DeleteAccountModal";
+import ProductRequestsTab from "@/app/components/account/ProductRequestsTab";
 
 export default function Hesabim() {
  const router = useRouter();
@@ -37,7 +38,7 @@ export default function Hesabim() {
   didInitTabFromUrl.current = true;
   if (!tab) return;
 
-  const allowedTabs = new Set(["profil", "siparisler", "favoriler", "adresler", "kartlar", "ayarlar"]);
+  const allowedTabs = new Set(["profil", "siparisler", "favoriler", "adresler", "kartlar", "urun-istekleri", "ayarlar"]);
   if (allowedTabs.has(tab) && tab !== activeTab) {
    setActiveTab(tab);
   }
@@ -583,12 +584,10 @@ export default function Hesabim() {
     setOrders(data.orders || []);
    } else {
     setOrders([]);
-    console.error('Siparişler yüklenemedi:', data.message || data.error);
     showToast(data.message || "Siparişler yüklenemedi", "error");
    }
   } catch (error) {
    setOrders([]);
-   console.error('Siparişler yükleme hatası:', error);
    showToast("Siparişler yüklenirken bir hata oluştu.", "error");
   } finally {
    setOrdersLoading(false);
@@ -1245,6 +1244,10 @@ export default function Hesabim() {
         showToast={showToast}
         fetchCards={fetchCards}
        />
+      )}
+
+      {activeTab === "urun-istekleri" && (
+       <ProductRequestsTab />
       )}
 
       {activeTab === "ayarlar" && (

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function ContactInfoCard({ icon: Icon, title, children, link, linkText }) {
  return (
-  <div className="flex items-start gap-4">
+  <div className="flex items-center gap-4">
    <div className="bg-indigo-100 p-3 rounded-lg">
     <Icon className="text-indigo-600" size={24} />
    </div>

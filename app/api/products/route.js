@@ -36,24 +36,15 @@ export async function GET(request) {
 
   // Özel kategoriler için özel filtreleme
   if (category === 'Yeniler' || category === 'Yeniler') {
-   // Yeni ürünler için isNew filtresi
    query.isNew = true;
   } else if (category === 'İndirimler') {
-   // İndirimli ürünler için discountPrice olanları filtrele (price'dan küçük olmalı)
    query.$and = [
     { discountPrice: { $exists: true, $ne: null, $gt: 0 } },
     { $expr: { $lt: ['$discountPrice', '$price'] } }
    ];
   } else if (category) {
-   // Normal kategoriler için kategori araması (case-insensitive, tam eşleşme)
-   // Türkçe karakterler için normalize et
    const normalizedCategory = category.trim();
    query.category = { $regex: new RegExp(`^${normalizedCategory.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') };
-
-   if (process.env.NODE_ENV === 'development') {
-    console.log('Filtering by category:', normalizedCategory);
-    console.log('Category regex:', query.category.$regex);
-   }
   }
 
   if (subCategory) {
@@ -231,17 +222,10 @@ export async function POST(request) {
    }, 0);
   }
 
-  if (process.env.NODE_ENV === 'development') {
-   console.log('Creating product with colors:', body.colors?.length || 0);
-   console.log('Product data keys:', Object.keys(productData));
-   console.log('Product data:', JSON.stringify(productData, null, 2));
-  }
-
   let product;
   try {
    product = await Product.create(productData);
   } catch (createError) {
-   console.error('Product creation error:', createError);
    if (createError.name === 'ValidationError') {
     const validationErrors = Object.values(createError.errors || {}).map(err => err.message).join(', ');
     return NextResponse.json(
@@ -258,11 +242,6 @@ export async function POST(request) {
     );
    }
    throw createError;
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-   console.log('Created product with colors:', product.colors?.length || 0);
-   console.log('Created product full data:', JSON.stringify(product.toObject(), null, 2));
   }
 
   return NextResponse.json({ success: true, data: product }, { status: 201 });

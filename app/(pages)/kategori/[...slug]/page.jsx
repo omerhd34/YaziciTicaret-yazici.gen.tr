@@ -40,10 +40,12 @@ export default function KategoriPage() {
   minPrice: "",
   maxPrice: "",
   brands: [],
+  categories: [],
   sortBy: "-createdAt",
  });
 
  const [availableBrands, setAvailableBrands] = useState([]);
+ const [availableCategories, setAvailableCategories] = useState([]);
  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
 
  // Ürün detay sayfası için state'ler
@@ -169,22 +171,8 @@ export default function KategoriPage() {
    if (subCategory) url += `&subCategory=${encodeURIComponent(subCategory)}`;
    if (filters.sortBy) url += `&sort=${filters.sortBy}`;
 
-   // Debug: kategori bilgilerini logla
-   if (process.env.NODE_ENV === 'development') {
-    console.log('Category Slug:', categorySlug);
-    console.log('Category:', category);
-    console.log('SubCategory:', subCategory);
-    console.log('API URL:', url);
-   }
-
    const res = await fetch(url);
    const data = await res.json();
-
-   // Debug: API yanıtını logla
-   if (process.env.NODE_ENV === 'development') {
-    console.log('API Response:', data);
-    console.log('Products Count:', data.data?.length || 0);
-   }
 
    if (data.success) {
     let filteredProducts = data.data;
@@ -220,11 +208,28 @@ export default function KategoriPage() {
      );
     }
 
+    // Category filter (only for "yeniler" and "indirim" pages)
+    if (categorySlug === "yeni" || categorySlug === "yeniler" || categorySlug === "indirim") {
+     if (filters.categories.length > 0) {
+      filteredProducts = filteredProducts.filter((p) =>
+       filters.categories.includes(p.category)
+      );
+     }
+    }
+
     setProducts(filteredProducts);
 
     // Extract unique brands
     const brands = [...new Set(data.data.map((p) => p.brand).filter(Boolean))];
     setAvailableBrands(brands);
+
+    // Extract unique categories (only for "yeniler" and "indirim" pages)
+    if (categorySlug === "yeni" || categorySlug === "yeniler" || categorySlug === "indirim") {
+     const categories = [...new Set(data.data.map((p) => p.category).filter(Boolean))];
+     setAvailableCategories(categories);
+    } else {
+     setAvailableCategories([]);
+    }
 
     // Calculate price range
     if (data.data.length > 0) {
@@ -242,7 +247,7 @@ export default function KategoriPage() {
   } finally {
    setLoading(false);
   }
- }, [slug, filters.sortBy, filters.brands, filters.minPrice, filters.maxPrice]);
+ }, [slug, filters.sortBy, filters.brands, filters.categories, filters.minPrice, filters.maxPrice]);
 
  // Ürün detay sayfası için fetch
  const fetchProductBySerialNumber = useCallback(async (serialNumber) => {
@@ -421,11 +426,21 @@ export default function KategoriPage() {
   }));
  };
 
+ const handleCategoryToggle = (category) => {
+  setFilters((prev) => ({
+   ...prev,
+   categories: prev.categories.includes(category)
+    ? prev.categories.filter((c) => c !== category)
+    : [...prev.categories, category],
+  }));
+ };
+
  const clearFilters = () => {
   setFilters({
    minPrice: "",
    maxPrice: "",
    brands: [],
+   categories: [],
    sortBy: "-createdAt",
   });
 
@@ -724,10 +739,12 @@ export default function KategoriPage() {
       slug={slug}
       filters={filters}
       availableBrands={availableBrands}
+      availableCategories={availableCategories}
       onClearFilters={clearFilters}
       onMinPriceChange={(value) => setFilters({ ...filters, minPrice: value })}
       onMaxPriceChange={(value) => setFilters({ ...filters, maxPrice: value })}
       onBrandToggle={handleBrandToggle}
+      onCategoryToggle={handleCategoryToggle}
      />
 
      <div className="flex-1">
@@ -752,11 +769,13 @@ export default function KategoriPage() {
     slug={slug}
     filters={filters}
     availableBrands={availableBrands}
+    availableCategories={availableCategories}
     onClose={() => setShowFilters(false)}
     onClearFilters={clearFilters}
     onMinPriceChange={(value) => setFilters({ ...filters, minPrice: value })}
     onMaxPriceChange={(value) => setFilters({ ...filters, maxPrice: value })}
     onBrandToggle={handleBrandToggle}
+    onCategoryToggle={handleCategoryToggle}
    />
   </div>
  );

@@ -4,6 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Product from "@/models/Product";
 import Contact from "@/models/Contact";
+import ProductRequest from "@/models/ProductRequest";
 
 async function requireAdmin() {
  const cookieStore = await cookies();
@@ -20,12 +21,13 @@ export async function GET() {
 
   await dbConnect();
 
-  const [userCount, productCount, inStockProductCount, totalContacts, unreadContacts] = await Promise.all([
+  const [userCount, productCount, inStockProductCount, totalContacts, unreadContacts, totalProductRequests] = await Promise.all([
    User.countDocuments(),
    Product.countDocuments(),
    Product.countDocuments({ stock: { $gt: 0 } }),
    Contact.countDocuments(),
    Contact.countDocuments({ read: false }),
+   ProductRequest.countDocuments(),
   ]);
 
   const agg = await User.aggregate([
@@ -98,10 +100,10 @@ export async function GET() {
     cancelledOrders,
     totalContacts,
     unreadContacts,
+    totalProductRequests,
    },
   });
  } catch (error) {
-  console.error("Admin stats error:", error);
   return NextResponse.json(
    { success: false, message: "İstatistikler getirilemedi", error: error.message },
    { status: 500 }

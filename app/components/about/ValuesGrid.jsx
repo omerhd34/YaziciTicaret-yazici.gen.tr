@@ -18,6 +18,14 @@ export default function ValuesGrid() {
   {
    title: "Yenilikçilik",
    description: "Teknolojik gelişmeleri takip eder, sürekli kendimizi geliştirir ve müşterilerimize en iyi deneyimi sunmak için çalışırız."
+  },
+  {
+   title: "Şeffaflık ve Dürüstlük",
+   description: "Müşterilerimizle kurduğumuz ilişkide her zaman açık ve net olmayı, doğru bilgi vermeyi ve beklentileri gerçekçi şekilde yönetmeyi önemsiyoruz."
+  },
+  {
+   title: "Tecrübe ve Uzmanlık",
+   description: "27 yıllık sektör tecrübemiz ve Profilo markasının yetkili bayisi olarak, müşterilerimize uzman danışmanlık hizmeti sunuyoruz."
   }
  ];
 

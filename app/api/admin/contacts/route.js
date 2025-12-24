@@ -59,7 +59,6 @@ export async function GET(request) {
    unreadCount,
   });
  } catch (error) {
-  console.error('[ADMIN CONTACTS] Hata:', error);
   return NextResponse.json(
    { success: false, message: 'Mesajlar getirilemedi' },
    { status: 500 }
@@ -105,9 +104,8 @@ export async function PATCH(request) {
    success: true,
    contact,
   });
- } catch (error) {
-  console.error('[ADMIN CONTACTS] Güncelleme hatası:', error);
-  return NextResponse.json(
+  } catch (error) {
+   return NextResponse.json(
    { success: false, message: 'Mesaj güncellenemedi' },
    { status: 500 }
   );
@@ -150,7 +148,6 @@ export async function DELETE(request) {
    message: 'Mesaj silindi',
   });
  } catch (error) {
-  console.error('[ADMIN CONTACTS] Silme hatası:', error);
   return NextResponse.json(
    { success: false, message: 'Mesaj silinemedi' },
    { status: 500 }

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { HiHeart, HiChevronLeft, HiChevronRight } from "react-icons/hi";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { getProductUrl } from "@/app/utils/productUrl";
@@ -10,47 +10,32 @@ import { getColorHex } from "@/app/utils/colorUtils";
 export default function ProductCard({ product }) {
  const [isImageHovered, setIsImageHovered] = useState(false);
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
- const { addToCart, addToFavorites, removeFromFavorites, isFavorite: checkFavorite } = useCart();
+ const { addToFavorites, removeFromFavorites, isFavorite: checkFavorite } = useCart();
  const isFavorite = checkFavorite(product._id);
 
- // Tüm renkleri al (eğer _allColors varsa onu kullan, yoksa product.colors'u kullan)
  const allColors = product._allColors || product.colors;
- // Sadece object tipinde ve serialNumber'ı olan renkleri say
  const validColors = allColors ? allColors.filter(c => typeof c === 'object' && c.serialNumber) : [];
-
- // İlk rengi başlangıç olarak seç
  const initialColor = validColors.length > 0 ? validColors[0] : null;
-
- // Seçili rengi product._id ile birlikte sakla (product değiştiğinde otomatik sıfırlanır)
  const [selectedColorState, setSelectedColorState] = useState({ productId: product._id, color: null });
-
- // Product değiştiğinde seçili rengi sıfırla
  const selectedColor = selectedColorState.productId === product._id ? selectedColorState.color : null;
-
- // Seçili renge göre resim ve fiyat (seçili renk yoksa ilk rengi kullan)
  const currentColor = selectedColor || initialColor;
  const images = currentColor?.images && currentColor.images.length > 0
   ? currentColor.images
-  : (product.images && product.images.length > 0 ? product.images : ["/1.jpeg"]);
+  : (product.images && product.images.length > 0 ? product.images : ["/products/beyaz-esya.webp"]);
 
  const colorPrice = currentColor?.price || product.price;
  const colorDiscountPrice = currentColor?.discountPrice !== undefined ? currentColor.discountPrice : product.discountPrice;
  const colorSerialNumber = currentColor?.serialNumber || product.serialNumber;
 
- // Renkleri orijinal sıralamada tut (seçili rengi başa taşıma)
  const sortedColors = validColors;
  const hasMultipleColors = sortedColors.length > 1;
 
- // Renk değiştiğinde resmi değiştir (mevcut indeksi koru, ama yeni rengin resim sayısına göre ayarla)
  const handleColorChange = (color) => {
   setSelectedColorState({ productId: product._id, color });
-  // Yeni rengin resimlerini al
   const newColorImages = color?.images && color.images.length > 0 ? color.images : (product.images || []);
-  // Mevcut indeksi yeni resim sayısına göre ayarla
   if (currentImageIndex >= newColorImages.length) {
    setCurrentImageIndex(Math.max(0, newColorImages.length - 1));
   }
-  // Eğer indeks geçerliyse, aynı indekste kal
  };
 
  const hasDiscount = colorDiscountPrice && colorDiscountPrice < colorPrice;
@@ -58,7 +43,6 @@ export default function ProductCard({ product }) {
   ? Math.round(((colorPrice - colorDiscountPrice) / colorPrice) * 100)
   : 0;
 
- // Ürün URL'ini oluştur
  const productUrl = getProductUrl(product, colorSerialNumber);
 
  return (
@@ -97,15 +81,30 @@ export default function ProductCard({ product }) {
     onMouseLeave={() => setIsImageHovered(false)}
    >
     <Link href={productUrl} className="w-full h-full flex items-center justify-center">
-     <Image
-      width={600}
-      height={600}
-      src={images[currentImageIndex]}
-      alt={product.name}
-      quality={90}
-      className={`max-w-full max-h-full object-contain transition-transform duration-500 ${isImageHovered ? "scale-110" : "scale-100"
-       }`}
-     />
+     {images[currentImageIndex] && images[currentImageIndex] !== null ? (
+      <Image
+       width={600}
+       height={600}
+       src={images[currentImageIndex]}
+       alt={product.name}
+       quality={90}
+       className={`max-w-full max-h-full object-contain transition-transform duration-500 ${isImageHovered ? "scale-110" : "scale-100"
+        }`}
+       onError={(e) => {
+        e.target.src = "/products/beyaz-esya.webp";
+       }}
+      />
+     ) : (
+      <Image
+       width={600}
+       height={600}
+       src="/products/beyaz-esya.webp"
+       alt={product.name}
+       quality={90}
+       className={`max-w-full max-h-full object-contain transition-transform duration-500 ${isImageHovered ? "scale-110" : "scale-100"
+        }`}
+      />
+     )}
     </Link>
 
     {images.length > 1 && (
@@ -116,7 +115,7 @@ export default function ProductCard({ product }) {
         e.stopPropagation();
         setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
        }}
-       className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all z-20"
+       className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all z-20 cursor-pointer"
        aria-label="Önceki resim"
       >
        <HiChevronLeft size={20} className="text-gray-700" />
@@ -127,7 +126,7 @@ export default function ProductCard({ product }) {
         e.stopPropagation();
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
        }}
-       className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all z-20"
+       className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all z-20 cursor-pointer"
        aria-label="Sonraki resim"
       >
        <HiChevronRight size={20} className="text-gray-700" />
@@ -217,7 +216,6 @@ export default function ProductCard({ product }) {
       )}
      </div>
 
-     {/* Renk seçenekleri - eğer birden fazla renk varsa göster */}
      {hasMultipleColors && (
       <div className="flex gap-2 flex-wrap shrink-0">
        {sortedColors.map((color, idx) => {

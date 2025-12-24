@@ -5,12 +5,6 @@ import { FaAsterisk } from "react-icons/fa";
 import Link from "next/link";
 import AlertMessage from "./AlertMessage";
 
-/**
- * Register Form Component
- * 
- * @param {function} onRegister - Kayıt başarılı olduğunda callback (userId, email ile)
- * @param {function} onVerificationRequired - Email doğrulama gerektiğinde callback (userId ile)
- */
 export default function RegisterForm({ onRegister, onVerificationRequired }) {
  const [form, setForm] = useState({
   name: "",

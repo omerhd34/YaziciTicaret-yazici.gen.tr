@@ -2,15 +2,18 @@
 import SubCategoryFilter from "./SubCategoryFilter";
 import PriceFilter from "./PriceFilter";
 import BrandFilter from "./BrandFilter";
+import CategoryFilter from "./CategoryFilter";
 
 export default function CategoryFiltersSidebar({
  slug,
  filters,
  availableBrands,
+ availableCategories,
  onClearFilters,
  onMinPriceChange,
  onMaxPriceChange,
  onBrandToggle,
+ onCategoryToggle,
 }) {
 
  return (
@@ -27,6 +30,14 @@ export default function CategoryFiltersSidebar({
     </div>
 
     <SubCategoryFilter slug={slug} />
+
+    {availableCategories && availableCategories.length > 0 && (
+     <CategoryFilter
+      availableCategories={availableCategories}
+      selectedCategories={filters.categories || []}
+      onCategoryToggle={onCategoryToggle}
+     />
+    )}
 
     <PriceFilter
      minPrice={filters.minPrice}

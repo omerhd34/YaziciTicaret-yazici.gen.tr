@@ -118,16 +118,13 @@ export async function PATCH(request, { params }) {
    // Admin "iade tamamlandı" işaretlerse ürünün geri ulaştığını kabul et
    if (norm === normalizeText("Tamamlandı")) {
     update["orders.$.returnRequest.completedAt"] = now;
-    // tamamlandıysa otomatik iptal devre dışı kalsın
     update["orders.$.returnRequest.cancelledAt"] = null;
     update["orders.$.returnRequest.cancelReason"] = "";
    }
-   // requestedAt yoksa set et (eski kayıtlara destek)
    if (!user.orders[idx].returnRequest?.requestedAt) {
     update["orders.$.returnRequest.requestedAt"] = now;
    }
    if (user.orders[idx].returnRequest == null) {
-    // note alanı yoksa boş olarak başlat (şema uyumu)
     update["orders.$.returnRequest.note"] = "";
    }
   }
@@ -176,7 +173,7 @@ export async function PATCH(request, { params }) {
       });
      }
     } catch (e) {
-     console.error('[RETURN STATUS UPDATE] User email exception:', e);
+     // Email error - silently fail
     }
    }
   }
@@ -204,7 +201,6 @@ export async function PATCH(request, { params }) {
      });
     }
    } catch (e) {
-    console.error('[ORDER STATUS UPDATE] User email exception:', e);
     // mail hatası sipariş güncellemesini bozmasın
    }
   }

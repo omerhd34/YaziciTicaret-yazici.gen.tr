@@ -3,7 +3,7 @@
 export default function PriceFilter({ minPrice, maxPrice, onMinPriceChange, onMaxPriceChange, isMobile = false }) {
  return (
   <div className={isMobile ? "mb-6" : "mb-6 pb-6 border-b"}>
-   <h4 className="font-semibold mb-4">Fiyat Aralığı</h4>
+   <h4 className="font-semibold mb-4">Fiyat Aralığı (₺)</h4>
    <div className="space-y-3">
     <input
      type="number"

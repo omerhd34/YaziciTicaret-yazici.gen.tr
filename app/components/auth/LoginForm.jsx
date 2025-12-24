@@ -3,13 +3,6 @@ import { useState } from "react";
 import { HiMail, HiLockClosed } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
 
-/**
- * Login Form Component
- * 
- * @param {function} onLogin - Login başarılı olduğunda callback
- * @param {function} onForgotPassword - Şifremi unuttum butonuna tıklandığında callback
- * @param {function} onVerificationRequired - Email doğrulama gerektiğinde callback (userId ile)
- */
 export default function LoginForm({ onLogin, onForgotPassword, onVerificationRequired }) {
  const [form, setForm] = useState({ email: "", password: "" });
  const [loading, setLoading] = useState(false);

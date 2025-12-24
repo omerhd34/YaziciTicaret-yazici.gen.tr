@@ -5,7 +5,7 @@ import { HiArrowRight } from "react-icons/hi";
 
 export default function FavoritesEmpty() {
  return (
-  <div className="min-h-screen bg-gray-50 py-12">
+  <div className="min-h-screen bg-gray-50 flex items-start justify-center pt-32">
    <div className="container mx-auto px-4">
     <div className="text-center py-12">
      <FaHeart size={80} className="mx-auto text-gray-300 mb-4" />
@@ -13,7 +13,7 @@ export default function FavoritesEmpty() {
       Favori Listeniz Boş
      </h2>
      <p className="text-gray-600 mb-6">
-      Beğendiğiniz ürünleri favorilere ekleyerek kolayca ulaşabilirsiniz
+      Beğendiğiniz ürünleri favorilere ekleyerek kolayca ulaşabilirsiniz.
      </p>
      <Link
       href="/"

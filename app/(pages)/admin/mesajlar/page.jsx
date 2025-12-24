@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import Toast from "@/app/components/ui/Toast";
 import AdminOrdersHeader from "@/app/components/admin/AdminOrdersHeader";
+import ConfirmDialog from "@/app/components/auth/ConfirmDialog";
 import {
  HiMail,
  HiX,
@@ -29,6 +30,7 @@ export default function AdminMesajlarPage() {
  const [selectedContact, setSelectedContact] = useState(null);
  const [unreadCount, setUnreadCount] = useState(0);
  const [totalCount, setTotalCount] = useState(0);
+ const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
  const fetchContacts = useCallback(async (readFilter = filter) => {
   try {
@@ -101,9 +103,12 @@ export default function AdminMesajlarPage() {
  };
 
  const handleDelete = async (id) => {
-  if (!confirm("Bu mesajı silmek istediğinize emin misiniz?")) {
-   return;
-  }
+  setDeleteConfirm({ show: true, id });
+ };
+
+ const confirmDelete = async () => {
+  const id = deleteConfirm.id;
+  setDeleteConfirm({ show: false, id: null });
 
   try {
    const response = await axiosInstance.delete(`/api/admin/contacts?id=${id}`);
@@ -159,6 +164,15 @@ export default function AdminMesajlarPage() {
  return (
   <div className="min-h-screen bg-gray-50 pb-12">
    <Toast toast={toast} setToast={setToast} />
+   <ConfirmDialog
+    show={deleteConfirm.show}
+    message="Bu mesajı silmek istediğinize emin misiniz?"
+    onConfirm={confirmDelete}
+    onCancel={() => setDeleteConfirm({ show: false, id: null })}
+    confirmText="Sil"
+    cancelText="İptal"
+    confirmColor="red"
+   />
    <AdminOrdersHeader title="Mesajlar" onLogout={handleLogout} />
 
    <div className="container mx-auto px-4 py-6">
@@ -169,8 +183,8 @@ export default function AdminMesajlarPage() {
        <div className="flex flex-wrap gap-3">
         <button
          onClick={() => handleFilterChange("all")}
-         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 ${filter === "all"
-          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 cursor-pointer ${filter === "all"
+          ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -178,8 +192,8 @@ export default function AdminMesajlarPage() {
         </button>
         <button
          onClick={() => handleFilterChange("unread")}
-         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 ${filter === "unread"
-          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 cursor-pointer ${filter === "unread"
+          ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -187,8 +201,8 @@ export default function AdminMesajlarPage() {
         </button>
         <button
          onClick={() => handleFilterChange("read")}
-         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 ${filter === "read"
-          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+         className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 cursor-pointer ${filter === "read"
+          ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -221,10 +235,10 @@ export default function AdminMesajlarPage() {
             }
            }}
            className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${selectedContact?._id === contact._id
-            ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg"
+            ? "border-indigo-500 bg-linear-to-br from-indigo-50 to-purple-50 shadow-lg"
             : contact.read
              ? "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
-             : "border-amber-300 bg-gradient-to-br from-amber-50/80 to-yellow-50/80 hover:border-amber-400 hover:shadow-md"
+             : "border-amber-300 bg-linear-to-br from-amber-50/80 to-yellow-50/80 hover:border-amber-400 hover:shadow-md"
             }`}
           >
            <div className="flex items-start justify-between mb-2">
@@ -234,7 +248,7 @@ export default function AdminMesajlarPage() {
                {contact.name}
               </p>
               {!contact.read && (
-               <span className="w-3 h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shrink-0 animate-pulse shadow-md"></span>
+               <span className="w-3 h-3 bg-linear-to-r from-amber-500 to-orange-500 rounded-full shrink-0 animate-pulse shadow-md"></span>
               )}
              </div>
              <p className="text-sm truncate text-gray-600 font-medium">
@@ -277,9 +291,9 @@ export default function AdminMesajlarPage() {
         {selectedContact ? (
          <div className="bg-white border-2 border-gray-200 rounded-xl shadow-xl overflow-hidden transition-all duration-300">
           {/* E-posta Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-5">
+          <div className="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-5">
            <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shrink-0 shadow-lg">
+            <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shrink-0 shadow-lg">
              <span className="text-white font-bold text-xl">
               {selectedContact.name.charAt(0).toUpperCase()}
              </span>
@@ -291,7 +305,7 @@ export default function AdminMesajlarPage() {
               </p>
               <span className={`text-xs px-3 py-1 rounded-full font-semibold ${selectedContact.read
                ? 'bg-gray-200 text-gray-700'
-               : 'bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 border border-indigo-200'
+               : 'bg-linear-to-r from-indigo-100 to-purple-100 text-indigo-700 border border-indigo-200'
                }`}>
                {selectedContact.read ? 'Okundu' : 'Yeni'}
               </span>
@@ -307,7 +321,7 @@ export default function AdminMesajlarPage() {
           {/* E-posta İçeriği */}
           <div className="px-6 py-6">
            <div className="mb-6">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-6 mb-4">
+            <div className="bg-linear-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-6 mb-4">
              <h2 className="text-2xl font-bold mb-6 text-gray-900 flex items-center gap-2">
               <HiMail className="text-indigo-600" size={24} />
               İletişim Formu Mesajı
@@ -318,40 +332,40 @@ export default function AdminMesajlarPage() {
               <div className="bg-white border-2 border-gray-200 rounded-xl p-5 shadow-sm">
                <div className="space-y-4">
                 <div className="flex items-start gap-4 pb-3 border-b border-gray-100">
-                 <span className="font-bold text-gray-700 w-28 flex-shrink-0 text-sm">
+                 <span className="font-bold text-gray-700 w-28 shrink-0 text-sm">
                   Konu:
                  </span>
-                 <span className="text-gray-900 flex-1 break-words font-medium">
+                 <span className="text-gray-900 flex-1 wrap-break-word font-medium">
                   {selectedContact.subject}
                  </span>
                 </div>
                 <div className="flex items-start gap-4 pb-3 border-b border-gray-100">
-                 <span className="font-bold text-gray-700 w-28 flex-shrink-0 text-sm">
+                 <span className="font-bold text-gray-700 w-28 shrink-0 text-sm">
                   Gönderen:
                  </span>
-                 <span className="text-gray-900 flex-1 break-words font-medium">
+                 <span className="text-gray-900 flex-1 wrap-break-word font-medium">
                   {selectedContact.name}
                  </span>
                 </div>
                 <div className="flex items-start gap-4 pb-3 border-b border-gray-100">
-                 <span className="font-bold text-gray-700 w-28 flex-shrink-0 text-sm">
+                 <span className="font-bold text-gray-700 w-28 shrink-0 text-sm">
                   E-posta:
                  </span>
                  <a
                   href={`mailto:${selectedContact.email}`}
-                  className="hover:underline text-indigo-600 flex-1 break-words font-medium hover:text-indigo-700 transition-colors"
+                  className="hover:underline text-indigo-600 flex-1 wrap-break-word font-medium hover:text-indigo-700 transition-colors"
                  >
                   {selectedContact.email}
                  </a>
                 </div>
                 {selectedContact.phone && (
                  <div className="flex items-start gap-4">
-                  <span className="font-bold text-gray-700 w-28 flex-shrink-0 text-sm">
+                  <span className="font-bold text-gray-700 w-28 shrink-0 text-sm">
                    Telefon:
                   </span>
                   <a
                    href={`tel:${selectedContact.phone}`}
-                   className="hover:underline text-indigo-600 flex-1 break-words font-medium hover:text-indigo-700 transition-colors"
+                   className="hover:underline text-indigo-600 flex-1 wrap-break-word font-medium hover:text-indigo-700 transition-colors"
                   >
                    {selectedContact.phone}
                   </a>
@@ -366,7 +380,7 @@ export default function AdminMesajlarPage() {
 
                 Mesaj:
                </h3>
-               <p className="whitespace-pre-wrap leading-relaxed text-gray-900 break-words text-base">
+               <p className="whitespace-pre-wrap leading-relaxed text-gray-900 wrap-break-word text-base">
                 {selectedContact.message}
                </p>
               </div>
@@ -381,7 +395,7 @@ export default function AdminMesajlarPage() {
               onClick={() => handleMarkAsRead(selectedContact._id, !selectedContact.read)}
               className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 transform hover:scale-105 ${selectedContact.read
                ? "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-md"
-               : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/30"
+               : "bg-linear-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/30"
                }`}
              >
               {selectedContact.read ? (
@@ -407,7 +421,7 @@ export default function AdminMesajlarPage() {
             <div className="flex items-center gap-2">
              <button
               onClick={() => window.open(`mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject}`, '_blank')}
-              className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 shadow-md transform hover:scale-105"
+              className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 bg-linear-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 shadow-md transform hover:scale-105"
              >
               <HiReply size={18} />
               Yanıtla
@@ -417,8 +431,8 @@ export default function AdminMesajlarPage() {
           </div>
          </div>
         ) : (
-         <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-16 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+         <div className="bg-linear-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-16 text-center">
+          <div className="w-20 h-20 bg-linear-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
            <HiMail size={48} className="text-indigo-400" />
           </div>
           <p className="text-xl font-bold text-gray-700 mb-2">

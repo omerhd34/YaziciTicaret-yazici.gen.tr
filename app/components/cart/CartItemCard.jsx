@@ -44,8 +44,7 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
       </span>
      )}
      {item.serialNumber && (
-      <span className="text-gray-600">
-       {item.selectedColor ? " - " : ""}
+      <span className={`text-gray-600 ${item.selectedColor ? "ml-3" : ""}`}>
        <span className="font-bold">Seri No:</span> <span className="font-mono">{item.serialNumber}</span>
       </span>
      )}

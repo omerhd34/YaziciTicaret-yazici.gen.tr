@@ -1,11 +1,7 @@
 "use client";
 
-/**
- * Status Dropdown 
- * @param {string} value - Mevcut durum değeri
- * @param {function} onChange - Durum değiştiğinde callback
- * @param {boolean} disabled - Disabled durumu
- */
+import { HiChevronDown } from "react-icons/hi";
+
 export default function StatusDropdown({ value, onChange, disabled }) {
  return (
   <div className="relative inline-flex items-center">
@@ -24,11 +20,8 @@ export default function StatusDropdown({ value, onChange, disabled }) {
     <option value="Teslim Edildi">Teslim Edildi</option>
    </select>
 
-   {/* Sağ kapsül + ok */}
    <span className="pointer-events-none absolute right-2 inline-flex h-7 w-9 items-center justify-center text-gray-700">
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-     <path d="M6.5 8.25l3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <HiChevronDown size={18} aria-hidden="true" />
    </span>
   </div>
  );

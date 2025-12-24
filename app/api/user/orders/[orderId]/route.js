@@ -77,7 +77,7 @@ export async function PATCH(request, { params }) {
   try {
    const adminEmail = process.env.EMAIL_USER;
    const order = user.orders[idx];
-   
+
    await sendAdminOrderCancelledEmail({
     adminEmail,
     orderId: String(orderId),
@@ -90,13 +90,11 @@ export async function PATCH(request, { params }) {
     addressSummary: order?.addressSummary || "",
    });
   } catch (e) {
-   console.error('[ORDER CANCEL] Admin email exception:', e);
    // mail hatası sipariş iptalini bozmasın
   }
 
   return NextResponse.json({ success: true, message: "Sipariş iptal edildi" });
  } catch (error) {
-  console.error("Order cancel error:", error);
   return NextResponse.json(
    { success: false, message: "Sipariş iptal edilemedi", error: error.message },
    { status: 500 }

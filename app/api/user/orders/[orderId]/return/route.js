@@ -148,7 +148,6 @@ export async function POST(request, { params }) {
    returnRequest: freshOrder?.returnRequest || null,
   });
  } catch (error) {
-  console.error("Return request error:", error);
   return NextResponse.json(
    { success: false, message: "İade talebi oluşturulamadı", error: error.message },
    { status: 500 }
@@ -260,7 +259,6 @@ export async function DELETE(request, { params }) {
    message: "İade talebi başarıyla iptal edildi",
   });
  } catch (error) {
-  console.error("Return request cancel error:", error);
   return NextResponse.json(
    { success: false, message: "İade talebi iptal edilemedi", error: error.message },
    { status: 500 }

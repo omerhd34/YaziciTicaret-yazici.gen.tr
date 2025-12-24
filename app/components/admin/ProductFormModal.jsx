@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { HiX, HiUpload, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { HiX, HiUpload, HiChevronDown, HiChevronUp, HiPlus } from "react-icons/hi";
 import Image from "next/image";
 import { MENU_ITEMS } from "@/app/components/ui/Header";
 import axiosInstance from "@/lib/axios";
@@ -79,9 +79,6 @@ const categoryBrands = {
  "Su Sebili": ["Profilo"],
  "Su Arıtma Cihazı": ["Profilo"],
 
- "Aksesuarlar": ["Profilo"],
- "Temizlik Bakım Ürünleri": ["Profilo"],
-
  "Türk Kahve Makineleri": ["Profilo"],
 
 };
@@ -109,8 +106,8 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
  const [uploadingImage, setUploadingImage] = useState(false);
  const [imagePreview, setImagePreview] = useState([]);
  const [loading, setLoading] = useState(false);
- const [isProductSpecsExpanded, setIsProductSpecsExpanded] = useState(true);
- const [isColorsExpanded, setIsColorsExpanded] = useState(true);
+ const [isProductSpecsExpanded, setIsProductSpecsExpanded] = useState(false);
+ const [isColorsExpanded, setIsColorsExpanded] = useState(false);
 
  // Editing product veya show değiştiğinde formu doldur/temizle
  useEffect(() => {
@@ -615,11 +612,11 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
     }
    `}} />
    <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-    <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+    <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10 shadow-sm">
      <h3 className="text-xl font-bold">{editingProduct ? "Ürün Düzenle" : "Yeni Ürün Ekle"}</h3>
      <button
       onClick={onClose}
-      className="text-gray-500 hover:text-gray-800 transition"
+      className="text-gray-500 hover:text-gray-800 transition cursor-pointer"
      >
       <HiX size={24} />
      </button>
@@ -645,7 +642,6 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
       <div>
        <label className="block text-sm font-semibold text-gray-700 mb-2">Marka</label>
        {(() => {
-        // Önce alt kategoriye göre, yoksa kategoriye göre markaları belirle
         const availableBrands = categoryBrands[form.subCategory] || categoryBrands[form.category] || [];
 
         if (availableBrands.length > 0) {
@@ -669,7 +665,6 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
          );
         }
 
-        // Eğer kategori için marka listesi yoksa, serbest metin girişi
         return (
          <input
           value={form.brand}
@@ -776,7 +771,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
        <button
         type="button"
         onClick={() => setIsProductSpecsExpanded(!isProductSpecsExpanded)}
-        className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition"
+        className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition cursor-pointer"
        >
         <span>Ürün Özellikleri</span>
         {isProductSpecsExpanded ? (
@@ -788,9 +783,10 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
        <button
         type="button"
         onClick={addProductSpecificationCategory}
-        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition"
+        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2 cursor-pointer"
        >
-        + Kategori Ekle
+        <HiPlus size={18} />
+        Kategori Ekle
        </button>
       </div>
 
@@ -809,7 +805,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
            <button
             type="button"
             onClick={() => removeProductSpecificationCategory(catIdx)}
-            className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs"
+            className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs cursor-pointer"
            >
             Sil
            </button>
@@ -835,18 +831,19 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
              <button
               type="button"
               onClick={() => removeProductSpecificationItem(catIdx, itemIdx)}
-              className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs"
+              className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs cursor-pointer"
              >
-              ×
+              <HiX size={12} />
              </button>
             </div>
            ))}
            <button
             type="button"
             onClick={() => addProductSpecificationItem(catIdx)}
-            className="w-full px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-xs font-semibold"
+            className="w-full px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-xs font-semibold cursor-pointer flex items-center justify-center gap-2"
            >
-            + Özellik Ekle
+            <HiPlus size={12} />
+            Özellik Ekle
            </button>
           </div>
          </div>
@@ -860,7 +857,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
        <button
         type="button"
         onClick={() => setIsColorsExpanded(!isColorsExpanded)}
-        className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition"
+        className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition cursor-pointer"
        >
         <span>Renkler</span>
         {isColorsExpanded ? (
@@ -872,9 +869,10 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
        <button
         type="button"
         onClick={addColor}
-        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition"
+        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2 cursor-pointer"
        >
-        + Renk Ekle
+        <HiPlus size={18} />
+        Renk Ekle
        </button>
       </div>
 
@@ -883,11 +881,11 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
         {(form.colors || []).map((color, colorIdx) => (
          <div key={colorIdx} className="border rounded-lg p-4 bg-gray-50">
           <div className="flex justify-between items-center mb-4">
-           <h4 className="font-semibold text-gray-700">Renk {colorIdx + 1}</h4>
+           <h4 className="font-semibold text-gray-700">{color.name || `Renk ${colorIdx + 1}`}</h4>
            <button
             type="button"
             onClick={() => removeColor(colorIdx)}
-            className="text-red-600 hover:text-red-800 text-sm font-semibold"
+            className="text-red-600 hover:text-red-800 text-sm font-semibold cursor-pointer"
            >
             Sil
            </button>
@@ -895,7 +893,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
 
           <div className="grid md:grid-cols-2 gap-4 mb-4">
            <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Renk Adı *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Renk Adı <span className="text-red-600">*</span></label>
             <input
              type="text"
              value={color.name || ""}
@@ -910,7 +908,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
             />
            </div>
            <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Seri Numarası *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Seri Numarası <span className="text-red-600">*</span></label>
             <input
              type="text"
              value={color.serialNumber || ""}
@@ -924,7 +922,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
 
           <div className="grid md:grid-cols-3 gap-4 mb-4">
            <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Fiyat *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Fiyat <span className="text-red-600">*</span></label>
             <input
              type="number"
              step="0.01"
@@ -963,7 +961,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
 
           <div className="mb-4">
            <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Görseller * ({(color.images || []).length}/{MAX_IMAGES})
+            Görseller <span className="text-red-600">*</span> ({(color.images || []).length}/{MAX_IMAGES})
            </label>
            <div className="flex items-center gap-3 mb-3">
             <label
@@ -993,7 +991,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
                <button
                 type="button"
                 onClick={() => removeColorImage(colorIdx, imgIdx)}
-                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700 cursor-pointer"
                >
                 <HiX size={14} />
                </button>
@@ -1020,9 +1018,10 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
              <button
               type="button"
               onClick={() => addSpecificationCategory(colorIdx)}
-              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-xs font-semibold"
+              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
              >
-              + Kategori Ekle
+              <HiPlus size={14} />
+              Kategori Ekle
              </button>
             </div>
 
@@ -1041,7 +1040,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
                  <button
                   type="button"
                   onClick={() => removeSpecificationCategory(colorIdx, catIdx)}
-                  className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs"
+                  className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs cursor-pointer"
                  >
                   Sil
                  </button>
@@ -1067,7 +1066,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
                    <button
                     type="button"
                     onClick={() => removeSpecificationItem(colorIdx, catIdx, itemIdx)}
-                    className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs"
+                    className="px-2 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs cursor-pointer"
                    >
                     ×
                    </button>
@@ -1076,9 +1075,10 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
                  <button
                   type="button"
                   onClick={() => addSpecificationItem(colorIdx, catIdx)}
-                  className="w-full px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-xs font-semibold"
+                  className="w-full px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-xs font-semibold cursor-pointer flex items-center justify-center gap-2"
                  >
-                  + Özellik Ekle
+                  <HiPlus size={12} />
+                  Özellik Ekle
                  </button>
                 </div>
                </div>
@@ -1094,19 +1094,21 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
      </div>
 
      <div className="flex items-center gap-4">
-      <label className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <label className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer">
        <input
         type="checkbox"
         checked={Boolean(form.isNew)}
         onChange={(e) => setForm({ ...form, isNew: e.target.checked })}
+        className="cursor-pointer"
        />
        Yeni Ürün
       </label>
-      <label className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <label className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer">
        <input
         type="checkbox"
         checked={Boolean(form.isFeatured)}
         onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
+        className="cursor-pointer"
        />
        Öne Çıkan
       </label>

@@ -1,48 +1,68 @@
 "use client";
-import { HiGlobe, HiCheck } from "react-icons/hi";
+import { HiStar, HiUsers, HiShoppingBag, HiCube, HiPhone, HiShieldCheck } from "react-icons/hi";
+import { FaTurkishLiraSign } from "react-icons/fa6";
 
 export default function WhyChooseUs() {
  const features = [
   {
+   icon: HiUsers,
+   title: "Uzman Kadro",
+   description: "Yılların deneyimi ve bilgi birikimiyle donatılmış uzman ekibimiz, ihtiyaçlarınıza en uygun çözümleri sunmak için her zaman yanınızdadır. Profesyonel danışmanlık hizmeti ile doğru ürün seçiminde size rehberlik ediyoruz.",
+   gradient: "from-blue-500 to-blue-700",
+  },
+  {
+   icon: FaTurkishLiraSign,
+   title: "Uygun Fiyat",
+   description: "Doğrudan üretici ve distribütörlerle kurduğumuz güçlü iş ortaklıkları sayesinde kaliteli ürünleri en uygun fiyatlarla sunuyoruz. Size en iyi fiyat garantisi veriyoruz ve bütçenize uygun ödeme seçenekleri sağlıyoruz.",
+   gradient: "from-green-500 to-green-700",
+  },
+  {
+   icon: HiShoppingBag,
    title: "Geniş Ürün Yelpazesi",
-   description: "Beyaz eşya, ankastre, elektronik ve daha fazlası kategorilerinde geniş ürün yelpazesi. Profilo markasının kaliteli ürünleri."
+   description: "Beyaz eşyadan elektroniğe, ankastre ürünlerden klimalara kadar geniş bir ürün yelpazemiz bulunmaktadır. Binlerce ürün seçeneği ile evinizin her köşesi için aradığınız çözümü tek bir yerden bulabilirsiniz.",
+   gradient: "from-purple-500 to-purple-700",
   },
   {
-   title: "Hızlı ve Güvenli Teslimat",
-   description: "Türkiye'nin her yerine hızlı ve güvenli kargo hizmeti. 2500 TL ve üzeri siparişlerde ücretsiz kargo."
+   icon: HiCube,
+   title: "Güvenli Paketleme",
+   description: "Ürünleriniz özel ambalaj malzemeleri ve özenli paketleme teknikleriyle korunmaktadır. Hasar görmemesi için her detaya dikkat ediyoruz ve kapınıza kadar güvenle ulaşmasını garanti ediyoruz.",
+   gradient: "from-pink-500 to-pink-700",
   },
   {
-   title: "Kolay İade ve Değişim",
-   description: "14 gün içinde iade ve değişim garantisi. Müşteri memnuniyeti bizim önceliğimiz."
+   icon: HiPhone,
+   title: "Hızlı Geri Dönüş",
+   description: "Müşteri memnuniyeti odaklı hizmet anlayışımızla sorularınıza ve taleplerinize en kısa sürede geri dönüş yapıyoruz. Sipariş takibi, ürün bilgileri ve teknik destek konularında yanınızdayız.",
+   gradient: "from-yellow-500 to-yellow-700",
   },
   {
+   icon: HiShieldCheck,
    title: "Güvenli Ödeme",
-   description: "256-bit SSL şifreleme ile güvenli ödeme. Tüm kredi kartlarına taksit imkanı."
+   description: "Tüm ödeme işlemleriniz güvenli bir şekilde gerçekleştirilmektedir. Kredi kartı bilgileriniz banka altyapısı üzerinden işlenir ve hiçbir şekilde saklanmaz. Tüm kartlarda taksit seçeneği mevcuttur.",
+   gradient: "from-orange-500 to-orange-700",
   },
-  {
-   title: "7/24 Müşteri Desteği",
-   description: "Her zaman yanınızdayız. Sorularınız ve talepleriniz için profesyonel müşteri hizmetleri ekibimiz."
-  }
  ];
 
  return (
   <section>
    <div className="flex items-center gap-3 mb-6">
-    <HiGlobe className="text-indigo-600" size={28} />
-    <h2 className="text-2xl font-bold text-gray-900">Neden Bizi Seçmelisiniz?</h2>
+    <HiStar className="text-indigo-600" size={28} />
+    <h2 className="text-2xl font-bold text-gray-900">Neden Yazıcı Ticaret ?</h2>
    </div>
    <div className="space-y-4">
-    {features.map((feature, idx) => (
-     <div key={idx} className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
-      <div className="shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
-       <HiCheck size={18} />
+    {features.map((feature, idx) => {
+     const IconComponent = feature.icon;
+     return (
+      <div key={idx} className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
+       <div className={`shrink-0 w-8 h-8 bg-linear-to-r ${feature.gradient} text-white rounded-full flex items-center justify-center`}>
+        <IconComponent size={18} />
+       </div>
+       <div>
+        <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
+        <p className="text-gray-700 text-sm">{feature.description}</p>
+       </div>
       </div>
-      <div>
-       <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-       <p className="text-gray-700 text-sm">{feature.description}</p>
-      </div>
-     </div>
-    ))}
+     );
+    })}
    </div>
   </section>
  );

@@ -1,15 +1,6 @@
 "use client";
 import { HiCheckCircle } from "react-icons/hi";
 
-/**
- * @param {string} title - Card title
- * @param {string} description - Card description
- * @param {Array} items - List of cookie items
- * @param {string} note - Optional note text
- * @param {string} bgColor - Background color class (e.g., "bg-green-50")
- * @param {string} borderColor - Border color class (e.g., "border-green-200")
- * @param {string} iconColor - Icon color class (e.g., "text-green-600")
- */
 export default function CookieTypeCard({ title, description, items, note, bgColor, borderColor, iconColor }) {
  return (
   <div className={`${bgColor} rounded-lg p-6 border ${borderColor}`}>

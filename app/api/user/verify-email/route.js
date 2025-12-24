@@ -24,22 +24,11 @@ export async function GET(request) {
   const storedCode = String(user.emailVerificationCode || '').trim();
   const providedCode = String(code || '').trim();
 
-  // Debug bilgisi
-  console.log('Link ile kod doğrulama:', {
-   storedCode,
-   providedCode,
-   storedCodeLength: storedCode.length,
-   providedCodeLength: providedCode.length,
-   userId: user._id,
-   hasVerificationCode: !!user.emailVerificationCode,
-  });
-
   if (!user.emailVerificationCode) {
    return NextResponse.redirect(new URL('/giris?error=kod-bulunamadi', request.url));
   }
 
   if (storedCode !== providedCode) {
-   console.error('Kod uyuşmazlığı:', { storedCode, providedCode, userId: user._id });
    return NextResponse.redirect(new URL('/giris?error=gecersiz-kod', request.url));
   }
 
@@ -70,7 +59,6 @@ export async function GET(request) {
 
   return NextResponse.redirect(new URL('/hesabim', request.url));
  } catch (error) {
-  console.error('Email doğrulama hatası:', error);
   return NextResponse.redirect(new URL('/giris?error=bir-hata-olustu', request.url));
  }
 }
@@ -97,18 +85,8 @@ export async function POST(request) {
    );
   }
 
-  // Debug: Kullanıcı bilgilerini logla
+  // Kullanıcı bilgileri
   const userObj = user.toObject ? user.toObject() : user;
-  console.log('Kullanıcı bulundu:', {
-   userId: user._id.toString(),
-   email: user.email,
-   hasVerificationCode: !!user.emailVerificationCode,
-   verificationCode: user.emailVerificationCode,
-   codeType: typeof user.emailVerificationCode,
-   isEmailVerified: user.isEmailVerified,
-   allFields: Object.keys(userObj),
-   emailVerificationCodeInObject: 'emailVerificationCode' in userObj,
-  });
 
   // Zaten doğrulanmış mı?
   if (user.isEmailVerified) {
@@ -120,7 +98,6 @@ export async function POST(request) {
 
   // Önce kodun varlığını kontrol et
   if (!user.emailVerificationCode) {
-   console.error('Kod bulunamadı:', { userId: user._id, hasCode: !!user.emailVerificationCode });
    return NextResponse.json(
     { success: false, message: 'Doğrulama kodu bulunamadı. Lütfen yeni bir kod isteyin.' },
     { status: 400 }
@@ -131,20 +108,7 @@ export async function POST(request) {
   const storedCode = String(user.emailVerificationCode || '').trim();
   const providedCode = String(code || '').trim();
 
-  // Debug bilgisi
-  console.log('Kod doğrulama:', {
-   storedCode,
-   providedCode,
-   storedCodeLength: storedCode.length,
-   providedCodeLength: providedCode.length,
-   userId: user._id,
-   hasVerificationCode: !!user.emailVerificationCode,
-   codeType: typeof user.emailVerificationCode,
-   rawStoredCode: user.emailVerificationCode,
-  });
-
   if (storedCode !== providedCode) {
-   console.error('Kod uyuşmazlığı:', { storedCode, providedCode, userId: user._id });
    return NextResponse.json(
     { success: false, message: 'Geçersiz doğrulama kodu.' },
     { status: 400 }
@@ -184,7 +148,6 @@ export async function POST(request) {
    { status: 200 }
   );
  } catch (error) {
-  console.error('Email doğrulama hatası:', error);
   return NextResponse.json(
    { success: false, message: 'Bir hata oluştu.' },
    { status: 500 }

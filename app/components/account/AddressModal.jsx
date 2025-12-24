@@ -11,7 +11,7 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
      <h3 className="text-2xl font-bold">
       {editingAddress ? "Adres Düzenle" : "Yeni Adres Ekle"}
      </h3>
-     <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
       <HiX size={24} />
      </button>
     </div>
@@ -163,14 +163,14 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
      <div className="flex gap-3 pt-4">
       <button
        type="submit"
-       className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold"
+       className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold cursor-pointer"
       >
        {editingAddress ? "Güncelle" : "Kaydet"}
       </button>
       <button
        type="button"
        onClick={onClose}
-       className="px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold"
+       className="px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold cursor-pointer"
       >
        İptal
       </button>

@@ -1,5 +1,5 @@
 "use client";
-import { HiAdjustments } from "react-icons/hi";
+import { HiAdjustments, HiChevronDown } from "react-icons/hi";
 
 export default function CategoryToolbar({ sortBy, onSortChange, onFiltersClick }) {
  return (
@@ -18,7 +18,7 @@ export default function CategoryToolbar({ sortBy, onSortChange, onFiltersClick }
      <select
       value={sortBy}
       onChange={(e) => onSortChange(e.target.value)}
-      className="appearance-none border border-gray-300 rounded-lg pl-4 pr-10 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500"
+      className="appearance-none border border-gray-300 rounded-lg pl-4 pr-10 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
      >
       <option value="-createdAt">Yeni Ürünler</option>
       <option value="price">Fiyat: Düşükten Yükseğe</option>
@@ -27,9 +27,7 @@ export default function CategoryToolbar({ sortBy, onSortChange, onFiltersClick }
       <option value="-soldCount">En Çok Satan</option>
      </select>
      <span className="pointer-events-none absolute right-3 inline-flex items-center justify-center text-gray-700">
-      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-       <path d="M6.5 8.25l3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <HiChevronDown size={18} aria-hidden="true" />
      </span>
     </div>
    </div>

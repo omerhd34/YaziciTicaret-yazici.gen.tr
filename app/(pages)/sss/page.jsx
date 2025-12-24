@@ -8,12 +8,52 @@ export default function SSSPage() {
 
  const faqs = [
   {
+   question: "Sipariş Bilgisi",
+   answer: "Siparişlerinizi takip etmek ve detaylı bilgilere ulaşmak için üye olmanızı öneriyoruz. Üye olarak giriş yaptığınızda, hesabınız üzerinden tüm siparişlerinizi kolayca görüntüleyebilir, sipariş durumlarını takip edebilir ve geçmiş siparişlerinize erişebilirsiniz. Üye olmadan da sipariş takibi yapabilirsiniz, ancak üye olursanız siparişleriniz otomatik olarak hesabınıza kaydedilir ve daha detaylı bilgilere ulaşabilirsiniz. Ayrıca, üye hesabınızdan sipariş geçmişinizi inceleyebilir, fatura bilgilerinize erişebilir ve gelecekteki alışverişlerinizde daha hızlı sipariş verebilirsiniz. Üye olmak tamamen ücretsizdir ve size birçok avantaj sağlar."
+  },
+  {
+   question: "İade işlemi nasıl yapılır?",
+   answer: "Ürünü aldıktan sonra 14 gün içinde iade edebilirsiniz. İade işlemi için öncelikle müşteri hizmetlerimizle iletişime geçmeniz gerekmektedir. İade talebiniz onaylandıktan sonra, ürünü orijinal ambalajında, kullanılmamış ve hasarsız şekilde göndermeniz gerekmektedir. İade kargo ücreti müşteriye aittir. Ürün kontrol edildikten sonra, ödeme yaptığınız yönteme göre iade işleminiz gerçekleştirilecektir. İade süreci genellikle 3-5 iş günü içinde tamamlanmaktadır."
+  },
+  {
+   question: "Garanti",
+   answer: "Tüm ürünlerimiz üretici garantisi kapsamındadır. Garanti süreleri ürün kategorisine göre değişiklik göstermektedir. Beyaz eşya ürünlerinde genellikle 2 yıl, küçük ev aletlerinde 1-2 yıl garanti süresi bulunmaktadır. Garanti kapsamındaki arızalar için ücretsiz servis hizmeti sağlanmaktadır. Garanti belgelerinizi mutlaka saklamanızı öneriyoruz. Garanti kapsamı dışındaki durumlar için ücretli servis hizmeti sunulmaktadır. Detaylı bilgi için müşteri hizmetlerimizle iletişime geçebilirsiniz."
+  },
+  {
+   question: "Ödeme ve Fatura İşlemleri",
+   answer: "Siparişlerinizde tüm kredi kartları ve banka kartları ile ödeme yapabilirsiniz. Taksit seçenekleri mevcuttur ve kartınıza göre taksit sayısı değişiklik gösterebilir. Ödeme işleminiz güvenli ödeme altyapısı üzerinden gerçekleştirilmektedir. Fatura işlemleri için fatura bilgilerinizi sipariş sırasında belirtmeniz gerekmektedir. E-fatura ve kağıt fatura seçenekleri mevcuttur. Faturalarınız siparişinizle birlikte gönderilmektedir. Fatura düzenleme talepleriniz için müşteri hizmetlerimizle iletişime geçebilirsiniz."
+  },
+  {
+   question: "Kargo ve Teslimat",
+   answer: "Tüm Türkiye geneline nakliye ve montaj hizmeti sunuyoruz. Siparişleriniz güvenilir nakliye firmaları aracılığıyla adresinize teslim edilmekte ve montaj hizmeti sağlanmaktadır. Bursa iline kargo ücretsizdir. Teslimat süresi genellikle 1-5 iş günü arasında değişmektedir. Teslimat sırasında ürünü kontrol etmenizi öneriyoruz. Teslimat adresinizde bulunmamanız durumunda, nakliye firması ile iletişime geçerek teslimatı yeniden planlayabilirsiniz. Acil teslimat talepleriniz için müşteri hizmetlerimizle iletişime geçebilirsiniz."
+  },
+  {
+   question: "Aldığım ürün paketten eksik veya hasarlı çıktı, ne yapmalıyım?",
+   answer: "Ürününüz paketten eksik veya hasarlı çıktıysa, lütfen derhal müşteri hizmetlerimizle iletişime geçin. Hasarlı veya eksik ürün durumunda fotoğraf çekmenizi ve bize göndermenizi rica ediyoruz. Durumunuz incelendikten sonra, hasarlı ürün için ücretsiz değişim veya iade işlemi gerçekleştirilecektir. Eksik parçalar için eksik ürünler gönderilecektir. Bu durumlarda ek bir ücret talep edilmemektedir. Müşteri memnuniyeti bizim için önceliklidir."
+  },
+  {
+   question: "Sipariş ettiğim üründen farklı bir ürün geldi, ne yapmalıyım?",
+   answer: "Yanlış ürün teslim edilmesi durumunda, lütfen ürünü kullanmadan müşteri hizmetlerimizle iletişime geçin. Yanlış gönderilen ürün için ücretsiz değişim işlemi gerçekleştirilecektir. Doğru ürün en kısa sürede adresinize gönderilecektir. Yanlış gönderilen ürünü iade etmeniz gerekmektedir ve iade kargo ücreti tarafımızca karşılanacaktır. Bu durumdan dolayı yaşadığınız mağduriyet için özür dileriz ve en hızlı şekilde çözüm sağlayacağız."
+  },
+  {
+   question: "Ürünleriniz hangi kargo firması tarafından teslim edilmektedir?",
+   answer: "Siparişleriniz bölgenize ve ürün özelliklerine göre farklı kargo firmaları aracılığıyla teslim edilmektedir. Genellikle Yurtiçi Kargo, Aras Kargo, MNG Kargo ve Sürat Kargo gibi güvenilir kargo firmaları ile çalışmaktayız. Kargo firması seçimi, teslimat adresinize ve ürününüzün özelliklerine göre otomatik olarak yapılmaktadır. Belirli bir kargo firması tercihiniz varsa, sipariş sırasında veya sipariş sonrası müşteri hizmetlerimizle iletişime geçerek talebinizi iletebilirsiniz."
+  },
+  {
+   question: "Dünyanın her yerinden sipariş verebilir miyim?",
+   answer: "Şu anda sadece Türkiye içi teslimat yapmaktayız. Yurt dışı teslimat hizmetimiz bulunmamaktadır. Türkiye'nin tüm şehirlerine ve ilçelerine kargo ile teslimat yapabilmekteyiz. Yurt dışı teslimat talepleriniz için lütfen müşteri hizmetlerimizle iletişime geçin. Gelecekte yurt dışı teslimat hizmeti eklemeyi planlamaktayız. Bu konudaki güncellemeleri web sitemizden takip edebilirsiniz."
+  },
+  {
+   question: "Siparişimin kargoya verildiğini nasıl anlayacağım?",
+   answer: "Siparişiniz kargoya verildiğinde, kayıtlı e-posta adresinize ve telefon numaranıza bilgilendirme mesajı gönderilmektedir. Mesajda kargo takip numaranız ve kargo firması bilgisi yer almaktadır. Ayrıca, üye iseniz hesabınızdan sipariş durumunuzu takip edebilirsiniz. Kargo takip numaranız ile kargo firmasının web sitesinden veya telefon hattından siparişinizin durumunu öğrenebilirsiniz. Kargo bilgilendirmesi genellikle siparişinizin hazırlanmasından sonraki 1-5 iş günü içinde gönderilmektedir."
+  },
+  {
    question: "Siparişimi nasıl takip edebilirim?",
    answer: "Sipariş takibi için üst menüden 'Sipariş Takibi' bölümüne gidebilir veya hesabınızdan siparişlerinizi görüntüleyebilirsiniz. Sipariş numaranızı girerek anlık durumunu öğrenebilirsiniz."
   },
   {
-   question: "Kargo ücreti ne kadar?",
-   answer: "500 TL ve üzeri siparişlerde kargo ücretsizdir. 500 TL altındaki siparişlerde kargo ücreti 29.99 TL'dir. Kargo süresi genellikle 2-5 iş günü arasındadır."
+   question: "Nakliye ve montaj hizmeti nasıl çalışır?",
+   answer: "Tüm Türkiye geneline nakliye ve montaj hizmeti sunuyoruz. Siparişleriniz güvenilir nakliye firmaları aracılığıyla adresinize teslim edilmekte ve montaj hizmeti sağlanmaktadır. Teslimat süresi genellikle 2-5 iş günü arasındadır. Detaylı bilgi için müşteri hizmetlerimizle iletişime geçebilirsiniz."
   },
   {
    question: "Ürün iade edebilir miyim?",
@@ -63,8 +103,8 @@ export default function SSSPage() {
     </div>
 
     {/* FAQ List */}
-    <div className="max-w-3xl mx-auto">
-     <div className="space-y-4">
+    <div className="max-w-5xl mx-auto">
+     <div className="space-y-4 ">
       {faqs.map((faq, index) => (
        <div
         key={index}
@@ -72,15 +112,15 @@ export default function SSSPage() {
        >
         <button
          onClick={() => toggleFAQ(index)}
-         className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-xl"
+         className="w-full px-6 py-5 flex items-center justify-between text-left rounded-xl focus:bg-blue-200 hover:bg-blue-200 transition-colors duration-500 ease-in-out cursor-pointer"
         >
-         <span className="font-semibold text-gray-800 text-lg pr-4">
+         <span className="font-semibold text-gray-800 text-lg pr-4 cursor-pointer">
           {faq.question}
          </span>
          {openIndex === index ? (
-          <HiChevronUp size={24} className="text-indigo-600 shrink-0" />
+          <HiChevronUp size={24} className="text-indigo-600 shrink-0 cursor-pointer" />
          ) : (
-          <HiChevronDown size={24} className="text-gray-400 shrink-0" />
+          <HiChevronDown size={24} className="text-gray-400 shrink-0 cursor-pointer" />
          )}
         </button>
         {openIndex === index && (

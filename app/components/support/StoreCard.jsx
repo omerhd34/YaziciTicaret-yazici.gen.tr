@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MdPhone, MdEmail, MdLocationOn } from "react-icons/md";
+import { MdPhone, MdEmail, MdLocationOn, MdAccessTime } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiExternalLink, HiX, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 
@@ -47,18 +47,7 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
   <div className="bg-white rounded-xl shadow-md overflow-hidden">
    {/* Header */}
    <div className="bg-linear-to-r from-indigo-600 to-purple-600 px-6 py-4">
-    <div className="flex items-center gap-3">
-     <h3 className="text-2xl font-bold text-white">{title}</h3>
-     <div className="bg-white rounded-full p-2 border-2 border-white">
-      <Image
-       src="/profilo-favicon.png"
-       alt="PROFILO"
-       width={40}
-       height={40}
-       className="w-10 h-10 object-contain"
-      />
-     </div>
-    </div>
+    <h3 className="text-2xl font-bold text-white">{title}</h3>
    </div>
 
    {/* Contact Info */}
@@ -118,6 +107,25 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
       <div>
        <p className="text-sm text-gray-500 mb-1">Adres</p>
        <p className="text-gray-900 font-semibold">{adres}</p>
+      </div>
+     </div>
+    </div>
+
+    {/* Working Hours */}
+    <div className="bg-gray-50 rounded-lg p-4">
+     <div className="flex items-start gap-3">
+      <div className="bg-indigo-100 p-2 rounded-lg">
+       <MdAccessTime className="text-indigo-600" size={20} />
+      </div>
+      <div>
+       <p className="text-sm text-gray-500 mb-1">Çalışma Saatleri</p>
+       <p className="text-gray-900 font-semibold">
+        Hafta içi: 09:00 - 19:00
+        <br />
+        Cumartesi: 09:00 - 19:00
+        <br />
+        Pazar: 12:00 - 17:00
+       </p>
       </div>
      </div>
     </div>
@@ -183,7 +191,7 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
     <div className="fixed inset-0 bg-black/90 z-100 flex items-center justify-center p-4">
      <button
       onClick={closeLightbox}
-      className="absolute top-4 right-4 text-white hover:text-gray-300 transition z-10"
+      className="absolute top-4 right-4 text-white hover:text-gray-300 transition z-10 cursor-pointer"
       aria-label="Kapat"
      >
       <HiX size={32} />
@@ -193,14 +201,14 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
       <>
        <button
         onClick={prevImage}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition z-10"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition z-10 cursor-pointer"
         aria-label="Önceki"
        >
         <HiChevronLeft size={28} />
        </button>
        <button
         onClick={nextImage}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition z-10"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition z-10 cursor-pointer"
         aria-label="Sonraki"
        >
         <HiChevronRight size={28} />

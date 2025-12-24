@@ -4,9 +4,9 @@ export default function ProductImportantFeatures({ product, selectedColor = null
  if (!product) return null;
 
  // Türk Kahve Makineleri için Önemli Özellikler gösterilmesin
- if (product.category === "Türk Kahve Makineleri" || 
-     product.category?.toLowerCase().includes("türk kahve") ||
-     product.category?.toLowerCase().includes("turk kahve")) {
+ if (product.category === "Türk Kahve Makineleri" ||
+  product.category?.toLowerCase().includes("türk kahve") ||
+  product.category?.toLowerCase().includes("turk kahve")) {
   return null;
  }
 

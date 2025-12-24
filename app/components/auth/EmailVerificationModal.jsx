@@ -3,15 +3,6 @@ import { useState } from "react";
 import { HiMail, HiX } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
 
-/**
- * Email Doğrulama Modal Component
- * 
- * @param {boolean} show - Modal görünür mü?
- * @param {function} onClose - Modal kapatma callback'i
- * @param {string} userId - Kullanıcı ID'si
- * @param {string} userEmail - Kullanıcı email'i (form temizlenmeden önce kaydetmek için)
- * @param {function} onSuccess - Doğrulama başarılı olduğunda callback
- */
 export default function EmailVerificationModal({ show, onClose, userId, userEmail, onSuccess }) {
  const [verificationCode, setVerificationCode] = useState("");
  const [verificationLoading, setVerificationLoading] = useState(false);

@@ -78,7 +78,6 @@ export async function POST(request) {
   verificationCodeExpires.setHours(verificationCodeExpires.getHours() + 1);
 
   const codeString = String(verificationCode).trim();
-  console.log('Kayıt - Doğrulama kodu oluşturuldu:', { codeString, codeLength: codeString.length });
 
   const user = await User.create({
    name,
@@ -97,7 +96,6 @@ export async function POST(request) {
   // Hemen kontrol et - fresh query ile
   const freshUser = await User.findById(user._id);
   if (!freshUser) {
-   console.error('Kritik hata: Kullanıcı oluşturulamadı!');
    return NextResponse.json(
     { success: false, message: 'Kayıt işlemi başarısız. Lütfen tekrar deneyin.' },
     { status: 500 }
@@ -106,12 +104,6 @@ export async function POST(request) {
 
   // Kod kontrolü
   if (!freshUser.emailVerificationCode || freshUser.emailVerificationCode !== codeString) {
-   console.error('Kritik hata: Kod kaydedilemedi!', {
-    userId: user._id,
-    hasCode: !!freshUser.emailVerificationCode,
-    savedCode: freshUser.emailVerificationCode,
-    expectedCode: codeString,
-   });
 
    const updatedUser = await User.findByIdAndUpdate(
     user._id,
@@ -135,35 +127,15 @@ export async function POST(request) {
 
      const finalUser = await User.findById(user._id);
      if (!finalUser || !finalUser.emailVerificationCode || finalUser.emailVerificationCode !== codeString) {
-      console.error('Kritik hata: Kod hala kaydedilemedi!');
       await User.deleteOne({ _id: user._id });
       return NextResponse.json(
        { success: false, message: 'Kayıt işlemi başarısız. Lütfen tekrar deneyin.' },
        { status: 500 }
       );
-     } else {
-      console.log('Kayıt - save() ile kod kaydedildi:', {
-       userId: user._id,
-       code: codeString,
-      });
      }
     }
-   } else {
-    console.log('Kayıt - findByIdAndUpdate ile kod kaydedildi:', {
-     userId: user._id,
-     code: codeString,
-    });
    }
   }
-
-  console.log('Kayıt - Başarılı:', {
-   userId: user._id,
-   savedCode: freshUser.emailVerificationCode,
-   savedCodeType: typeof freshUser.emailVerificationCode,
-   savedCodeLength: String(freshUser.emailVerificationCode).length,
-   expectedCode: codeString,
-   codesMatch: freshUser.emailVerificationCode === codeString,
-  });
 
   // Email doğrulama maili gönder
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -178,12 +150,9 @@ export async function POST(request) {
    });
 
    if (!emailResult.success) {
-    console.error('Email gönderme hatası:', emailResult.error);
-   } else {
-    console.log('Email başarıyla gönderildi:', emailResult.messageId);
    }
   } catch (emailError) {
-   console.error('Email gönderme exception:', emailError);
+   // Email error - silently fail
   }
 
   return NextResponse.json(

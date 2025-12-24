@@ -240,10 +240,9 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
           <div>
            <p className="font-semibold text-gray-900">{g.name}</p>
            <p className="text-sm text-gray-600">
-            {colorsText ? <><span className="font-bold">Renk:</span> {colorsText} </> : ""}
             {g.serialNumber && (
-             <span className={colorsText ? " • " : ""}>
-              {" - "}<span className="font-bold">Seri No:</span> <span className="font-mono">{g.serialNumber}</span>
+             <span>
+              <span className="font-bold">Seri No:</span> <span className="font-mono">{g.serialNumber}</span>
              </span>
             )}
            </p>

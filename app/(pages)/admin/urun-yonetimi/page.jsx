@@ -23,6 +23,8 @@ export default function AdminUrunYonetimiPage() {
  const [selectedCategory, setSelectedCategory] = useState(null);
  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
  const [selectedStockFilter, setSelectedStockFilter] = useState(null);
+ const [selectedFeaturedFilter, setSelectedFeaturedFilter] = useState(null);
+ const [selectedNewFilter, setSelectedNewFilter] = useState(null);
 
  useEffect(() => {
   checkAuth();
@@ -185,6 +187,12 @@ export default function AdminUrunYonetimiPage() {
      });
      return count;
     })()}
+    featuredProducts={(() => {
+     return products.filter((product) => product.isFeatured === true).length;
+    })()}
+    newProducts={(() => {
+     return products.filter((product) => product.isNew === true).length;
+    })()}
    />
 
    <div className="container mx-auto px-4">
@@ -199,9 +207,13 @@ export default function AdminUrunYonetimiPage() {
      selectedCategory={selectedCategory}
      selectedSubCategory={selectedSubCategory}
      selectedStockFilter={selectedStockFilter}
+     selectedFeaturedFilter={selectedFeaturedFilter}
+     selectedNewFilter={selectedNewFilter}
      onCategoryChange={setSelectedCategory}
      onSubCategoryChange={setSelectedSubCategory}
      onStockFilterChange={setSelectedStockFilter}
+     onFeaturedFilterChange={setSelectedFeaturedFilter}
+     onNewFilterChange={setSelectedNewFilter}
     />
    </div>
 

@@ -4,7 +4,7 @@ import { MdLocalShipping, MdInfo } from "react-icons/md";
 
 export default function ExchangeTab() {
  return (
-  <div className="max-w-4xl mx-auto space-y-8">
+  <div className="max-w-5xl mx-auto space-y-8">
    <div className="bg-white rounded-xl shadow-md p-8">
     <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
      <HiShoppingBag className="text-indigo-600" size={28} />
@@ -126,7 +126,7 @@ export default function ExchangeTab() {
       <div className="flex-1">
        <h3 className="font-semibold text-gray-900 mb-2">Yeni Ürün Teslimatı</h3>
        <p className="text-gray-700 text-sm">
-        Ürün kontrol edildikten sonra, yeni ürününüz 1-3 iş günü içinde adresinize teslim edilir.
+        Ürün kontrol edildikten sonra, yeni ürününüz 1-5 iş günü içinde adresinize teslim edilir.
        </p>
       </div>
      </div>

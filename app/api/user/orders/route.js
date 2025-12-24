@@ -111,7 +111,6 @@ export async function GET() {
    orders: ordersList,
   });
  } catch (error) {
-  console.error('Siparişler getirme hatası:', error);
   return NextResponse.json(
    { success: false, message: 'Siparişler getirilemedi', error: error.message },
    { status: 500 }
@@ -242,7 +241,7 @@ export async function POST(request) {
     }
    }
   } catch (soldCountError) {
-   console.error('[ORDER] soldCount güncelleme hatası:', soldCountError);
+   // soldCount update error - silently fail
    // Hata olsa bile sipariş oluşturulmuş sayılır
   }
 
@@ -254,17 +253,7 @@ export async function POST(request) {
    const pmType = paymentMethod?.type || order.payment?.type || '';
    const pmText = pmType === 'cash' ? 'Kapıda Ödeme' : (pmType === 'card' ? 'Kart ile Ödeme' : (pmType || '-'));
 
-   // Debug: env okunuyor mu?
-   console.log('[ORDER] Admin email attempt:', {
-    hasAdminEmailEnv: Boolean(adminEmail),
-    adminEmailEnvPreview: adminEmail ? `${String(adminEmail).slice(0, 3)}***${String(adminEmail).slice(-6)}` : null,
-    hasEmailUserEnv: Boolean(process.env.EMAIL_USER),
-    hasEmailPasswordEnv: Boolean(process.env.EMAIL_PASSWORD),
-   });
-
-   if (!adminEmail) {
-    console.warn('[ORDER] Admin email skipped: EMAIL_USER not set');
-   } else {
+   if (adminEmail) {
     adminEmailResult = await sendAdminNewOrderEmail({
      adminEmail,
      orderId,
@@ -277,20 +266,9 @@ export async function POST(request) {
      items: repricedItems,
     });
 
-    if (!adminEmailResult?.success) {
-     console.error('[ORDER] Admin email failed:', {
-      error: adminEmailResult?.error,
-      hasTransporter: Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD),
-     });
-    } else {
-     console.log('[ORDER] Admin email sent:', { messageId: adminEmailResult.messageId });
-    }
    }
   } catch (e) {
-   console.error('[ORDER] Admin email exception:', {
-    error: e.message,
-    stack: e.stack,
-   });
+   // Admin email error - silently fail
   }
 
   // Müşteriye e-posta bildirimi (e-posta bildirimleri açıksa)
@@ -314,19 +292,9 @@ export async function POST(request) {
      items: repricedItems,
     });
 
-    if (!userEmailResult?.success) {
-     console.error('[ORDER] User email failed:', userEmailResult);
-    } else {
-     console.log('[ORDER] User email sent:', { messageId: userEmailResult.messageId });
-    }
-   } else {
-    console.log('[ORDER] User email skipped:', {
-     emailNotificationsEnabled,
-     hasEmail: Boolean(user.email)
-    });
    }
   } catch (e) {
-   console.error('[ORDER] User email exception:', e);
+   // User email error - silently fail
   }
 
   return NextResponse.json({
@@ -340,7 +308,6 @@ export async function POST(request) {
     : null,
   });
  } catch (error) {
-  console.error('Sipariş oluşturma hatası:', error);
   return NextResponse.json({ success: false, message: 'Sipariş oluşturulamadı', error: error.message }, { status: 500 });
  }
 }

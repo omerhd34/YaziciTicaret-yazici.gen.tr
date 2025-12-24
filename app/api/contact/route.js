@@ -33,21 +33,16 @@ export async function POST(request) {
 
   const subjectText = subjectMap[subject] || subject;
 
-  let contactId = null;
-  try {
-   await dbConnect();
-   const contact = await Contact.create({
-    name,
-    email: email.toLowerCase(),
-    phone: phone || '',
-    subject: subjectText,
-    message,
-    read: false,
-   });
-   contactId = contact._id.toString();
-  } catch (dbError) {
-   console.error('[CONTACT] Veritabanı hatası:', dbError);
-  }
+  await dbConnect();
+  const contact = await Contact.create({
+   name,
+   email: email.toLowerCase(),
+   phone: phone || '',
+   subject: subjectText,
+   message,
+   read: false,
+  });
+  const contactId = contact._id.toString();
 
   const adminEmail = process.env.EMAIL_USER;
 
@@ -57,14 +52,10 @@ export async function POST(request) {
    ? `${baseUrl}/admin/mesajlar?id=${contactId}`
    : `${baseUrl}/admin/mesajlar`;
 
-  console.log('[CONTACT] Admin email:', adminEmail);
-  console.log('[CONTACT] Email gönderilecek adres:', adminEmail);
-
   try {
    const transporter = createTransporter();
 
    if (!transporter) {
-    console.error('[CONTACT] E-posta transporter oluşturulamadı');
     return NextResponse.json(
      { success: true, message: 'Mesajınız kaydedildi. En kısa sürede size dönüş yapacağız.' },
      { status: 200 }
@@ -85,7 +76,7 @@ export async function POST(request) {
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>İletişim Formu Mesajı - Yazıcı Ticaret</title>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+      <body style="margin: 0; padding: 0; background-color: #2d3748; font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';">
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #2d3748; padding: 40px 20px;">
           <tr>
             <td align="center">
@@ -208,36 +199,19 @@ export async function POST(request) {
     `,
    };
 
-   const info = await transporter.sendMail(mailOptions);
-
-   console.log('[CONTACT] E-posta başarıyla gönderildi:', {
-    messageId: info.messageId,
-    to: adminEmail,
-    subject: mailOptions.subject
-   });
+   await transporter.sendMail(mailOptions);
 
    return NextResponse.json(
     { success: true, message: 'Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.' },
     { status: 200 }
    );
   } catch (emailError) {
-   console.error('[CONTACT] Email gönderme hatası:', {
-    error: emailError.message,
-    stack: emailError.stack,
-    code: emailError.code,
-    command: emailError.command,
-    response: emailError.response
-   });
-
-   // E-posta gönderme başarısız olsa bile veritabanına kaydedildi
-   // Kullanıcıya başarı mesajı döndür ama log'da hatayı kaydet
    return NextResponse.json(
     { success: true, message: 'Mesajınız kaydedildi. En kısa sürede size dönüş yapacağız.' },
     { status: 200 }
    );
   }
  } catch (error) {
-  console.error('[CONTACT] Genel hata:', error);
   return NextResponse.json(
    { success: false, message: 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.' },
    { status: 500 }

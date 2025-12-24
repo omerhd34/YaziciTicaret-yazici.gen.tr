@@ -1,10 +1,6 @@
 "use client";
 import { MdPeople, MdReceiptLong } from "react-icons/md";
 
-/**
- * @param {number} userCount - Toplam kullanıcı sayısı
- * @param {number} totalOrders - Toplam sipariş sayısı
- */
 export default function AdminStats({ userCount, totalOrders }) {
  const stats = [
   { icon: MdPeople, label: "Toplam Kullanıcı", value: userCount, color: "bg-emerald-500" },

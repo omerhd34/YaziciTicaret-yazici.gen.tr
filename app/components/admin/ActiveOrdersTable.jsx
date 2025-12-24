@@ -3,18 +3,6 @@ import normalizeText from "@/lib/normalizeText";
 import StatusDropdown from "./StatusDropdown";
 import ReturnStatusDropdown from "./ReturnStatusDropdown";
 
-/**
- * Active Orders Table Component
- * 
- * @param {Array} orders - Aktif siparişler listesi
- * @param {function} getRowBgClass - Satır arka plan rengi fonksiyonu
- * @param {function} onStatusChange - Durum değiştiğinde callback
- * @param {function} onReturnStatusChange - İade durumu değiştiğinde callback
- * @param {function} onDetailClick - Detay butonuna tıklandığında callback
- * @param {string} updatingOrderId - Güncellenen sipariş ID'si
- * @param {string} updatingReturnOrderId - Güncellenen iade sipariş ID'si
- * @param {function} onRefresh - Yenile butonuna tıklandığında callback
- */
 export default function ActiveOrdersTable({
  orders,
  getRowBgClass,
@@ -127,7 +115,7 @@ export default function ActiveOrdersTable({
            type="button"
            onClick={() => onDetailClick(row)}
            disabled={!o.orderId}
-           className={`px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition ${!o.orderId ? "opacity-50 cursor-not-allowed" : ""}`}
+           className={`px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer ${!o.orderId ? "opacity-50 cursor-not-allowed" : ""}`}
           >
            Detay
           </button>

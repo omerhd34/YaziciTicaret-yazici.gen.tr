@@ -3,12 +3,6 @@ import { useState } from "react";
 import { HiMail, HiX } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
 
-/**
- * Forgot Password Modal Component
- * 
- * @param {boolean} show - Modal görünür mü?
- * @param {function} onClose - Modal kapatma callback'i
- */
 export default function ForgotPasswordModal({ show, onClose }) {
  const [email, setEmail] = useState("");
  const [loading, setLoading] = useState(false);

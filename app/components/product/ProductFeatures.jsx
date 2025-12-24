@@ -10,7 +10,7 @@ export default function ProductFeatures() {
     </div>
     <div>
      <p className="font-semibold text-sm">Hızlı Kargo</p>
-     <p className="text-xs text-gray-500">2-3 iş günü</p>
+     <p className="text-xs text-gray-500">1-5 iş günü</p>
     </div>
    </div>
 

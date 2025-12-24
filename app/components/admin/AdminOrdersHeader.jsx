@@ -24,7 +24,7 @@ export default function AdminOrdersHeader({ onLogout, title = "Son Siparişler" 
         Mesajlar
        </Link>
       )}
-      <button onClick={onLogout} className="bg-white/30 hover:bg-white/40 px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center gap-2 transition min-w-[150px]">
+      <button onClick={onLogout} className="bg-white/30 hover:bg-white/40 px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center gap-2 transition min-w-[150px] cursor-pointer">
        <HiLogout size={20} />
        Çıkış Yap
       </button>

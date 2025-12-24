@@ -87,7 +87,6 @@ export async function GET() {
 
   return NextResponse.json({ success: true, orders });
  } catch (error) {
-  console.error("Admin orders error:", error);
   return NextResponse.json(
    { success: false, message: "Siparişler getirilemedi", error: error.message },
    { status: 500 }

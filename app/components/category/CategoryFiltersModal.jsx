@@ -3,17 +3,20 @@ import { HiX } from "react-icons/hi";
 import SubCategoryFilter from "./SubCategoryFilter";
 import PriceFilter from "./PriceFilter";
 import BrandFilter from "./BrandFilter";
+import CategoryFilter from "./CategoryFilter";
 
 export default function CategoryFiltersModal({
  show,
  slug,
  filters,
  availableBrands,
+ availableCategories,
  onClose,
  onClearFilters,
  onMinPriceChange,
  onMaxPriceChange,
  onBrandToggle,
+ onCategoryToggle,
 }) {
  if (!show) return null;
 
@@ -29,6 +32,14 @@ export default function CategoryFiltersModal({
 
     <div className="p-4 space-y-6">
      <SubCategoryFilter slug={slug} onLinkClick={onClose} />
+
+     {availableCategories && availableCategories.length > 0 && (
+      <CategoryFilter
+       availableCategories={availableCategories}
+       selectedCategories={filters.categories || []}
+       onCategoryToggle={onCategoryToggle}
+      />
+     )}
 
      <PriceFilter
       minPrice={filters.minPrice}

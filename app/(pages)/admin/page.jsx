@@ -24,19 +24,10 @@ export default function AdminHomePage() {
     const checkRes = await axiosInstance.get("/api/auth/check");
     const checkData = checkRes.data;
 
-    console.log('🔐 Auth check response:', checkData);
-
     if (!checkData?.authenticated) {
-     console.error('❌ Authentication başarısız!', checkData);
-     // Cookie yoksa, localStorage'a geçici token kaydet (fallback)
-     if (typeof window !== 'undefined' && !checkData?.debug?.hasSession) {
-      console.warn('⚠️ Cookie bulunamadı, localStorage kontrol ediliyor...');
-     }
      router.push("/admin-giris");
      return;
     }
-
-    console.log('✅ Authentication başarılı!');
 
     setDashboardLoading(true);
     try {
@@ -94,14 +85,14 @@ export default function AdminHomePage() {
  }
 
  return (
-  <div className="min-h-screen bg-gray-50 px-4 py-35">
-   <div className="w-full max-w-5xl mx-auto">
+  <div className="min-h-screen bg-gray-50 px-4 py-20">
+   <div className="w-full max-w-7xl mx-auto">
     <Toast toast={toast} setToast={setToast} />
 
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border">
      <AdminHomeHeader onLogout={handleLogout} />
 
-     <div className="p-6 space-y-6">
+     <div className="p-8 space-y-8">
       <QuickAccessCards />
       <AdminStatsCards stats={stats} loading={dashboardLoading} />
      </div>

@@ -1,14 +1,6 @@
 "use client";
 import { MdError, MdCheckCircle } from "react-icons/md";
 
-/**
- * Alert Message Component
- * Error ve success mesajları için kullanılır
- * 
- * @param {string} message - Gösterilecek mesaj
- * @param {string} type - "error" | "success"
- * @param {function} onClose - Kapatma callback'i (opsiyonel)
- */
 export default function AlertMessage({ message, type = "error", onClose }) {
  if (!message) return null;
 

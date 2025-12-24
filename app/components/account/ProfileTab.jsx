@@ -102,7 +102,7 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
     <button
      type="submit"
      disabled={updatingProfile}
-     className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+     className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
     >
      {updatingProfile ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
     </button>

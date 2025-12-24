@@ -2,14 +2,6 @@
 import { HiX } from "react-icons/hi";
 import { useMemo } from "react";
 
-/**
- * Order Detail Modal Component
- * 
- * @param {boolean} show - Modal görünür mü?
- * @param {Object} order - Sipariş objesi
- * @param {Object} user - Kullanıcı objesi
- * @param {function} onClose - Modal kapatma callback'i
- */
 export default function OrderDetailModal({ show, order, user, onClose }) {
  const shipping = order?.shippingAddress || null;
  const billing = order?.billingAddress || shipping;
@@ -36,7 +28,7 @@ export default function OrderDetailModal({ show, order, user, onClose }) {
    onClick={onClose}
   >
    <div
-    className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+    className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto"
     onClick={(e) => e.stopPropagation()}
    >
     <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
@@ -46,7 +38,7 @@ export default function OrderDetailModal({ show, order, user, onClose }) {
        <p className="text-sm text-gray-500">Sipariş No: {order.orderId}</p>
       ) : null}
      </div>
-     <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition">
+     <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition cursor-pointer">
       <HiX size={22} />
      </button>
     </div>
@@ -202,9 +194,8 @@ export default function OrderDetailModal({ show, order, user, onClose }) {
            <div>
             <div className="font-semibold text-gray-900">{g.name}</div>
             <div className="text-sm text-gray-600">
-             {colorsText ? <><span className="font-bold">Renk:</span> {colorsText} </> : ""}
              {g.serialNumber && (
-              <span className={colorsText ? " • " : ""}>
+              <span>
                <span className="font-bold">Seri No:</span> <span className="font-mono">{g.serialNumber}</span>
               </span>
              )}

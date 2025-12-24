@@ -3,11 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter } from "next/navigation";
-import { HiSearch, HiUser, HiHeart, HiMenu, HiX, HiPhone, HiChevronDown, HiArrowRight } from "react-icons/hi";
+import { HiSearch, HiUser, HiHeart, HiMenu, HiX, HiPhone, HiChevronDown, HiArrowRight, HiClipboardList, HiTruck, HiTag, HiGift } from "react-icons/hi";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
 import axiosInstance from "@/lib/axios";
 import { getProductUrl } from "@/app/utils/productUrl";
+import ProductRequestModal from "@/app/components/product/ProductRequestModal";
 
 export const MENU_ITEMS = [
  { name: "Yeniler", path: "/kategori/yeniler", isSpecial: true },
@@ -27,45 +28,27 @@ export const MENU_ITEMS = [
    { name: "Mikrodalga Fırın", path: "/kategori/beyaz-esya/mikrodalga-firin" },
   ]
  },
- { name: "Televizyon", path: "/kategori/televizyon", isSpecial: false },
- { name: "Elektrikli Süpürge", path: "/kategori/elektrikli-supurge", isSpecial: false },
  {
   name: "Ankastre",
   path: "/kategori/ankastre",
   isSpecial: false,
   bannerImg: "/products/ankastre/ankastre.jpg",
   subCategories: [
-   { name: "Ankastre Fırın", path: "/kategori/ankastre/ankastre-firin" },
-   { name: "Ankastre Mikrodalga Fırın", path: "/kategori/ankastre/ankastre-mikrodalga-firin" },
-   { name: "Ankastre Ocak", path: "/kategori/ankastre/ankastre-ocak" },
-   { name: "Ankastre Aspiratör / Davlumbaz", path: "/kategori/ankastre/ankastre-aspirator-davlumbaz" },
-   { name: "Ankastre Bulaşık Makinesi", path: "/kategori/ankastre/ankastre-bulasik-makinesi" },
+   { name: "Fırın", path: "/kategori/ankastre/ankastre-firin" },
+   { name: "Mikrodalga Fırın", path: "/kategori/ankastre/ankastre-mikrodalga-firin" },
+   { name: "Ocak", path: "/kategori/ankastre/ankastre-ocak" },
+   { name: "Aspiratör / Davlumbaz", path: "/kategori/ankastre/ankastre-aspirator-davlumbaz" },
+   { name: "Bulaşık Makinesi", path: "/kategori/ankastre/ankastre-bulasik-makinesi" },
    { name: "Ankastre Setler", path: "/kategori/ankastre/ankastre-setler" },
    { name: "Mikrodalga Fırın", path: "/kategori/ankastre/mikrodalga-firin" },
   ]
  },
+ { name: "Televizyon", path: "/kategori/televizyon", isSpecial: false },
+ { name: "Süpürge", path: "/kategori/elektrikli-supurge", isSpecial: false },
  { name: "Klima", path: "/kategori/klima", isSpecial: false },
- {
-  name: "Su Sebilleri ve Su Arıtma",
-  path: "/kategori/su-sebilleri-ve-su-aritma/SS1161-1.webp",
-  isSpecial: false,
-  bannerImg: "/products/suSebiliSuAritma/",
-  subCategories: [
-   { name: "Su Sebili", path: "/kategori/su-sebilleri-ve-su-aritma/su-sebili" },
-   { name: "Su Arıtma Cihazı", path: "/kategori/su-sebilleri-ve-su-aritma/su-aritma-cihazi" },
-  ]
- },
- {
-  name: "Aksesuarlar / Temizlik ve Bakım Ürünleri",
-  path: "/kategori/aksesuarlar-temizlik-bakim",
-  isSpecial: false,
-  bannerImg: "/products/",
-  subCategories: [
-   { name: "Aksesuarlar", path: "/kategori/aksesuarlar-temizlik-bakim/aksesuarlar" },
-   { name: "Temizlik Bakım Ürünleri", path: "/kategori/aksesuarlar-temizlik-bakim/temizlik-bakim-urunleri" },
-  ]
- },
- { name: "Türk Kahve Makineleri", path: "/kategori/turk-kahve-makineleri", isSpecial: false },
+ { name: "Su Sebili", path: "/kategori/su-sebili", isSpecial: false },
+ { name: "Su Arıtma", path: "/kategori/su-aritma-cihazi", isSpecial: false },
+ { name: "Kahve Makinesi", path: "/kategori/turk-kahve-makineleri", isSpecial: false },
  { name: "İndirimler", path: "/kategori/indirim", isSpecial: true },
  { name: "Kampanyalar", path: "/kategori/kampanyalar", isSpecial: true },
 ];
@@ -81,6 +64,9 @@ const Header = () => {
  const [searchTimeout, setSearchTimeout] = useState(null);
  const { getCartItemCount, getFavoriteCount } = useCart();
  const [isClient, setIsClient] = useState(false);
+ const [showProductRequestModal, setShowProductRequestModal] = useState(false);
+ const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+ const [expandedMobileMenu, setExpandedMobileMenu] = useState(null);
 
  useLayoutEffect(() => {
   setIsClient(true);
@@ -172,6 +158,18 @@ const Header = () => {
  const closeMenu = () => {
   setActiveMenu(null);
   setIsMobileMenuOpen(false);
+  setExpandedMobileMenu(null);
+ };
+
+ const closeSearchModal = () => {
+  setIsSearchModalOpen(false);
+  setSearchTerm("");
+  setShowSuggestions(false);
+  setSearchResults([]);
+ };
+
+ const toggleMobileSubmenu = (itemName) => {
+  setExpandedMobileMenu(expandedMobileMenu === itemName ? null : itemName);
  };
 
  const fetchSearchSuggestions = async (term) => {
@@ -226,133 +224,63 @@ const Header = () => {
 
  return (
   <header className="w-full bg-white shadow-sm sticky top-0 z-50 font-sans">
-   <div className="bg-slate-900 text-white text-[11px] font-medium py-2.5 tracking-wide">
-    <div className="container mx-auto px-4 flex justify-between items-center">
-     <p>🎉 2500 TL ve üzeri siparişlerde kargo bedava!</p>
-     <div className="hidden sm:flex items-center gap-5">
-      <Link href="/destek" className="flex items-center gap-1.5 hover:text-slate-300 transition">
-       <HiPhone size={13} /> Destek
+   <div className="bg-slate-900 text-white text-[10px] sm:text-[11px] font-medium py-2 sm:py-2.5 tracking-wide">
+    <div className="container mx-auto px-3 sm:px-4 flex justify-between items-center">
+     <p className="hidden sm:flex items-center gap-1 sm:gap-1.5 text-xs sm:text-[11px]">
+      <HiTruck color="red" size={18} />
+      <span>Tüm Türkiye&apos;ye nakliye ve montaj hizmeti !</span>
+     </p>
+     <div className="flex items-center justify-end gap-3 sm:gap-4 lg:gap-5">
+      <button
+       onClick={() => setShowProductRequestModal(true)}
+       className="flex items-center gap-1 sm:gap-1.5 hover:text-slate-300 transition cursor-pointer text-xs sm:text-[11px]"
+      >
+       <HiClipboardList size={18} />
+       <span>Ürün İsteği</span>
+      </button>
+      <Link href="/destek" className="flex items-center  gap-1 sm:gap-1.5 hover:text-slate-300 transition text-xs sm:text-[11px]">
+       <HiPhone size={18} />
+       <span>Destek</span>
       </Link>
      </div>
     </div>
    </div>
 
-   <div className="container mx-auto px-4 py-5">
-    <div className="flex justify-between items-center gap-6">
-     <Link href="/" className="flex items-center group" onClick={closeMenu}>
+   <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-5">
+    <div className="flex justify-between items-center gap-3 sm:gap-4 lg:gap-6">
+     <Link href="/" className="flex items-center group shrink-0" onClick={closeMenu}>
       <div className="flex flex-col leading-tight">
-       <span className="text-2xl sm:text-3xl font-extrabold tracking-[0.25em] text-indigo-600 transition-colors duration-500 ease-out group-hover:text-blue-900 select-none">
-        YAZICI TİCARET
-       </span>
+       <div className="block max-[450px]:hidden">
+        <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-[0.15em] md:tracking-[0.2em] lg:tracking-[0.25em] text-indigo-600 transition-colors duration-500 ease-out group-hover:text-blue-900 select-none">
+         YAZICI TİCARET
+        </span>
+       </div>
+       <div className="hidden max-[450px]:flex flex-col">
+        <span className="text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-500 ease-out group-hover:text-blue-900 select-none">
+         YAZICI
+        </span>
+        <span className="text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-500 ease-out group-hover:text-blue-900 select-none">
+         TİCARET
+        </span>
+       </div>
       </div>
      </Link>
-     <div className="hidden md:flex flex-1 max-w-xl relative search-container">
-      <form
-       className="w-full relative group"
-       onSubmit={(e) => {
-        e.preventDefault();
-        const term = searchTerm.trim();
-        if (term) {
-         setShowSuggestions(false);
-         window.location.href = `/arama?q=${encodeURIComponent(term)}`;
-        }
-       }}
+     <div className="flex items-center gap-0 md:gap-2 lg:gap-3 xl:gap-4 text-slate-700">
+      <button
+       onClick={() => setIsSearchModalOpen(true)}
+       className="search-icon-button flex flex-col items-center gap-1 group hover:bg-slate-50 p-2 rounded-lg transition cursor-pointer"
       >
-       <input
-        type="text"
-        name="search"
-        value={searchTerm || ""}
-        onChange={handleSearchChange}
-        onFocus={() => {
-         if (searchResults.length > 0) {
-          setShowSuggestions(true);
-         }
-        }}
-        placeholder="Ürün, kategori, marka veya seri no ara..."
-        className="w-full bg-slate-100 border border-transparent rounded-full py-3 pl-5 pr-12 focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-100 transition-all outline-none text-sm font-medium placeholder:text-slate-500"
-       />
-       <button
-        type="submit"
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 shadow-md hover:scale-105 active:scale-95 transition-all"
-       >
-        <HiSearch size={18} />
-       </button>
-      </form>
+       <HiSearch size={22} className="group-hover:text-indigo-600 transition" />
+      </button>
 
-      {showSuggestions && searchResults.length > 0 && (
-       <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
-        <div className="p-2">
-         {searchResults.map((product) => {
-          const productUrl = getProductUrl(product);
-          return (
-           <Link
-            key={product._id}
-            href={productUrl}
-            onClick={() => setShowSuggestions(false)}
-            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition cursor-pointer group"
-           >
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-white shrink-0 relative flex items-center justify-center p-1">
-             {product.images?.[0] && (
-              <Image
-               src={product.images[0]}
-               alt={product.name}
-               width={64}
-               height={64}
-               className="w-full h-full object-contain"
-              />
-             )}
-            </div>
-            <div className="flex-1 min-w-0">
-             <h4 className="font-semibold text-gray-800 truncate group-hover:text-indigo-600 transition">
-              {product.name}
-             </h4>
-             {product.brand && (
-              <p className="text-xs text-gray-500">{product.brand}</p>
-             )}
-             <div className="flex items-center gap-2 mt-1">
-              {product.discountPrice && product.discountPrice < product.price ? (
-               <>
-                <span className="text-sm font-bold text-indigo-600">
-                 {product.discountPrice} ₺
-                </span>
-                <span className="text-xs text-gray-400 line-through">
-                 {product.price} ₺
-                </span>
-               </>
-              ) : (
-               <span className="text-sm font-bold text-gray-800">
-                {product.price} ₺
-               </span>
-              )}
-             </div>
-            </div>
-           </Link>
-          );
-         })}
-         {searchTerm && (
-          <Link
-           href={`/arama?q=${encodeURIComponent(searchTerm)}`}
-           onClick={() => setShowSuggestions(false)}
-           className="block p-3 text-center text-indigo-600 font-semibold hover:bg-indigo-50 rounded-lg transition border-t border-gray-100 mt-2"
-          >
-           Tüm sonuçları gör
-          </Link>
-         )}
-        </div>
-       </div>
-      )}
-     </div>
-
-     <div className="flex items-center gap-1 sm:gap-4 text-slate-700">
       <button
        onClick={handleHesabimClick}
        className="flex flex-col items-center gap-1 group hover:bg-slate-50 p-2 rounded-lg transition cursor-pointer"
       >
        <HiUser size={22} className="group-hover:text-indigo-600 transition" />
-       <span className="text-[10px] font-bold hidden sm:block group-hover:text-indigo-600">Hesabım</span>
       </button>
 
-      <Link href="/favoriler" className="flex flex-col items-center gap-1 group relative hover:bg-slate-50 p-2 rounded-lg transition">
+      <Link href="/favoriler" className="hidden md:flex flex-col items-center gap-1 group relative hover:bg-slate-50 p-2 rounded-lg transition">
        <div className="relative">
         <HiHeart size={22} className="group-hover:text-indigo-600 transition" />
         {isClient && getFavoriteCount() > 0 && (
@@ -361,7 +289,6 @@ const Header = () => {
          </span>
         )}
        </div>
-       <span className="text-[10px] font-bold hidden sm:block group-hover:text-indigo-600">Favoriler</span>
       </Link>
 
       <Link href="/sepet" className="flex flex-col items-center gap-1 group relative hover:bg-slate-50 p-2 rounded-lg transition">
@@ -373,47 +300,27 @@ const Header = () => {
          </span>
         )}
        </div>
-       <span className="text-[10px] font-bold hidden sm:block group-hover:text-indigo-600">Sepetim</span>
       </Link>
 
       <button
-       className="md:hidden ml-2 text-slate-900 p-2"
+       className="md:hidden text-slate-900 p-2 cursor-pointer"
        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
        {isMobileMenuOpen ? <HiX size={24} /> : <HiMenu size={24} />}
       </button>
      </div>
     </div>
-
-    <form
-     className="md:hidden mt-4 relative"
-     onSubmit={(e) => {
-      e.preventDefault();
-      const searchTerm = e.target.searchMobile.value.trim();
-      if (searchTerm) {
-       window.location.href = `/arama?q=${encodeURIComponent(searchTerm)}`;
-      }
-     }}
-    >
-     <input
-      type="text"
-      name="searchMobile"
-      placeholder="Ürün, kategori, marka veya seri no ara..."
-      className="w-full bg-slate-100 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 focus:ring-1 focus:ring-indigo-500 outline-none text-sm"
-     />
-     <HiSearch size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-    </form>
    </div>
 
-   <nav className="hidden md:block border-t border-slate-100 relative bg-white z-40">
+   <nav className="hidden md:block border-t relative border-gray-100 bg-gray-100 z-40">
     <div className="container mx-auto px-4">
-     <ul className="flex items-center gap-8 text-[14px] font-bold text-slate-700 tracking-tight">
+     <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 xl:gap-10 text-[14px] font-bold text-slate-700 tracking-tight">
       {MENU_ITEMS.map((item) => (
        <li
         key={item.path}
-        className="py-4"
-        onMouseEnter={() => setActiveMenu(item.name)}
-        onMouseLeave={() => setActiveMenu(null)}
+        className={`py-4 ${item.isSpecial ? 'hidden lg:block' : ''}`}
+        onMouseEnter={item.subCategories ? () => setActiveMenu(item.name) : undefined}
+        onMouseLeave={item.subCategories ? () => setActiveMenu(null) : undefined}
        >
         <Link
          href={item.path}
@@ -438,6 +345,8 @@ const Header = () => {
          <div
           className={`absolute top-full left-0 w-full bg-white border-t border-slate-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out transform z-50 
                     ${activeMenu === item.name ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-2"}`}
+          onMouseEnter={() => setActiveMenu(item.name)}
+          onMouseLeave={() => setActiveMenu(null)}
           suppressHydrationWarning
          >
           <div className="container mx-auto p-8">
@@ -472,7 +381,7 @@ const Header = () => {
              </Link>
             </div>
 
-            <div className="w-1/4 hidden lg:block">
+            <div className="w-2/5 hidden lg:block">
              {(() => {
               const activeMenuItem = MENU_ITEMS.find(item => item.name === activeMenu);
               const bannerImage = activeMenuItem?.bannerImg || "/products/beyaz-esya.webp";
@@ -484,7 +393,8 @@ const Header = () => {
                  width={600}
                  height={400}
                  className="object-cover w-full h-full transition-transform duration-700 group-hover/card:scale-105"
-                 key={bannerImage}
+                 unoptimized
+                 priority={false}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
                  <span className="text-white text-xs font-bold uppercase mb-2 bg-indigo-600 w-fit px-2 py-1 rounded">Yeni Sezon</span>
@@ -506,37 +416,239 @@ const Header = () => {
    </nav>
 
    {isMobileMenuOpen && (
-    <div className="md:hidden bg-white border-t border-slate-200 absolute w-full left-0 shadow-lg h-[calc(100vh-64px)] overflow-y-auto z-50">
-     <ul className="flex flex-col py-2">
-      {MENU_ITEMS.map((item) => (
-       <li key={item.path} className="border-b border-slate-50 last:border-none">
-        <div className="flex flex-col">
+    <>
+     <div
+      className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300"
+      onClick={closeMenu}
+     />
+     <div className="md:hidden fixed inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-y-auto">
+      <div className="sticky top-0 bg-white border-b border-slate-200 z-10">
+       <div className="flex items-center justify-between px-5 py-4">
+        <h2 className="text-lg font-bold text-slate-900">Ürünler</h2>
+        <button
+         onClick={closeMenu}
+         className="p-2 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+         aria-label="Menüyü Kapat"
+        >
+         <HiX size={24} className="text-slate-600" />
+        </button>
+       </div>
+      </div>
+
+      <nav className="py-2">
+       <ul className="flex flex-col">
+        {MENU_ITEMS.filter(item => !item.isSpecial).map((item) => (
+         <li key={item.path} className="border-b border-slate-100 last:border-none">
+          {item.subCategories ? (
+           <div className="flex flex-col">
+            <button
+             onClick={() => toggleMobileSubmenu(item.name)}
+             className="flex items-center justify-between px-5 py-4 font-bold text-slate-800 hover:bg-slate-50 transition-colors w-full text-left group cursor-pointer"
+            >
+             <span>{item.name}</span>
+             <HiChevronDown
+              size={20}
+              className={`text-slate-400 transition-transform duration-300 ${expandedMobileMenu === item.name ? 'rotate-180' : ''
+               }`}
+             />
+            </button>
+            <div
+             className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedMobileMenu === item.name
+              ? 'max-h-[1000px] opacity-100'
+              : 'max-h-0 opacity-0'
+              }`}
+            >
+             <ul className="bg-linear-to-b from-slate-50 to-white px-5 py-3 space-y-1">
+              {item.subCategories.map((sub) => (
+               <li key={sub.path}>
+                <Link
+                 href={sub.path}
+                 className="block py-2.5 px-3 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 font-medium"
+                 onClick={closeMenu}
+                >
+                 {sub.name}
+                </Link>
+               </li>
+              ))}
+              <li className="pt-2">
+               <Link
+                href={item.path}
+                className="flex items-center gap-2 py-2.5 px-3 text-sm font-bold text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+                onClick={closeMenu}
+               >
+                Tüm {item.name} Ürünleri
+                <HiArrowRight size={16} />
+               </Link>
+              </li>
+             </ul>
+            </div>
+           </div>
+          ) : (
+           <Link
+            href={item.path}
+            className="block px-5 py-4 font-bold text-slate-800 hover:bg-slate-50 transition-colors"
+            onClick={closeMenu}
+           >
+            {item.name}
+           </Link>
+          )}
+         </li>
+        ))}
+       </ul>
+
+       <div className="px-5 py-4 mt-4 border-t border-slate-200">
+        <div className="flex flex-col gap-2.5">
+         {MENU_ITEMS.filter(item => item.isSpecial).map((item) => (
+          <Link
+           key={item.path}
+           href={item.path}
+           className="flex items-center justify-left gap-2 px-4 py-3 font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+           onClick={closeMenu}
+          >
+           {item.name === "Yeniler" && <HiGift size={18} className="text-red-600" />}
+           {item.name === "İndirimler" && <HiTag size={18} className="text-red-600" />}
+           {item.name === "Kampanyalar" && <HiGift size={18} className="text-red-600" />}
+           <span>{item.name}</span>
+          </Link>
+         ))}
          <Link
-          href={item.path}
-          className={`block px-5 py-4 font-bold ${item.isSpecial ? "text-red-600" : "text-slate-800"}`}
+          href="/favoriler"
+          className="flex items-center justify-left gap-2 px-4 py-3 font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors"
           onClick={closeMenu}
          >
-          {item.name}
+          <HiHeart size={18} className="text-pink-600" />
+          <span>Favoriler</span>
+          {isClient && getFavoriteCount() > 0 && (
+           <span className="ml-auto bg-pink-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            {getFavoriteCount() >= 9 ? "9+" : getFavoriteCount()}
+           </span>
+          )}
          </Link>
-         {item.subCategories && (
-          <ul className="bg-slate-50 px-5 py-3 grid grid-cols-2 gap-2">
-           {item.subCategories.map((sub) => (
-            <li key={sub.path}>
-             <Link
-              href={sub.path}
-              className="block py-2 text-sm text-slate-500 hover:text-slate-900"
-              onClick={closeMenu}
-             >
-              {sub.name}
-             </Link>
-            </li>
-           ))}
-          </ul>
-         )}
         </div>
-       </li>
-      ))}
-     </ul>
+       </div>
+      </nav>
+     </div>
+    </>
+   )}
+
+   <ProductRequestModal
+    show={showProductRequestModal}
+    onClose={() => setShowProductRequestModal(false)}
+   />
+
+   {isSearchModalOpen && (
+    <div className="fixed inset-0 bg-black/50 z-100 flex items-start justify-center pt-20 px-4" onClick={closeSearchModal}>
+     <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl relative search-container" onClick={(e) => e.stopPropagation()}>
+      <div className="p-6">
+       <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-slate-900">Arama Yap</h2>
+        <button
+         onClick={closeSearchModal}
+         className="p-2 hover:bg-slate-100 rounded-lg transition cursor-pointer"
+        >
+         <HiX size={24} className="text-slate-600" />
+        </button>
+       </div>
+       <form
+        className="w-full relative group"
+        onSubmit={(e) => {
+         e.preventDefault();
+         const term = searchTerm.trim();
+         if (term) {
+          closeSearchModal();
+          window.location.href = `/arama?q=${encodeURIComponent(term)}`;
+         }
+        }}
+       >
+        <input
+         type="text"
+         name="search"
+         value={searchTerm || ""}
+         onChange={handleSearchChange}
+         onFocus={() => {
+          if (searchResults.length > 0) {
+           setShowSuggestions(true);
+          }
+         }}
+         placeholder="Ürün, kategori, marka veya seri no ara..."
+         className="w-full bg-slate-100 border border-transparent rounded-full py-3 pl-5 pr-12 focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-100 transition-all outline-none text-sm font-medium placeholder:text-slate-500"
+         autoFocus
+        />
+        <button
+         type="submit"
+         className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700 shadow-md hover:scale-105 active:scale-95 transition-all"
+        >
+         <HiSearch size={18} />
+        </button>
+       </form>
+
+       {showSuggestions && searchResults.length > 0 && (
+        <div className="mt-4 bg-white rounded-xl border border-gray-200 max-h-96 overflow-y-auto">
+         <div className="p-2">
+          {searchResults.map((product) => {
+           const productUrl = getProductUrl(product);
+           return (
+            <Link
+             key={product._id}
+             href={productUrl}
+             onClick={closeSearchModal}
+             className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition cursor-pointer group"
+            >
+             <div className="w-16 h-16 rounded-lg overflow-hidden bg-white shrink-0 relative flex items-center justify-center p-1">
+              {product.images?.[0] && (
+               <Image
+                src={product.images[0]}
+                alt={product.name}
+                width={64}
+                height={64}
+                className="w-full h-full object-contain"
+               />
+              )}
+             </div>
+             <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-gray-800 truncate group-hover:text-indigo-600 transition">
+               {product.name}
+              </h4>
+              {product.brand && (
+               <p className="text-xs text-gray-500">{product.brand}</p>
+              )}
+              <div className="flex items-center gap-2 mt-1">
+               {product.discountPrice && product.discountPrice < product.price ? (
+                <>
+                 <span className="text-sm font-bold text-indigo-600">
+                  {product.discountPrice} ₺
+                 </span>
+                 <span className="text-xs text-gray-400 line-through">
+                  {product.price} ₺
+                 </span>
+                </>
+               ) : (
+                <span className="text-sm font-bold text-gray-800">
+                 {product.price} ₺
+                </span>
+               )}
+              </div>
+             </div>
+            </Link>
+           );
+          })}
+          {searchTerm && (
+           <Link
+            href={`/arama?q=${encodeURIComponent(searchTerm)}`}
+            onClick={() => {
+             setShowSuggestions(false);
+             setIsSearchModalOpen(false);
+            }}
+            className="block p-3 text-center text-indigo-600 font-semibold hover:bg-indigo-50 rounded-lg transition border-t border-gray-100 mt-2"
+           >
+            Tüm sonuçları gör
+           </Link>
+          )}
+         </div>
+        </div>
+       )}
+      </div>
+     </div>
     </div>
    )}
   </header>

@@ -12,7 +12,6 @@ let products;
    const productsModule = require('./products.js');
    products = productsModule.products;
   } catch (requireError) {
-   console.error('products.js yüklenirken hata:', requireError);
    process.exit(1);
   }
  }
@@ -172,7 +171,6 @@ if (typeof require !== 'undefined' && require.main === module) {
   }
 
   if (!products) {
-   console.error('products.js yüklenemedi!');
    process.exit(1);
   }
 
@@ -198,7 +196,6 @@ if (typeof require !== 'undefined' && require.main === module) {
     }, 200);
    })
    .catch(error => {
-    console.error('Kritik Hata:', error);
     setTimeout(() => {
      process.exit(1);
     }, 200);

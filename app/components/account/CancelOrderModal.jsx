@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { HiX } from "react-icons/hi";
 
 export default function CancelOrderModal({ show, orderId, onConfirm, onCancel }) {
  const [loading, setLoading] = useState(false);
@@ -22,11 +23,19 @@ export default function CancelOrderModal({ show, orderId, onConfirm, onCancel })
    onClick={onCancel}
   >
    <div
-    className="bg-white rounded-xl shadow-2xl max-w-md w-full"
+    className="bg-white rounded-xl shadow-2xl max-w-md w-full relative"
     onClick={(e) => e.stopPropagation()}
    >
+    <button
+     onClick={onCancel}
+     disabled={loading}
+     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+     aria-label="Kapat"
+    >
+     <HiX size={24} />
+    </button>
     <div className="p-6">
-     <h3 className="text-lg font-bold text-gray-900 mb-2">Siparişi İptal Et</h3>
+     <h3 className="text-lg font-bold text-gray-900 mb-2 pr-8">Siparişi İptal Et</h3>
      <p className="text-sm text-gray-600 mb-6">
       Siparişi iptal etmek istediğinize emin misiniz? Bu işlem geri alınamaz.
      </p>

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { HiChevronDown, HiChevronUp, HiArrowRight } from "react-icons/hi";
 import { FaShoppingBag } from "react-icons/fa";
 import normalizeText from "@/lib/normalizeText";
 
@@ -100,9 +100,9 @@ export default function OrdersTab({ orders, ordersLoading, showAllOrders, setSho
          </div>
          <button
           onClick={() => onOrderClick(order)}
-          className="text-indigo-600 hover:text-indigo-800 font-semibold"
+          className="text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer flex items-center gap-1"
          >
-          Detayları Gör →
+          Detayları Gör <HiArrowRight size={18} />
          </button>
         </div>
        </div>
@@ -114,7 +114,7 @@ export default function OrdersTab({ orders, ordersLoading, showAllOrders, setSho
         <button
          type="button"
          onClick={() => setShowAllOrders(true)}
-         className="px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold transition inline-flex items-center gap-2"
+         className="px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold transition inline-flex items-center gap-2 cursor-pointer"
         >
          Diğerleri <HiChevronDown className="w-5 h-5" />
         </button>
@@ -122,7 +122,7 @@ export default function OrdersTab({ orders, ordersLoading, showAllOrders, setSho
         <button
          type="button"
          onClick={() => setShowAllOrders(false)}
-         className="px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold transition inline-flex items-center gap-2"
+         className="px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold transition inline-flex items-center gap-2 cursor-pointer"
         >
          Son 5 <HiChevronUp className="w-5 h-5" />
         </button>

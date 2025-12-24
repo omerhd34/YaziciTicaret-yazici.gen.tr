@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { HiX } from "react-icons/hi";
 
 export default function CardModal({
@@ -11,15 +12,17 @@ export default function CardModal({
  onSubmit,
  onClose,
 }) {
+ const [isFlipped, setIsFlipped] = useState(false);
+
  if (!show) return null;
 
  const rawNumber = (cardForm.cardNumber || "").replace(/\s/g, "");
  const paddedNumber = (rawNumber + "################").slice(0, 16);
- const previewNumber = paddedNumber
-  ? paddedNumber
-   .match(/.{1,4}/g)
-   ?.join(" ")
-  : "#### #### #### ####";
+ // İlk 8 hane görünsün, son 8 hane * olsun
+ const maskedNumber = paddedNumber
+  ? paddedNumber.slice(0, 8) + "********"
+  : "########********";
+ const previewNumber = maskedNumber.match(/.{1,4}/g)?.join(" ") || "#### #### #### ####";
 
  const previewName = cardForm.cardHolderName
   ? cardForm.cardHolderName.toUpperCase()
@@ -42,39 +45,81 @@ export default function CardModal({
     <form onSubmit={onSubmit} className="p-6 space-y-6">
      {/* Kart Önizleme */}
      <div className="flex justify-center">
-      <div className="relative w-full max-w-md rounded-2xl bg-linear-to-br from-slate-900 via-purple-700 to-indigo-600 text-white p-5 shadow-xl">
-       <div className="flex items-center justify-between text-xs font-semibold tracking-wide uppercase text-slate-200">
-        <span>Kredi Kartı</span>
-        <span className="flex items-center gap-1">
-         <span className="w-2 h-2 rounded-full bg-red-500" />
-         <span className="w-2 h-2 rounded-full bg-yellow-400" />
-        </span>
-       </div>
+      <div className="relative w-full max-w-md h-52" style={{ perspective: '1000px' }}>
+       <div
+        className={`relative w-full h-full transition-transform duration-700 ${isFlipped ? 'rotate-y-180' : ''}`}
+        style={{
+         transformStyle: 'preserve-3d',
+         transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+        }}
+       >
+        {/* Kart Ön Yüzü */}
+        <div
+         className="absolute inset-0 w-full h-full rounded-2xl bg-linear-to-br from-slate-900 via-purple-700 to-indigo-600 text-white p-5 shadow-xl select-none"
+         style={{
+          backfaceVisibility: 'hidden',
+          transform: 'rotateY(0deg)',
+          userSelect: 'none'
+         }}
+        >
+         <div className="flex items-center justify-between text-xs font-semibold tracking-wide uppercase text-slate-200">
+          <span>Banka Adı</span>
+          <span className="flex items-center gap-1">
+           <span className="w-2 h-2 rounded-full bg-red-500" />
+           <span className="w-2 h-2 rounded-full bg-yellow-400" />
+          </span>
+         </div>
 
-       <div className="mt-6 mb-4">
-        <div className="text-[11px] uppercase tracking-[0.25em] text-slate-300 mb-2">
-         Card Number
-        </div>
-        <div className="text-lg md:text-xl font-mono tracking-[0.18em] bg-white/10 rounded-xl px-4 py-2 flex items-center justify-between">
-         <span>{previewNumber}</span>
-        </div>
-       </div>
+         <div className="mt-6 mb-4">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-slate-300 mb-2">
+           Card Number
+          </div>
+          <div className="text-lg md:text-xl font-mono tracking-[0.18em] bg-white/10 rounded-xl px-4 py-2 flex items-center justify-between">
+           <span>{previewNumber}</span>
+          </div>
+         </div>
 
-       <div className="flex items-end justify-between text-[11px] md:text-xs mt-4">
-        <div>
-         <div className="uppercase tracking-widest text-slate-300 mb-1">
-          Card Holder
-         </div>
-         <div className="text-sm md:text-base font-semibold">
-          {previewName}
+         <div className="flex items-end justify-between text-[11px] md:text-xs mt-4">
+          <div>
+           <div className="uppercase tracking-widest text-slate-300 mb-1">
+            Card Holder
+           </div>
+           <div className="text-sm md:text-base font-semibold">
+            {previewName}
+           </div>
+          </div>
+          <div className="text-right">
+           <div className="uppercase tracking-widest text-slate-300 mb-1">
+            Expires
+           </div>
+           <div className="text-sm md:text-base font-semibold">
+            {previewExpiry}
+           </div>
+          </div>
          </div>
         </div>
-        <div className="text-right">
-         <div className="uppercase tracking-widest text-slate-300 mb-1">
-          Expires
-         </div>
-         <div className="text-sm md:text-base font-semibold">
-          {previewExpiry}
+
+        {/* Kart Arka Yüzü */}
+        <div
+         className="absolute inset-0 w-full h-full rounded-2xl bg-linear-to-br from-slate-900 via-purple-700 to-indigo-600 text-white p-5 shadow-xl select-none"
+         style={{
+          backfaceVisibility: 'hidden',
+          transform: 'rotateY(180deg)',
+          userSelect: 'none'
+         }}
+        >
+         <div className="h-full flex flex-col">
+          <div className="flex-1 bg-black/20 rounded-lg mb-4"></div>
+          <div className="bg-white/10 rounded-lg px-4 py-3 flex items-center justify-end">
+           <div className="text-right">
+            <div className="text-[10px] uppercase tracking-widest text-slate-300 mb-1">
+             CVV
+            </div>
+            <div className="text-lg font-mono tracking-widest">
+             {cardForm.cvv || '***'}
+            </div>
+           </div>
+          </div>
          </div>
         </div>
        </div>
@@ -195,6 +240,8 @@ export default function CardModal({
            setCardErrors({ ...cardErrors, cvv: '' });
           }
          }}
+         onFocus={() => setIsFlipped(true)}
+         onBlur={() => setIsFlipped(false)}
          className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${cardErrors.cvv ? 'border-red-500' : 'border-gray-300'
           }`}
          placeholder="123"
@@ -208,14 +255,14 @@ export default function CardModal({
       </div>
 
       <div className="md:col-span-2">
-       <label className="flex items-center gap-2 cursor-pointer">
+       <label className="flex items-center gap-2">
         <input
          type="checkbox"
          checked={cardForm.isDefault}
          onChange={(e) => setCardForm({ ...cardForm, isDefault: e.target.checked })}
-         className="w-4 h-4"
+         className="w-4 h-4 cursor-pointer"
         />
-        <span className="text-sm font-semibold">Varsayılan kart olarak kaydet</span>
+        <span className="text-sm font-semibold cursor-pointer">Varsayılan kart olarak kaydet</span>
        </label>
       </div>
      </div>

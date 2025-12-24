@@ -10,9 +10,6 @@ export default function PrivacyPolicyHeader() {
    <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
     Gizlilik Politikası
    </h1>
-   <p className="text-gray-600 text-lg">
-    Son güncelleme: {new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
-   </p>
   </div>
  );
 }

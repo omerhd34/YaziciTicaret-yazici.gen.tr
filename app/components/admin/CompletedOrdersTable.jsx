@@ -3,20 +3,6 @@ import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import normalizeText from "@/lib/normalizeText";
 import ReturnStatusDropdown from "./ReturnStatusDropdown";
 
-/**
- * Completed Orders Table Component
- * 
- * @param {Array} orders - Tamamlanan siparişler listesi
- * @param {string} filter - Aktif filtre
- * @param {function} onFilterChange - Filtre değiştiğinde callback
- * @param {function} getRowBgClass - Satır arka plan rengi fonksiyonu
- * @param {function} onReturnStatusChange - İade durumu değiştiğinde callback
- * @param {function} onDetailClick - Detay butonuna tıklandığında callback
- * @param {string} updatingReturnOrderId - Güncellenen iade sipariş ID'si
- * @param {number} currentPage - Mevcut sayfa
- * @param {number} totalPages - Toplam sayfa sayısı
- * @param {function} onPageChange - Sayfa değiştiğinde callback
- */
 export default function CompletedOrdersTable({
  orders,
  filter,
@@ -179,7 +165,7 @@ export default function CompletedOrdersTable({
            type="button"
            onClick={() => onDetailClick(row)}
            disabled={!o.orderId}
-           className={`px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition ${!o.orderId ? "opacity-50 cursor-not-allowed" : ""}`}
+           className={`px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer ${!o.orderId ? "opacity-50 cursor-not-allowed" : ""}`}
           >
            Detay
           </button>

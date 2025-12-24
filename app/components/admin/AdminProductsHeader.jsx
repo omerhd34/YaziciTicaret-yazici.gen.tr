@@ -2,9 +2,6 @@
 import Link from "next/link";
 import { HiLogout } from "react-icons/hi";
 
-/**
- * @param {function} onLogout - Çıkış yap butonuna tıklandığında callback
- */
 export default function AdminProductsHeader({ onLogout }) {
  return (
   <div className="bg-linear-to-r from-indigo-600 to-purple-600 text-white">
@@ -21,7 +18,7 @@ export default function AdminProductsHeader({ onLogout }) {
       <Link href="/admin/mesajlar" className="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-semibold transition inline-flex items-center justify-center min-w-[150px]">
        Mesajlar
       </Link>
-      <button onClick={onLogout} className="bg-white/30 hover:bg-white/40 px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center gap-2 transition min-w-[150px]">
+      <button onClick={onLogout} className="bg-white/30 hover:bg-white/40 px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center gap-2 transition min-w-[150px] cursor-pointer">
        <HiLogout size={20} />
        Çıkış Yap
       </button>

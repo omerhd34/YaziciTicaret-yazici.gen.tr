@@ -49,14 +49,6 @@ export async function POST(request) {
 
    // Kodun kaydedildiğinden emin ol
    if (!updatedUser || !updatedUser.emailVerificationCode || updatedUser.emailVerificationCode !== codeString) {
-    console.error('Giriş - findByIdAndUpdate ile kod kaydedilemedi, save() ile deniyor...', {
-     userId: user._id,
-     hasUser: !!updatedUser,
-     hasCode: !!updatedUser?.emailVerificationCode,
-     savedCode: updatedUser?.emailVerificationCode,
-     expectedCode: codeString,
-    });
-
     // Son çare: direkt save() ile
     const retryUser = await User.findById(user._id);
     if (retryUser) {
@@ -65,28 +57,7 @@ export async function POST(request) {
      retryUser.markModified('emailVerificationCode');
      retryUser.markModified('emailVerificationCodeExpires');
      await retryUser.save();
-
-     // Tekrar kontrol et
-     const finalUser = await User.findById(user._id);
-     if (!finalUser || !finalUser.emailVerificationCode || finalUser.emailVerificationCode !== codeString) {
-      console.error('Giriş - save() ile de kod kaydedilemedi!', {
-       userId: user._id,
-       hasCode: !!finalUser?.emailVerificationCode,
-       savedCode: finalUser?.emailVerificationCode,
-       expectedCode: codeString,
-      });
-     } else {
-      console.log('Giriş - save() ile kod başarıyla kaydedildi:', {
-       userId: user._id,
-       code: codeString,
-      });
-     }
     }
-   } else {
-    console.log('Giriş - findByIdAndUpdate ile kod başarıyla kaydedildi:', {
-     userId: user._id,
-     code: codeString,
-    });
    }
 
    // Email gönder
@@ -101,7 +72,7 @@ export async function POST(request) {
      verificationLink,
     });
    } catch (emailError) {
-    console.error('Giriş sırasında email gönderme hatası:', emailError);
+    // Email error - silently fail
    }
 
    return NextResponse.json(

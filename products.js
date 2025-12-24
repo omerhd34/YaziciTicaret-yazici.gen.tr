@@ -10,14 +10,6 @@ export const products = [
 
 
 
-
-
-
-
-
-
-
-
  // ? ELEKTRİKLİ SÜPÜRGE
  /*
   {

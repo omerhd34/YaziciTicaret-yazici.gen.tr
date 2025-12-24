@@ -110,7 +110,6 @@ Bu proje, Profilo markası beyaz eşya ve elektronik ürünlerinin satışını 
 
 ### Diğer Kategoriler
 - Su Sebilleri ve Su Arıtma
-- Aksesuarlar / Temizlik ve Bakım Ürünleri
 - Türk Kahve Makineleri
 
 ## 🛍️ Alışveriş Süreci

@@ -1,13 +1,5 @@
 "use client";
 
-/**
- * Return Status Dropdown Component
- * İade durumu dropdown'ı
- * 
- * @param {string} value - Mevcut durum değeri
- * @param {function} onChange - Durum değiştiğinde callback
- * @param {boolean} disabled - Disabled durumu
- */
 export default function ReturnStatusDropdown({ value, onChange, disabled }) {
  return (
   <select

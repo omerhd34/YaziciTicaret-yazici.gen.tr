@@ -50,7 +50,6 @@ export async function GET(request, { params }) {
 
   return NextResponse.json({ success: true, user: safe });
  } catch (error) {
-  console.error("Admin user detail error:", error);
   return NextResponse.json(
    { success: false, message: "Kullanıcı getirilemedi", error: error.message },
    { status: 500 }
