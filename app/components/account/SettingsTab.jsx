@@ -1,6 +1,6 @@
 "use client";
 
-export default function SettingsTab({ passwordForm, setPasswordForm, passwordError, setPasswordError, passwordSuccess, passwordLoading, onPasswordChange, notificationPreferences, setNotificationPreferences, onNotificationChange, onDeleteAccount }) {
+export default function SettingsTab({ passwordForm, setPasswordForm, passwordError, setPasswordError, passwordSuccess, passwordLoading, onPasswordChange, notificationPreferences, onNotificationChange, onDeleteAccount }) {
  return (
   <div className="bg-white rounded-xl shadow-sm p-6">
    <h2 className="text-2xl font-bold mb-6">Hesap Ayarları</h2>

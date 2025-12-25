@@ -25,6 +25,94 @@ export function CartProvider({ children }) {
   }
  });
 
+ // Sepet verilerini veritabanından yükle ve senkronize et
+ useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  let isFetching = false;
+  let lastFetchTime = 0;
+  const FETCH_COOLDOWN = 5000;
+
+  const syncCartWithDB = async () => {
+   const now = Date.now();
+   if (isFetching || (now - lastFetchTime < FETCH_COOLDOWN)) {
+    return;
+   }
+
+   isFetching = true;
+   lastFetchTime = now;
+
+   try {
+    // LocalStorage'dan sepet verilerini al
+    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const localCartIds = localCart
+     .map(item => {
+      const id = item._id || item.id;
+      return id ? String(id) : null;
+     })
+     .filter(Boolean);
+
+    // Veritabanından sepet ID'lerini al
+    let dbCartIds = [];
+    try {
+     const res = await axiosInstance.get("/api/user/cart");
+     const data = res.data;
+
+     if (data.success && data.cart && data.cart.length > 0) {
+      dbCartIds = data.cart.map(id => String(id)).filter(Boolean);
+     }
+    } catch (error) {
+     // Giriş yapılmamışsa veya hata varsa sadece localStorage'daki verileri veritabanına kaydet
+     if (localCartIds.length > 0) {
+      try {
+       await axiosInstance.put("/api/user/cart", { productIds: localCartIds });
+      } catch (putError) {
+       // Hata varsa sessizce devam et
+      }
+     }
+     isFetching = false;
+     return;
+    }
+
+    // Veritabanı ve localStorage'ı birleştir
+    const allCartIds = [...new Set([...dbCartIds, ...localCartIds])];
+
+    // Veritabanına senkronize et (tüm ürün ID'lerini gönder)
+    if (allCartIds.length > 0 && allCartIds.length !== dbCartIds.length) {
+     try {
+      await axiosInstance.put("/api/user/cart", { productIds: allCartIds });
+     } catch (error) {
+      // Hata varsa sessizce devam et
+     }
+    }
+   } catch (error) {
+   } finally {
+    isFetching = false;
+   }
+  };
+
+  // Sayfa yüklendiğinde hemen senkronize et
+  syncCartWithDB();
+
+  const handleCartStorageChange = (e) => {
+   if (e.key === 'cart' || e.key === null) {
+    syncCartWithDB();
+   }
+  };
+
+  const handleCartUpdate = () => {
+   syncCartWithDB();
+  };
+
+  window.addEventListener("storage", handleCartStorageChange);
+  window.addEventListener("cartUpdated", handleCartUpdate);
+
+  return () => {
+   window.removeEventListener("storage", handleCartStorageChange);
+   window.removeEventListener("cartUpdated", handleCartUpdate);
+  };
+ }, []);
+
  useEffect(() => {
   if (typeof window === "undefined") return;
 
@@ -221,7 +309,7 @@ export function CartProvider({ children }) {
   }
  }, [favorites]);
 
- const addToCart = (product, selectedSize = null, selectedColor = null, quantity = 1) => {
+ const addToCart = async (product, selectedSize = null, selectedColor = null, quantity = 1) => {
   if (product.stock === 0 || product.stock < quantity) {
    return;
   }
@@ -230,6 +318,8 @@ export function CartProvider({ children }) {
    return;
   }
 
+  // Yeni sepeti hesapla
+  let newCart;
   setCart((prevCart) => {
    const existingItemIndex = prevCart.findIndex(
     (item) =>
@@ -246,9 +336,10 @@ export function CartProvider({ children }) {
     } else {
      updatedCart[existingItemIndex].quantity = newQuantity;
     }
+    newCart = updatedCart;
     return updatedCart;
    } else {
-    return [
+    newCart = [
      ...prevCart,
      {
       ...product,
@@ -257,20 +348,52 @@ export function CartProvider({ children }) {
       addedAt: Date.now(),
      },
     ];
+    return newCart;
    }
   });
+
+  // Veritabanına kaydet (giriş yapılmışsa)
+  if (newCart) {
+   try {
+    const productIds = newCart.map(item => String(item._id || item.id)).filter(Boolean);
+    await axiosInstance.put("/api/user/cart", { productIds });
+   } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+     console.log('Sepet veritabanına kaydedilemedi:', error);
+    }
+   }
+  }
  };
 
- const removeFromCart = (productId, selectedSize = null, selectedColor = null) => {
-  setCart((prevCart) =>
-   prevCart.filter(
+ const removeFromCart = async (productId, selectedSize = null, selectedColor = null) => {
+  let newCart;
+  setCart((prevCart) => {
+   newCart = prevCart.filter(
     (item) =>
      !(
       item._id === productId &&
       item.selectedColor === selectedColor
      )
-   )
-  );
+   );
+   return newCart;
+  });
+
+  // Veritabanından sil (giriş yapılmışsa)
+  // Eğer aynı ürünün başka varyantı sepetde kaldıysa silme
+  try {
+   const remainingItems = newCart.filter(
+    (item) => item._id === productId && item.selectedColor !== selectedColor
+   );
+   if (remainingItems.length === 0) {
+    // Aynı ürünün başka varyantı yoksa veritabanından sil
+    await axiosInstance.delete(`/api/user/cart?productId=${productId}`);
+   }
+   // Sepeti tamamen güncelle
+   const productIds = newCart.map(item => String(item._id || item.id)).filter(Boolean);
+   await axiosInstance.put("/api/user/cart", { productIds });
+  } catch (error) {
+   // Giriş yapılmamışsa veya hata varsa sessizce devam et
+  }
  };
 
  const updateQuantity = (productId, selectedSize, selectedColor, newQuantity) => {
@@ -297,9 +420,16 @@ export function CartProvider({ children }) {
   );
  };
 
- const clearCart = () => {
+ const clearCart = async () => {
   setCart([]);
   localStorage.removeItem("cart");
+
+  // Veritabanından temizle (giriş yapılmışsa)
+  try {
+   await axiosInstance.put("/api/user/cart", { productIds: [] });
+  } catch (error) {
+   // Giriş yapılmamışsa veya hata varsa sessizce devam et
+  }
  };
 
  const getCartTotal = () => {

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { MENU_ITEMS } from "@/app/components/ui/Header";
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 
 const categoryToSlug = (categoryName) => {
  if (!categoryName) return "";

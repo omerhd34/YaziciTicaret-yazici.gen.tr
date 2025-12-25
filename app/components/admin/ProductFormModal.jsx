@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { HiX, HiUpload, HiChevronDown, HiChevronUp, HiPlus } from "react-icons/hi";
 import Image from "next/image";
-import { MENU_ITEMS } from "@/app/components/ui/Header";
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 import axiosInstance from "@/lib/axios";
 
 const MAX_IMAGES = 15;

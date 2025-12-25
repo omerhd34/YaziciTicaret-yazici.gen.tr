@@ -2,8 +2,9 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { MENU_ITEMS } from "@/app/components/ui/Header";
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 import { useCart } from "@/context/CartContext";
+import { useComparison } from "@/context/ComparisonContext";
 import CategoryHeader from "@/app/components/category/CategoryHeader";
 import CategoryToolbar from "@/app/components/category/CategoryToolbar";
 import CategoryProducts from "@/app/components/category/CategoryProducts";
@@ -64,6 +65,7 @@ export default function KategoriPage() {
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
  const { addToCart, addToFavorites, removeFromFavorites, isFavorite } = useCart();
+ const { addToComparison, removeFromComparison, isInComparison } = useComparison();
 
  const slugString = useMemo(() => slug.join('/'), [slug]);
 
@@ -401,6 +403,19 @@ export default function KategoriPage() {
   }
  };
 
+ const handleComparisonToggle = () => {
+  if (!product || !product._id) return;
+
+  const productId = String(product._id);
+  const isCurrentlyInComparison = isInComparison(productId);
+
+  if (isCurrentlyInComparison) {
+   removeFromComparison(productId);
+  } else {
+   addToComparison(product);
+  }
+ };
+
  // Sayfa yüklendiğinde veya slug değiştiğinde scroll'u en üste al
  useEffect(() => {
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -681,8 +696,10 @@ export default function KategoriPage() {
         stock={colorStock}
         addedToCart={addedToCart}
         isFavorite={isFavorite(product._id)}
+        isInComparison={isInComparison(product._id)}
         onAddToCart={handleAddToCart}
         onFavoriteToggle={handleFavoriteToggle}
+        onComparisonToggle={handleComparisonToggle}
        />
 
        <ProductFeatures />

@@ -1,5 +1,4 @@
-"use client";
-import { MENU_ITEMS } from "@/app/components/ui/Header";
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 
 const categoryToSlug = (categoryName) => {
  if (!categoryName) return "";
@@ -24,11 +23,6 @@ export const getProductUrl = (product, colorSerialNumber = null) => {
    ? product.colors[0].serialNumber
    : product.serialNumber
  );
-
- if (!serialNumber) {
-  // Fallback: eski URL formatı
-  return `/urun/${product.slug}`;
- }
 
  // MENU_ITEMS'den kategori ve alt kategori path'lerini bul
  let categoryPath = "";
@@ -61,13 +55,22 @@ export const getProductUrl = (product, colorSerialNumber = null) => {
   }
  }
 
- // URL oluştur
- if (categoryPath && subCategoryPath) {
-  return `/kategori/${categoryPath}/${subCategoryPath}/${serialNumber}`;
- } else if (categoryPath) {
-  return `/kategori/${categoryPath}/${serialNumber}`;
+ // SerialNumber varsa tam ürün URL'i oluştur
+ if (serialNumber) {
+  if (categoryPath && subCategoryPath) {
+   return `/kategori/${categoryPath}/${subCategoryPath}/${serialNumber}`;
+  } else if (categoryPath) {
+   return `/kategori/${categoryPath}/${serialNumber}`;
+  }
  }
 
- // Fallback
- return `/urun/${product.slug}`;
+ // SerialNumber yoksa ama kategori bilgileri varsa kategori sayfasına yönlendir
+ if (categoryPath && subCategoryPath) {
+  return `/kategori/${categoryPath}/${subCategoryPath}`;
+ } else if (categoryPath) {
+  return `/kategori/${categoryPath}`;
+ }
+
+ // Hiçbir şey yoksa ana sayfaya yönlendir
+ return "/";
 };

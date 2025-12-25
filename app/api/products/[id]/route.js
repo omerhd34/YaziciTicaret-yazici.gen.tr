@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import mongoose from 'mongoose';
 import dbConnect from '@/lib/dbConnect';
 import Product from '@/models/Product';
 import User from '@/models/User';
 import { sendPriceChangeEmail, sendStockAvailableEmail } from '@/lib/notifications';
+import { getProductUrl } from '@/app/utils/productUrl';
 
 // GET - Tek ürün getir
 export async function GET(request, { params }) {
@@ -242,7 +244,8 @@ export async function PUT(request, { params }) {
      // E-posta bildirimi (hem kampanya hem e-posta tercihi açıksa)
      if (user.notificationPreferences?.campaignNotifications && user.notificationPreferences?.emailNotifications && user.email) {
       try {
-       const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/urun/${product.slug}`;
+       const relativeUrl = getProductUrl(product);
+       const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${relativeUrl}`;
        await sendPriceChangeEmail(
         user.email,
         user.name,
@@ -250,6 +253,39 @@ export async function PUT(request, { params }) {
         oldEffectivePrice,
         newPrice,
         productUrl
+       );
+      } catch (emailError) {
+      }
+     }
+
+    }
+   } catch (notificationError) {
+   }
+
+   // Bu ürünü sepetine ekleyen kullanıcıları bul
+   try {
+    // id'yi ObjectId'ye dönüştür
+    const productObjectId = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
+    const usersWithCart = await User.find({
+     cart: productObjectId
+    }).select('name email phone notificationPreferences');
+
+    // Her kullanıcıya bildirim gönder (tercihlerine göre)
+    // Fiyat düşüşü bildirimi: hem campaignNotifications hem emailNotifications açık olmalı
+    for (const user of usersWithCart) {
+     // E-posta bildirimi (hem kampanya hem e-posta tercihi açıksa)
+     if (user.notificationPreferences?.campaignNotifications && user.notificationPreferences?.emailNotifications && user.email) {
+      try {
+       const relativeUrl = getProductUrl(product);
+       const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${relativeUrl}`;
+       await sendPriceChangeEmail(
+        user.email,
+        user.name,
+        product.name,
+        oldEffectivePrice,
+        newPrice,
+        productUrl,
+        'cart' // Sepet bildirimi için
        );
       } catch (emailError) {
       }
@@ -275,15 +311,45 @@ export async function PUT(request, { params }) {
     // Her kullanıcıya bildirim gönder (tercihlerine göre)
     // Stok artışı bildirimi: hem campaignNotifications hem emailNotifications açık olmalı
     for (const user of usersWithFavorite) {
-     // E-posta bildirimi (hem kampanya hem e-posta tercihi açıksa)
      if (user.notificationPreferences?.campaignNotifications && user.notificationPreferences?.emailNotifications && user.email) {
       try {
-       const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/urun/${product.slug}`;
+       const relativeUrl = getProductUrl(product);
+       const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${relativeUrl}`;
        await sendStockAvailableEmail(
         user.email,
         user.name,
         product.name,
         productUrl
+       );
+      } catch (emailError) {
+      }
+     }
+
+    }
+   } catch (notificationError) {
+   }
+
+   // Bu ürünü sepetine ekleyen kullanıcıları bul
+   try {
+    const productObjectId = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
+    const usersWithCart = await User.find({
+     cart: productObjectId
+    }).select('name email phone notificationPreferences');
+
+    // Her kullanıcıya bildirim gönder (tercihlerine göre)
+    // Stok artışı bildirimi: hem campaignNotifications hem emailNotifications açık olmalı
+    for (const user of usersWithCart) {
+     // E-posta bildirimi (hem kampanya hem e-posta tercihi açıksa)
+     if (user.notificationPreferences?.campaignNotifications && user.notificationPreferences?.emailNotifications && user.email) {
+      try {
+       const relativeUrl = getProductUrl(product);
+       const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${relativeUrl}`;
+       await sendStockAvailableEmail(
+        user.email,
+        user.name,
+        product.name,
+        productUrl,
+        'cart' // Sepet bildirimi için
        );
       } catch (emailError) {
       }

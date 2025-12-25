@@ -1,17 +1,22 @@
 "use client";
 import Link from "next/link";
-import { HiHeart, HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import { HiHeart, HiChevronLeft, HiChevronRight, HiSwitchHorizontal } from "react-icons/hi";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { useComparison } from "@/context/ComparisonContext";
 import Image from "next/image";
 import { getProductUrl } from "@/app/utils/productUrl";
 import { getColorHex } from "@/app/utils/colorUtils";
+import Toast from "@/app/components/ui/Toast";
 
 export default function ProductCard({ product }) {
  const [isImageHovered, setIsImageHovered] = useState(false);
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+ const [toast, setToast] = useState({ show: false, message: "", type: "success" });
  const { addToFavorites, removeFromFavorites, isFavorite: checkFavorite } = useCart();
+ const { addToComparison, removeFromComparison, isInComparison, canAddMore } = useComparison();
  const isFavorite = checkFavorite(product._id);
+ const inComparison = isInComparison(product._id);
 
  const allColors = product._allColors || product.colors;
  const validColors = allColors ? allColors.filter(c => typeof c === 'object' && c.serialNumber) : [];
@@ -60,20 +65,45 @@ export default function ProductCard({ product }) {
     )}
    </div>
 
-   <button
-    onClick={(e) => {
-     e.preventDefault();
-     if (isFavorite) {
-      removeFromFavorites(product._id);
-     } else {
-      addToFavorites(product);
-     }
-    }}
-    className={`absolute top-3 right-3 z-10 bg-white p-2 rounded-full shadow-md transition-all cursor-pointer ${isFavorite ? "text-red-500" : "text-gray-400 hover:text-red-500"
-     }`}
-   >
-    <HiHeart size={18} className={isFavorite ? "fill-current" : ""} />
-   </button>
+   <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+    <button
+     onClick={(e) => {
+      e.preventDefault();
+      if (inComparison) {
+       removeFromComparison(product._id);
+      } else {
+       const result = addToComparison(product);
+       if (!result.success) {
+        setToast({ show: true, message: result.message, type: "error" });
+       }
+      }
+     }}
+     className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${inComparison
+      ? "bg-indigo-600 text-white"
+      : "bg-white text-gray-400 hover:bg-indigo-50 hover:text-indigo-600"
+      }`}
+     title={inComparison ? "Karşılaştırmadan Çıkar" : "Karşılaştırmaya Ekle"}
+    >
+     <HiSwitchHorizontal size={18} />
+    </button>
+    <button
+     onClick={(e) => {
+      e.preventDefault();
+      if (isFavorite) {
+       removeFromFavorites(product._id);
+      } else {
+       addToFavorites(product);
+      }
+     }}
+     className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${isFavorite
+      ? "bg-red-600 text-white"
+      : "bg-white text-gray-400 hover:bg-red-50 hover:text-red-500"
+      }`}
+     title={isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
+    >
+     <HiHeart size={18} className={isFavorite ? "fill-current" : ""} />
+    </button>
+   </div>
 
    <div
     className="relative aspect-square overflow-hidden bg-white flex items-center justify-center p-4"
@@ -242,6 +272,7 @@ export default function ProductCard({ product }) {
      )}
     </div>
    </div>
+   <Toast toast={toast} setToast={setToast} />
   </div>
  );
 }

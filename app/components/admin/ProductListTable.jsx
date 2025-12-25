@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { HiPlus, HiX } from "react-icons/hi";
 import { MdDelete, MdEdit, MdInventory2, MdStar, MdCheckCircle, MdNewReleases } from "react-icons/md";
-import { MENU_ITEMS } from "@/app/components/ui/Header";
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 
 export default function ProductListTable({ products, onEdit, onDelete, onAddNew, selectedCategory, selectedSubCategory, selectedStockFilter, selectedFeaturedFilter, selectedNewFilter, onCategoryChange, onSubCategoryChange, onStockFilterChange, onFeaturedFilterChange, onNewFilterChange }) {
  const categoryFilteredProducts = products.filter((product) => {

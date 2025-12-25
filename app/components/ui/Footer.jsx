@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+
 import { FaFacebook, FaInstagram } from "react-icons/fa";
 import { HiMail, HiLocationMarker } from "react-icons/hi";
 

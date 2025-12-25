@@ -9,49 +9,7 @@ import { useCart } from "@/context/CartContext";
 import axiosInstance from "@/lib/axios";
 import { getProductUrl } from "@/app/utils/productUrl";
 import ProductRequestModal from "@/app/components/product/ProductRequestModal";
-
-export const MENU_ITEMS = [
- { name: "Yeniler", path: "/kategori/yeniler", isSpecial: true },
- {
-  name: "Beyaz Eşya",
-  path: "/kategori/beyaz-esya",
-  isSpecial: false,
-  bannerImg: "/products/beyaz-esya.webp",
-  subCategories: [
-   { name: "Buzdolabı", path: "/kategori/beyaz-esya/buzdolabi" },
-   { name: "Derin Dondurucu", path: "/kategori/beyaz-esya/derin-dondurucu" },
-   { name: "Çamaşır Makinesi", path: "/kategori/beyaz-esya/camasir-makinesi" },
-   { name: "Kurutma Makinesi", path: "/kategori/beyaz-esya/kurutma-makinesi" },
-   { name: "Bulaşık Makinesi", path: "/kategori/beyaz-esya/bulasik-makinesi" },
-   { name: "Fırın", path: "/kategori/beyaz-esya/firin" },
-   { name: "Set Üstü Ocak", path: "/kategori/beyaz-esya/set-ustu-ocak" },
-   { name: "Mikrodalga Fırın", path: "/kategori/beyaz-esya/mikrodalga-firin" },
-  ]
- },
- {
-  name: "Ankastre",
-  path: "/kategori/ankastre",
-  isSpecial: false,
-  bannerImg: "/products/ankastre/ankastre.jpg",
-  subCategories: [
-   { name: "Fırın", path: "/kategori/ankastre/ankastre-firin" },
-   { name: "Mikrodalga Fırın", path: "/kategori/ankastre/ankastre-mikrodalga-firin" },
-   { name: "Ocak", path: "/kategori/ankastre/ankastre-ocak" },
-   { name: "Aspiratör / Davlumbaz", path: "/kategori/ankastre/ankastre-aspirator-davlumbaz" },
-   { name: "Bulaşık Makinesi", path: "/kategori/ankastre/ankastre-bulasik-makinesi" },
-   { name: "Ankastre Setler", path: "/kategori/ankastre/ankastre-setler" },
-   { name: "Mikrodalga Fırın", path: "/kategori/ankastre/mikrodalga-firin" },
-  ]
- },
- { name: "Televizyon", path: "/kategori/televizyon", isSpecial: false },
- { name: "Süpürge", path: "/kategori/elektrikli-supurge", isSpecial: false },
- { name: "Klima", path: "/kategori/klima", isSpecial: false },
- { name: "Su Sebili", path: "/kategori/su-sebili", isSpecial: false },
- { name: "Su Arıtma", path: "/kategori/su-aritma-cihazi", isSpecial: false },
- { name: "Kahve Makinesi", path: "/kategori/turk-kahve-makineleri", isSpecial: false },
- { name: "İndirimler", path: "/kategori/indirim", isSpecial: true },
- { name: "Kampanyalar", path: "/kategori/kampanyalar", isSpecial: true },
-];
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 
 const Header = () => {
  const router = useRouter();

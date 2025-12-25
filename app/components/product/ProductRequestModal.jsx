@@ -17,6 +17,23 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
  const [loading, setLoading] = useState(false);
  const [success, setSuccess] = useState(false);
 
+ // ESC tuşu ile modal'ı kapat
+ useEffect(() => {
+  const handleEscape = (e) => {
+   if (e.key === "Escape" && show) {
+    onClose();
+   }
+  };
+
+  if (show) {
+   document.addEventListener("keydown", handleEscape);
+  }
+
+  return () => {
+   document.removeEventListener("keydown", handleEscape);
+  };
+ }, [show, onClose]);
+
  // Kullanıcı giriş durumunu kontrol et
  useEffect(() => {
   if (show) {
@@ -54,6 +71,19 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
     }
    };
    checkAuth();
+  } else {
+   // Modal kapandığında form'u sıfırla
+   setForm({
+    name: "",
+    email: "",
+    phone: "",
+    productName: "",
+    productDescription: "",
+    brand: "",
+    model: "",
+   });
+   setErrors({});
+   setSuccess(false);
   }
  }, [show]);
 
@@ -207,7 +237,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
            <input
             type="text"
             name="name"
-            value={form.name}
+            value={form.name || ""}
             onChange={handleChange}
             className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.name ? "border-red-300" : "border-gray-200"}`}
             placeholder="Adınız ve soyadınız"
@@ -225,7 +255,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
             <input
              type="email"
              name="email"
-             value={form.email}
+             value={form.email || ""}
              onChange={handleChange}
              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.email ? "border-red-300" : "border-gray-200"}`}
              placeholder="ornek@email.com"
@@ -245,7 +275,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
             <input
              type="tel"
              name="phone"
-             value={form.phone}
+             value={form.phone || ""}
              onChange={handleChange}
              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
              placeholder="0532 123 45 67"
@@ -275,7 +305,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
           <input
            type="text"
            name="productName"
-           value={form.productName}
+           value={form.productName || ""}
            onChange={handleChange}
            className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.productName ? "border-red-300" : "border-gray-200"}`}
            placeholder="Örn: Buzdolabı, Çamaşır Makinesi"
@@ -293,7 +323,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
            <input
             type="text"
             name="brand"
-            value={form.brand}
+            value={form.brand || ""}
             onChange={handleChange}
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
             placeholder="Örn: Bosch, Siemens"
@@ -307,7 +337,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
            <input
             type="text"
             name="model"
-            value={form.model}
+            value={form.model || ""}
             onChange={handleChange}
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
             placeholder="Model numarası"
@@ -321,7 +351,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
           </label>
           <textarea
            name="productDescription"
-           value={form.productDescription}
+           value={form.productDescription || ""}
            onChange={handleChange}
            rows={4}
            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none"

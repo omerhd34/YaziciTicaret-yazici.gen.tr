@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { MENU_ITEMS } from "@/app/components/ui/Header";
+import { MENU_ITEMS } from "@/app/utils/menuItems";
 
 export default function SubCategoryFilter({ slug, onLinkClick }) {
  const categorySlug = slug.length > 0 ? decodeURIComponent(slug[0]) : "";
