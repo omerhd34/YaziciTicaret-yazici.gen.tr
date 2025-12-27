@@ -74,12 +74,8 @@ const categoryBrands = {
  "Ankastre Setler": ["Profilo"],
 
  "Klima": ["Profilo", "Airfel", "Daikin", "Mitsubishi"],
-
- "Su Sebili": ["Profilo"],
- "Su Arıtma Cihazı": ["Profilo"],
-
+ "Su Sebili ve Su Arıtma": ["Profilo"],
  "Türk Kahve Makineleri": ["Profilo"],
-
 };
 
 export default function ProductFormModal({ show, editingProduct, onClose, onSuccess, onError }) {

@@ -41,10 +41,20 @@ export const MENU_ITEMS = [
    { name: "Klima Takımı", path: "/kategori/klima/klima-takimi" },
   ]
  },
+
+ {
+  name: "Su Sebili ve Su Arıtma", path: "/kategori/su-sebili-ve-su-aritma-cihazi", isSpecial: false,
+  bannerImg: "/products/suSebiliSuAritma/suSebiliSuAritma.png",
+  subCategories: [
+   { name: "Su Sebili", path: "/kategori/su-sebili-ve-su-aritma-cihazi/su-sebili" },
+   { name: "Su Arıtma", path: "/kategori/su-sebili-ve-su-aritma-cihazi/su-aritici" },
+  ]
+ },
+
+
+
  { name: "Televizyon", path: "/kategori/televizyon", isSpecial: false },
  { name: "Elektrikli Süpürge", path: "/kategori/elektrikli-supurge", isSpecial: false },
- { name: "Su Sebili", path: "/kategori/su-sebili", isSpecial: false },
- { name: "Su Arıtma", path: "/kategori/su-aritma-cihazi", isSpecial: false },
  { name: "Kahve Makinesi", path: "/kategori/turk-kahve-makineleri", isSpecial: false },
  { name: "İndirimler", path: "/kategori/indirim", isSpecial: true },
  { name: "Kampanyalar", path: "/kategori/kampanyalar", isSpecial: true },
