@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import axiosInstance from "@/lib/axios";
 import { HiLogin, HiUserAdd, HiArrowLeft } from "react-icons/hi";
 import LoginForm from "@/app/components/auth/LoginForm";
 import RegisterForm from "@/app/components/auth/RegisterForm";
@@ -26,10 +27,8 @@ export default function GirisPage() {
    if (searchParams.get('logout') === 'true') {
     // Logout API çağrısı yap
     try {
-     await fetch("/api/user/logout", {
-      method: "POST",
+     await axiosInstance.post("/api/user/logout", {}, {
       cache: 'no-store',
-      credentials: 'include',
      });
     } catch (error) {
     }

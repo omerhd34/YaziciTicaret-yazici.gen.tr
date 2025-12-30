@@ -277,7 +277,7 @@ export default function ProductCard({ product, priority = false }) {
        )}
       </div>
 
-      {validColors.length > 0 && (
+      {hasMultipleColors && (
        <div className="flex gap-2.5 flex-wrap items-center shrink-0">
         {sortedColors.map((color, idx) => {
          const isSelected = currentColor && currentColor.serialNumber === color.serialNumber;

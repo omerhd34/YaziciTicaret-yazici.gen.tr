@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiMail, HiX } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
 
@@ -17,16 +18,12 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
   setVerificationLoading(true);
 
   try {
-   const res = await fetch("/api/user/verify-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     userId: userId,
-     code: String(verificationCode).trim(),
-    }),
+   const res = await axiosInstance.post("/api/user/verify-email", {
+    userId: userId,
+    code: String(verificationCode).trim(),
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     if (data.autoLogin) {
@@ -58,15 +55,11 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
   setResendLoading(true);
 
   try {
-   const res = await fetch("/api/user/resend-verification-code", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     userId: userId,
-    }),
+   const res = await axiosInstance.post("/api/user/resend-verification-code", {
+    userId: userId,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     setSuccess(data.message || "Yeni doğrulama kodu e-posta adresinize gönderildi.");

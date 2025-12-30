@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
 export default function ProductAllFeatures({ product, selectedColor = null }) {
@@ -46,8 +47,8 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
   const fetchBundleProducts = async () => {
    setLoadingBundleProducts(true);
    try {
-    const res = await fetch("/api/products?limit=1000");
-    const data = await res.json();
+    const res = await axiosInstance.get("/api/products?limit=1000");
+    const data = res.data;
     
     if (data.success) {
      const foundProducts = [];

@@ -252,23 +252,23 @@ const Header = () => {
        <HiUser size={22} className="group-hover:text-indigo-600 transition" />
       </button>
 
-      <Link href="/favoriler" className="hidden md:flex flex-col items-center gap-1 group relative hover:bg-slate-50 p-2 rounded-lg transition">
-       <div className="relative">
-        <HiHeart size={22} className="group-hover:text-indigo-600 transition" />
-        {isClient && getFavoriteCount() > 0 && (
-         <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm ${getFavoriteCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
-          {getFavoriteCount() >= 9 ? "9+" : getFavoriteCount()}
-         </span>
-        )}
-       </div>
-      </Link>
-
       <Link href="/sepet" className="flex flex-col items-center gap-1 group relative hover:bg-slate-50 p-2 rounded-lg transition">
        <div className="relative">
         <FaShoppingCart size={22} className="group-hover:text-indigo-600 transition" />
         {isClient && getCartItemCount() > 0 && (
          <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm ${getCartItemCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
           {getCartItemCount() >= 9 ? "9+" : getCartItemCount()}
+         </span>
+        )}
+       </div>
+      </Link>
+
+      <Link href="/favoriler" className="flex flex-col items-center gap-1 group relative hover:bg-slate-50 p-2 rounded-lg transition">
+       <div className="relative">
+        <HiHeart size={22} className="group-hover:text-indigo-600 transition" />
+        {isClient && getFavoriteCount() > 0 && (
+         <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm ${getFavoriteCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
+          {getFavoriteCount() >= 9 ? "9+" : getFavoriteCount()}
          </span>
         )}
        </div>
@@ -286,7 +286,7 @@ const Header = () => {
 
    <nav className="hidden md:block border-t relative border-gray-100 bg-gray-100 z-40">
     <div className="container mx-auto px-4">
-     <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 xl:gap-10 text-[15px] font-bold text-slate-700 tracking-tight">
+     <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 xl:gap-10 text-[14px] md:text-[15px] xl:text-[16px] font-bold text-slate-700 tracking-tight">
       {MENU_ITEMS.map((item) => (
        <li
         key={item.path}
@@ -376,7 +376,6 @@ const Header = () => {
               );
              })()}
             </div>
-
            </div>
           </div>
          </div>
@@ -551,23 +550,6 @@ const Header = () => {
            </Link>
           );
          })}
-         <Link
-          href="/favoriler"
-          className="flex items-center justify-between gap-3 px-4 py-3.5 font-bold text-amber-600 bg-linear-to-r from-amber-50 to-amber-50/50 hover:from-amber-100 hover:to-amber-100/50 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 border border-amber-100"
-          onClick={closeMenu}
-         >
-          <div className="flex items-center gap-3">
-           <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
-            <HiHeart size={20} className="text-amber-500" />
-           </div>
-           <span className="text-base">Favoriler</span>
-          </div>
-          {isClient && getFavoriteCount() > 0 && (
-           <span className="bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm min-w-[24px] text-center">
-            {getFavoriteCount() >= 9 ? "9+" : getFavoriteCount()}
-           </span>
-          )}
-         </Link>
         </div>
        </div>
       </nav>
@@ -575,10 +557,7 @@ const Header = () => {
     </>
    )}
 
-   <ProductRequestModal
-    show={showProductRequestModal}
-    onClose={() => setShowProductRequestModal(false)}
-   />
+   <ProductRequestModal show={showProductRequestModal} onClose={() => setShowProductRequestModal(false)} />
 
    {isSearchModalOpen && (
     <div className="fixed inset-0 bg-black/50 z-100 flex items-start justify-center pt-20 px-4" onClick={closeSearchModal}>

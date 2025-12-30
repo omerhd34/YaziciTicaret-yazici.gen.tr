@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiX, HiShoppingBag, HiInformationCircle, HiMail, HiPhone } from "react-icons/hi";
 
 export default function ProductRequestModal({ show, onClose, onSuccess }) {
@@ -51,10 +52,8 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
 
    const checkAuth = async () => {
     try {
-     const res = await fetch("/api/user/check", {
-      credentials: 'include',
-     });
-     const data = await res.json();
+     const res = await axiosInstance.get("/api/user/check");
+     const data = res.data;
      setIsAuthenticated(data.authenticated || false);
 
      // Eğer giriş yapmışsa, kullanıcı bilgilerini form'a doldur
@@ -142,16 +141,11 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
   setLoading(true);
 
   try {
-   const res = await fetch("/api/product-requests", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify(form),
-   });
+   const res = await axiosInstance.post("/api/product-requests", form);
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     setErrors({ submit: data.message || "İstek gönderilemedi. Lütfen tekrar deneyin." });
     setLoading(false);
     return;

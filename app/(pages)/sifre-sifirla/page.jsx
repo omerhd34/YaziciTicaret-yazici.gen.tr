@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import axiosInstance from "@/lib/axios";
 import { HiLockClosed, HiMail, HiArrowLeft, HiEye, HiEyeOff } from "react-icons/hi";
 import { MdError, MdCheckCircle } from "react-icons/md";
 
@@ -49,16 +50,12 @@ export default function SifreSifirlaPage() {
   setLoading(true);
 
   try {
-   const res = await fetch("/api/user/reset-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     token,
-     password: formData.password,
-    }),
+   const res = await axiosInstance.post("/api/user/reset-password", {
+    token,
+    password: formData.password,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     setSuccess("Şifreniz başarıyla sıfırlandı! Giriş yapabilirsiniz.");

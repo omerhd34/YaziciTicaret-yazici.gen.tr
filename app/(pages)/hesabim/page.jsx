@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import axiosInstance from "@/lib/axios";
 import Toast from "@/app/components/ui/Toast";
 import AccountLoading from "@/app/components/account/AccountLoading";
 import AccountHeader from "@/app/components/account/AccountHeader";
@@ -87,12 +88,11 @@ export default function Hesabim() {
    }
 
    // Fresh auth kontrolü yap (cache yok, credentials ile)
-   const res = await fetch("/api/user/check", {
+   const res = await axiosInstance.get("/api/user/check", {
     cache: 'no-store',
-    credentials: 'include',
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.authenticated) {
     setIsAuthenticated(true);
@@ -135,10 +135,8 @@ export default function Hesabim() {
 
    // API'ye logout isteği gönder ve BEKLE
    try {
-    await fetch("/api/user/logout", {
-     method: "POST",
+    await axiosInstance.post("/api/user/logout", {}, {
      cache: 'no-store',
-     credentials: 'include',
      headers: {
       'Cache-Control': 'no-cache',
      },
@@ -220,11 +218,9 @@ export default function Hesabim() {
   const fetchUserProfile = async () => {
    if (currentUser) {
     try {
-     const res = await fetch("/api/user/profile", {
-      credentials: 'include',
-     });
+     const res = await axiosInstance.get("/api/user/profile");
 
-     const contentType = res.headers.get("content-type");
+     const contentType = res.headers["content-type"];
      if (!contentType || !contentType.includes("application/json")) {
       setUserInfo({
        name: currentUser.name || "",
@@ -237,7 +233,7 @@ export default function Hesabim() {
       return;
      }
 
-     const data = await res.json();
+     const data = res.data;
 
      if (data.success && data.user) {
       setUserInfo({
@@ -281,23 +277,16 @@ export default function Hesabim() {
 
  const fetchAddresses = useCallback(async () => {
   try {
-   const res = await fetch("/api/user/addresses", {
-    credentials: 'include',
-   });
+   const res = await axiosInstance.get("/api/user/addresses");
 
    // Response'un JSON olup olmadığını kontrol et
-   const contentType = res.headers.get("content-type");
+   const contentType = res.headers["content-type"];
    if (!contentType || !contentType.includes("application/json")) {
     showToast("Adresler yüklenirken bir hata oluştu. Lütfen tekrar giriş yapın.", "error");
     return;
    }
 
-   const data = await res.json();
-
-   if (!res.ok) {
-    showToast(data.message || "Adresler yüklenemedi", "error");
-    return;
-   }
+   const data = res.data;
 
    if (data.success) {
     const loadedAddresses = data.addresses || [];
@@ -319,22 +308,15 @@ export default function Hesabim() {
 
  const fetchCards = useCallback(async () => {
   try {
-   const res = await fetch("/api/user/cards", {
-    credentials: 'include',
-   });
+   const res = await axiosInstance.get("/api/user/cards");
 
-   const contentType = res.headers.get("content-type");
+   const contentType = res.headers["content-type"];
    if (!contentType || !contentType.includes("application/json")) {
     showToast("Kartlar yüklenirken bir hata oluştu. Lütfen tekrar giriş yapın.", "error");
     return;
    }
 
-   const data = await res.json();
-
-   if (!res.ok) {
-    showToast(data.message || "Kartlar yüklenemedi", "error");
-    return;
-   }
+   const data = res.data;
 
    if (data.success) {
     const loadedCards = data.cards || [];
@@ -409,13 +391,9 @@ export default function Hesabim() {
   try {
    const addressId = editingAddress?._id?.toString ? editingAddress._id.toString() : editingAddress?._id;
    const url = editingAddress ? `/api/user/addresses/${addressId}` : "/api/user/addresses";
-   const method = editingAddress ? "PUT" : "POST";
 
-   const res = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify({
+   const res = editingAddress
+    ? await axiosInstance.put(url, {
      ...addressForm,
      phone: phoneDigits,
      title: addressForm.title.trim(),
@@ -423,19 +401,27 @@ export default function Hesabim() {
      city: addressForm.city.trim(),
      district: addressForm.district.trim(),
      address: addressForm.address.trim(),
-    }),
-   });
+    })
+    : await axiosInstance.post(url, {
+     ...addressForm,
+     phone: phoneDigits,
+     title: addressForm.title.trim(),
+     fullName: addressForm.fullName.trim(),
+     city: addressForm.city.trim(),
+     district: addressForm.district.trim(),
+     address: addressForm.address.trim(),
+    });
 
    // Response'un JSON olup olmadığını kontrol et
-   const contentType = res.headers.get("content-type");
+   const contentType = res.headers["content-type"];
    if (!contentType || !contentType.includes("application/json")) {
     showToast("Sunucu hatası! Lütfen tekrar giriş yapın.", "error");
     return;
    }
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "İşlem başarısız!", "error");
     return;
    }
@@ -469,14 +455,11 @@ export default function Hesabim() {
    }
 
    if (deleteConfirm.type === 'address') {
-    const res = await fetch(`/api/user/addresses/${id}`, {
-     method: "DELETE",
-     credentials: 'include',
-    });
+    const res = await axiosInstance.delete(`/api/user/addresses/${id}`);
 
-    const data = await res.json();
+    const data = res.data;
 
-    if (!res.ok || !data.success) {
+    if (!data.success) {
      showToast(data.message || "Adres silinemedi!", "error");
      return;
     }
@@ -484,14 +467,11 @@ export default function Hesabim() {
     showToast("Adres silindi!", "success");
     await fetchAddresses();
    } else if (deleteConfirm.type === 'card') {
-    const res = await fetch(`/api/user/cards/${id}`, {
-     method: "DELETE",
-     credentials: 'include',
-    });
+    const res = await axiosInstance.delete(`/api/user/cards/${id}`);
 
-    const data = await res.json();
+    const data = res.data;
 
-    if (!res.ok || !data.success) {
+    if (!data.success) {
      showToast(data.message || "Kart silinemedi!", "error");
      return;
     }
@@ -561,13 +541,12 @@ export default function Hesabim() {
  const fetchOrders = useCallback(async () => {
   try {
    setOrdersLoading(true);
-   const res = await fetch("/api/user/orders", {
-    credentials: 'include',
+   const res = await axiosInstance.get("/api/user/orders", {
     cache: 'no-store',
    });
 
    // Response'un JSON olup olmadığını kontrol et
-   const contentType = res.headers.get("content-type");
+   const contentType = res.headers["content-type"];
    if (!contentType || !contentType.includes("application/json")) {
     // HTML response geldi - muhtemelen authentication hatası
     setOrders([]);
@@ -579,7 +558,7 @@ export default function Hesabim() {
     return;
    }
 
-   const data = await res.json();
+   const data = res.data;
    if (data.success) {
     setOrders(data.orders || []);
    } else {
@@ -658,20 +637,16 @@ export default function Hesabim() {
   setUpdatingProfile(true);
 
   try {
-   const res = await fetch("/api/user/profile", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     name: userInfo.name.trim(),
-     email: userInfo.email.trim(),
-     phone: phoneDigits, // Sadece rakamları gönder
-     // city ve address artık gönderilmiyor - Adreslerim kısmından gelecek
-    }),
+   const res = await axiosInstance.put("/api/user/profile", {
+    name: userInfo.name.trim(),
+    email: userInfo.email.trim(),
+    phone: phoneDigits, // Sadece rakamları gönder
+    // city ve address artık gönderilmiyor - Adreslerim kısmından gelecek
    });
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "Profil güncellenemedi!", "error");
     return;
    }
@@ -752,9 +727,6 @@ export default function Hesabim() {
   }
 
   try {
-   const url = editingCard ? `/api/user/cards/${editingCard._id}` : "/api/user/cards";
-   const method = editingCard ? "PUT" : "POST";
-
    // Eğer kart numarası maskelenmiş formattaysa, API'ye gönderme (sadece diğer alanları güncelle)
    const requestBody = {
     cardName: cardForm.cardName.trim(),
@@ -769,16 +741,13 @@ export default function Hesabim() {
     requestBody.cardNumber = cardNumberDigits;
    }
 
-   const res = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify(requestBody),
-   });
+   const res = editingCard
+    ? await axiosInstance.put(`/api/user/cards/${editingCard._id}`, requestBody)
+    : await axiosInstance.post("/api/user/cards", requestBody);
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "Kart kaydedilemedi!", "error");
     return;
    }
@@ -841,19 +810,14 @@ export default function Hesabim() {
   }
 
   try {
-   const res = await fetch("/api/user/profile", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify({
-     currentPassword: passwordForm.currentPassword,
-     newPassword: passwordForm.newPassword,
-    }),
+   const res = await axiosInstance.put("/api/user/profile", {
+    currentPassword: passwordForm.currentPassword,
+    newPassword: passwordForm.newPassword,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     setPasswordError(data.message || "Şifre güncellenemedi!");
     setPasswordLoading(false);
     return;
@@ -899,32 +863,23 @@ export default function Hesabim() {
    const formData = new FormData();
    formData.append('file', file);
 
-   const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-    credentials: 'include',
-   });
+   const res = await axiosInstance.post("/api/upload", formData);
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "Resim yüklenemedi!", "error");
     return;
    }
 
    // Profil resmini güncelle
-   const updateRes = await fetch("/api/user/profile", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify({
-     profileImage: data.url,
-    }),
+   const updateRes = await axiosInstance.put("/api/user/profile", {
+    profileImage: data.url,
    });
 
-   const updateData = await updateRes.json();
+   const updateData = updateRes.data;
 
-   if (!updateRes.ok || !updateData.success) {
+   if (!updateData.success) {
     showToast("Profil resmi güncellenemedi!", "error");
     return;
    }
@@ -959,16 +914,13 @@ export default function Hesabim() {
   if (!targetOrderId) return;
 
   try {
-   const res = await fetch(`/api/user/orders/${targetOrderId}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify({ status: "İptal Edildi" }),
+   const res = await axiosInstance.patch(`/api/user/orders/${targetOrderId}`, {
+    status: "İptal Edildi",
    });
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "Sipariş iptal edilemedi!", "error");
     return;
    }
@@ -993,18 +945,13 @@ export default function Hesabim() {
   }
 
   try {
-   const res = await fetch(`/api/user/orders/${targetOrderId}/return`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify({
-     note: reason.trim(),
-    }),
+   const res = await axiosInstance.post(`/api/user/orders/${targetOrderId}/return`, {
+    note: reason.trim(),
    });
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "İade talebi oluşturulamadı!", "error");
     return;
    }
@@ -1032,15 +979,11 @@ export default function Hesabim() {
   if (!targetOrderId) return;
 
   try {
-   const res = await fetch(`/api/user/orders/${targetOrderId}/return`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-   });
+   const res = await axiosInstance.delete(`/api/user/orders/${targetOrderId}/return`);
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "İade talebi iptal edilemedi!", "error");
     return;
    }
@@ -1075,18 +1018,13 @@ export default function Hesabim() {
   setNotificationPreferences(updatedPreferences);
 
   try {
-   const res = await fetch("/api/user/profile", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include',
-    body: JSON.stringify({
-     notificationPreferences: updatedPreferences,
-    }),
+   const res = await axiosInstance.put("/api/user/profile", {
+    notificationPreferences: updatedPreferences,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "Bildirim tercihleri güncellenemedi!", "error");
     setNotificationPreferences(notificationPreferences);
     return;
@@ -1102,14 +1040,11 @@ export default function Hesabim() {
  const handleDeleteAccount = async () => {
   setDeletingAccount(true);
   try {
-   const res = await fetch("/api/user/profile", {
-    method: "DELETE",
-    credentials: 'include',
-   });
+   const res = await axiosInstance.delete("/api/user/profile");
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
+   if (!data.success) {
     showToast(data.message || "Hesap silinemedi!", "error");
     setDeletingAccount(false);
     setDeleteAccountConfirm(false);

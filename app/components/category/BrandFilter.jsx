@@ -16,7 +16,7 @@ export default function BrandFilter({ availableBrands, selectedBrands, onBrandTo
        type="checkbox"
        checked={selectedBrands.includes(brand)}
        onChange={() => onBrandToggle(brand)}
-       className="w-4 h-4"
+       className="w-4 h-4 cursor-pointer"
       />
       <span className="text-sm">{brand}</span>
      </label>

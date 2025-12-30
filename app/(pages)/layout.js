@@ -5,7 +5,6 @@ import ScrollToTop from "../components/ui/ScrollToTop";
 import ComparisonWidget from "../components/ui/ComparisonWidget";
 import { usePathname } from "next/navigation";
 import { OrganizationSchema, WebSiteSchema } from "../components/seo/StructuredData";
-import CanonicalUrl from "../components/seo/CanonicalUrl";
 
 export default function PagesLayout({ children }) {
  const pathname = usePathname();
@@ -18,7 +17,6 @@ export default function PagesLayout({ children }) {
     <>
      <OrganizationSchema baseUrl={baseUrl} />
      <WebSiteSchema baseUrl={baseUrl} />
-     <CanonicalUrl pathname={pathname} baseUrl={baseUrl} />
     </>
    )}
    {!isAdminPage && <Header />}

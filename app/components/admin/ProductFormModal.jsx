@@ -46,7 +46,7 @@ const inferHexCode = (name) => {
 
 
 const subCategoryOptions = {};
-MENU_ITEMS.forEach((item) => {
+MENU_ITEMS.filter(item => !item.isSpecial).forEach((item) => {
  if (item.subCategories && item.subCategories.length > 0) {
   subCategoryOptions[item.name] = item.subCategories.map((subCat) => subCat.name);
  }
@@ -715,7 +715,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
         required
        >
         <option value="">Seçiniz</option>
-        {MENU_ITEMS.map((item) => (
+        {MENU_ITEMS.filter(item => !item.isSpecial).map((item) => (
          <option key={item.name} value={item.name}>{item.name}</option>
         ))}
        </select>
@@ -895,13 +895,52 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
              onChange={(e) => {
               const name = e.target.value;
               updateColor(colorIdx, "name", name);
-              updateColor(colorIdx, "hexCode", inferHexCode(name));
+              const currentHex = color.hexCode || "";
+              if (!currentHex || currentHex === inferHexCode(color.name || "")) {
+               updateColor(colorIdx, "hexCode", inferHexCode(name));
+              }
              }}
              className="w-full border rounded-lg px-4 py-2"
              placeholder="Örn: Beyaz, Paslanmaz çelik"
              required
             />
            </div>
+           <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Renk Kodu</label>
+            <div className="flex items-center gap-2">
+             <input
+              type="text"
+              value={color.hexCode || ""}
+              onChange={(e) => {
+               let hexValue = e.target.value.trim();
+               // # işareti yoksa ekle, varsa olduğu gibi bırak
+               if (hexValue && !hexValue.startsWith("#")) {
+                // Sadece hex karakterler varsa # ekle
+                if (/^[0-9a-fA-F]{3,6}$/.test(hexValue)) {
+                 hexValue = "#" + hexValue;
+                }
+               }
+               updateColor(colorIdx, "hexCode", hexValue);
+              }}
+              className="flex-1 border rounded-lg px-4 py-2"
+              placeholder="Örn: 808080 veya #808080"
+              pattern="^#?[0-9a-fA-F]{3,6}$"
+              maxLength={7}
+             />
+             {color.hexCode && /^#?[0-9a-fA-F]{3,6}$/i.test(color.hexCode) && (
+              <div
+               className="w-10 h-10 rounded border-2 border-gray-300 shrink-0"
+               style={{
+                backgroundColor: color.hexCode.startsWith("#") ? color.hexCode : `#${color.hexCode}`,
+               }}
+               title={color.hexCode}
+              />
+             )}
+            </div>
+           </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
            <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Seri Numarası <span className="text-red-600">*</span></label>
             <input

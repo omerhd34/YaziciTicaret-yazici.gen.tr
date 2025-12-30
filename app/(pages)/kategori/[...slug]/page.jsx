@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { HiArrowRight } from "react-icons/hi";
+import axiosInstance from "@/lib/axios";
 import { MENU_ITEMS } from "@/app/utils/menuItems";
 import { useCart } from "@/context/CartContext";
 import { useComparison } from "@/context/ComparisonContext";
@@ -27,7 +28,6 @@ import ProductNotFound from "@/app/components/product/ProductNotFound";
 import Toast from "@/app/components/ui/Toast";
 import { ProductSchema, BreadcrumbSchema } from "@/app/components/seo/StructuredData";
 import { getProductUrl } from "@/app/utils/productUrl";
-import DynamicMetadata from "@/app/components/seo/DynamicMetadata";
 
 export default function KategoriPage() {
  const params = useParams();
@@ -187,8 +187,8 @@ export default function KategoriPage() {
     url += `&sort=${filters.sortBy}`;
    }
 
-   const res = await fetch(url);
-   const data = await res.json();
+   const res = await axiosInstance.get(url);
+   const data = res.data;
 
    if (data.success) {
     let filteredProducts = data.data;
@@ -498,8 +498,8 @@ export default function KategoriPage() {
  const fetchProductBySerialNumber = useCallback(async (serialNumber) => {
   setLoading(true);
   try {
-   const res = await fetch("/api/products?limit=1000");
-   const data = await res.json();
+   const res = await axiosInstance.get("/api/products?limit=1000");
+   const data = res.data;
 
    if (data.success) {
     // Renk seviyesinde seri numarasına göre ürün bul
@@ -545,10 +545,8 @@ export default function KategoriPage() {
  const checkCanRate = async (productId) => {
   try {
    setCheckingRating(true);
-   const res = await fetch(`/api/products/${productId}/rating`, {
-    credentials: "include",
-   });
-   const data = await res.json();
+   const res = await axiosInstance.get(`/api/products/${productId}/rating`);
+   const data = res.data;
    if (data.success) {
     setCanRate(data.canRate);
     setRatingMessage(data.message || "");
@@ -568,16 +566,11 @@ export default function KategoriPage() {
   if (!product || !canRate) return;
 
   try {
-   const res = await fetch(`/api/products/${product._id}/rating`, {
-    method: "POST",
-    headers: {
-     "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify({ rating }),
+   const res = await axiosInstance.post(`/api/products/${product._id}/rating`, {
+    rating,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     setRatingSubmitted(true);
@@ -897,8 +890,8 @@ export default function KategoriPage() {
   if (isCampaignsPage) {
    const fetchCampaigns = async () => {
     try {
-     const res = await fetch("/api/campaigns");
-     const data = await res.json();
+     const res = await axiosInstance.get("/api/campaigns");
+     const data = res.data;
      if (data.success) {
       setCampaignsData(data.data || []);
      }
@@ -960,20 +953,10 @@ export default function KategoriPage() {
   const productImage = product && product.images && product.images.length > 0
    ? product.images[0].startsWith('http') ? product.images[0] : product.images[0]
    : '/icon.svg';
-  const productCanonical = productUrl;
 
   return (
    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 md:py-8 lg:py-12">
     <Toast toast={toast} setToast={setToast} />
-
-    {/* Dynamic Metadata */}
-    <DynamicMetadata
-     title={productTitle}
-     description={productDescription}
-     keywords={[product?.name, product?.brand, product?.category, 'beyaz eşya', 'elektronik', 'yazıcı ticaret']}
-     ogImage={productImage}
-     canonical={productCanonical}
-    />
 
     {/* Structured Data */}
     <ProductSchema product={product} baseUrl={baseUrl} productUrl={productUrl} />
@@ -1153,18 +1136,9 @@ export default function KategoriPage() {
  const categoryDescription = categoryName
   ? `${categoryName} kategorisindeki tüm ürünler. Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Hızlı kargo ve montaj hizmeti.`
   : 'Yazıcı Ticaret ürün kategorileri. En uygun fiyatlarla beyaz eşya ve elektronik ürünler.';
- const categoryCanonical = typeof window !== 'undefined' ? window.location.pathname : '';
 
  return (
   <div className="min-h-screen bg-gray-50">
-   {/* Dynamic Metadata for Category */}
-   <DynamicMetadata
-    title={categoryTitle}
-    description={categoryDescription}
-    keywords={[categoryName, 'beyaz eşya', 'elektronik', 'profilo', 'lg', 'yazıcı ticaret']}
-    canonical={categoryCanonical}
-   />
-
    <CategoryHeader categoryName={categoryName} productCount={expandedProductsCount} />
    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
     <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">

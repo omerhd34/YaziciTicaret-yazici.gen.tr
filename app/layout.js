@@ -4,10 +4,14 @@ import ClientProviders from "./ClientProviders";
 export const metadata = {
  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
  title: {
-  default: 'Yazıcı Ticaret - Profilo ve LG Beyaz Eşya ve Elektronik E-Ticaret',
-  template: '%s | Yazıcı Ticaret'
+  default: 'Yazıcı Ticaret',
  },
  description: 'Yazıcı Ticaret - Profilo ve LG markası beyaz eşya ve elektronik ürünlerinin satışını yapan güvenilir e-ticaret platformu. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
+ icons: {
+  icon: '/icon.svg',
+  shortcut: '/icon.svg',
+  apple: '/icon.svg',
+ },
  keywords: [
   'profilo',
   'lg',
@@ -30,16 +34,8 @@ export const metadata = {
   locale: 'tr_TR',
   url: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
   siteName: 'Yazıcı Ticaret',
-  title: 'Yazıcı Ticaret - Profilo VE LG Beyaz Eşya ve Elektronik E-Ticaret',
+  title: 'Yazıcı Ticaret',
   description: 'Profilo ve LG markası beyaz eşya ve elektronik ürünlerinin satışını yapan güvenilir e-ticaret platformu. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
-  images: [
-   {
-    url: '/icon.svg',
-    width: 1200,
-    height: 630,
-    alt: 'Yazıcı Ticaret',
-   },
-  ],
  },
  robots: {
   index: true,

@@ -46,15 +46,6 @@ const AdminHeader = () => {
      </Link>
      <nav className="hidden lg:flex items-center gap-1">
       <Link
-       href="/admin"
-       className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${pathname === "/admin"
-        ? "bg-indigo-100 text-indigo-700 font-semibold"
-        : "text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
-        }`}
-      >
-       Ana Sayfa
-      </Link>
-      <Link
        href="/admin/son-siparisler"
        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${pathname?.startsWith("/admin/son-siparisler")
         ? "bg-indigo-100 text-indigo-700 font-semibold"
@@ -89,6 +80,15 @@ const AdminHeader = () => {
         }`}
       >
        Ürün İstekleri
+      </Link>
+      <Link
+       href="/admin/kampanyalar"
+       className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${pathname?.startsWith("/admin/kampanyalar")
+        ? "bg-indigo-100 text-indigo-700 font-semibold"
+        : "text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
+        }`}
+      >
+       Kampanyalar
       </Link>
      </nav>
      <div className="flex items-center gap-4">

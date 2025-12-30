@@ -46,6 +46,18 @@ export default function ProductImageGallery({
   setLightboxIndex((prev) => (prev - 1 + images.length) % images.length);
  };
 
+ const handleNextImage = (e) => {
+  e.stopPropagation();
+  const nextIndex = (selectedImage + 1) % images.length;
+  onImageSelect(nextIndex);
+ };
+
+ const handlePrevImage = (e) => {
+  e.stopPropagation();
+  const prevIndex = (selectedImage - 1 + images.length) % images.length;
+  onImageSelect(prevIndex);
+ };
+
  return (
   <>
    <div className="space-y-3 sm:space-y-4">
@@ -62,6 +74,24 @@ export default function ProductImageGallery({
       <span className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-600 text-white text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full z-10">
        İNDİRİM
       </span>
+     )}
+     {images.length > 1 && (
+      <>
+       <button
+        onClick={handlePrevImage}
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-gray-700 hover:text-indigo-600 transition z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer"
+        aria-label="Önceki resim"
+       >
+        <HiChevronLeft size={24} />
+       </button>
+       <button
+        onClick={handleNextImage}
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-gray-700 hover:text-indigo-600 transition z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer"
+        aria-label="Sonraki resim"
+       >
+        <HiChevronRight size={24} />
+       </button>
+      </>
      )}
      <Image
       width={1200}

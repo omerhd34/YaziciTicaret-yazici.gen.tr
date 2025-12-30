@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiMail, HiLockClosed, HiEye, HiEyeOff } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
 
@@ -16,13 +17,12 @@ export default function LoginForm({ onLogin, onForgotPassword, onVerificationReq
   setLoading(true);
 
   try {
-   const res = await fetch("/api/user/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...form, rememberMe }),
+   const res = await axiosInstance.post("/api/user/login", {
+    ...form,
+    rememberMe,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     if (typeof window !== 'undefined') {

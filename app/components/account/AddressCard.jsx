@@ -1,4 +1,5 @@
 "use client";
+import axiosInstance from "@/lib/axios";
 
 export default function AddressCard({ address, onEdit, onDelete, onSetDefault, showToast, fetchAddresses }) {
  return (
@@ -43,21 +44,16 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault, s
       onClick={async () => {
        try {
         const addressId = address._id?.toString ? address._id.toString() : address._id;
-        const res = await fetch(`/api/user/addresses/${addressId}`, {
-         method: "PUT",
-         headers: { "Content-Type": "application/json" },
-         credentials: 'include',
-         body: JSON.stringify({
-          title: address.title,
-          fullName: address.fullName,
-          phone: address.phone,
-          address: address.address,
-          city: address.city,
-          district: address.district,
-          isDefault: true,
-         }),
+        const res = await axiosInstance.put(`/api/user/addresses/${addressId}`, {
+         title: address.title,
+         fullName: address.fullName,
+         phone: address.phone,
+         address: address.address,
+         city: address.city,
+         district: address.district,
+         isDefault: true,
         });
-        const data = await res.json();
+        const data = res.data;
         if (data.success) {
          showToast("Varsayılan adres güncellendi!", "success");
          await fetchAddresses();

@@ -1,4 +1,3 @@
-import { MetadataRoute } from 'next';
 import dbConnect from '@/lib/dbConnect';
 import Product from '@/models/Product';
 import { MENU_ITEMS } from '@/app/utils/menuItems';

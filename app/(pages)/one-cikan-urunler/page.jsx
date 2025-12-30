@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo, useCallback } from "react";
+import axiosInstance from "@/lib/axios";
 import ProductCard from "@/app/components/ui/ProductCard";
 import Link from "next/link";
 import { MdInventory2 } from "react-icons/md";
@@ -101,8 +102,8 @@ export default function OneCikanUrunlerPage() {
 
  const checkAdmin = async () => {
   try {
-   const res = await fetch("/api/auth/check");
-   const data = await res.json();
+   const res = await axiosInstance.get("/api/auth/check");
+   const data = res.data;
    setIsAdmin(data.authenticated || false);
   } catch (error) {
    setIsAdmin(false);
@@ -111,8 +112,8 @@ export default function OneCikanUrunlerPage() {
 
  const fetchProducts = async () => {
   try {
-   const res = await fetch("/api/products?isFeatured=true&limit=1000");
-   const data = await res.json();
+   const res = await axiosInstance.get("/api/products?isFeatured=true&limit=1000");
+   const data = res.data;
 
    if (data.success) {
     setProducts(data.data);

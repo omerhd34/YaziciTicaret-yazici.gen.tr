@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import axiosInstance from "@/lib/axios";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import CartLoading from "@/app/components/cart/CartLoading";
@@ -25,8 +26,8 @@ export default function SepetPage() {
   try {
    const cartProductIds = cart.map(item => String(item._id || item.id)).filter(Boolean);
 
-   const res = await fetch("/api/products?limit=1000");
-   const data = await res.json();
+   const res = await axiosInstance.get("/api/products?limit=1000");
+   const data = res.data;
 
    const allProducts = data.data || data.products || [];
 
@@ -61,7 +62,7 @@ export default function SepetPage() {
   } finally {
    setLoading(false);
   }
- }, []);
+ }, [localStorageCart]);
 
  useEffect(() => {
   fetchCartProducts();

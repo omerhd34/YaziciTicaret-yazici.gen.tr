@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiLockClosed, HiUser, HiLogin, HiEye, HiEyeOff } from "react-icons/hi";
 import AlertMessage from "@/app/components/auth/AlertMessage";
 
@@ -16,14 +17,12 @@ export default function AdminLoginForm({ onSuccess }) {
   setLoading(true);
 
   try {
-   const res = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ username, password }),
+   const res = await axiosInstance.post("/api/auth/login", {
+    username,
+    password,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     if (process.env.NODE_ENV === 'development') {

@@ -4,6 +4,8 @@ import { getProductUrl } from "@/app/utils/productUrl";
 
 export function OrganizationSchema({ baseUrl }) {
  useEffect(() => {
+  if (typeof document === 'undefined' || !document.head) return;
+
   const currentBaseUrl = baseUrl || process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3000");
 
   const script = document.createElement("script");
@@ -30,14 +32,12 @@ export function OrganizationSchema({ baseUrl }) {
    ],
   });
 
-  if (document.head) {
-   document.head.appendChild(script);
-  }
+  document.head.appendChild(script);
 
   return () => {
-   if (document.head && document.head.contains(script)) {
+   if (typeof document !== 'undefined' && script && script.parentNode) {
     try {
-     document.head.removeChild(script);
+     script.remove();
     } catch (e) {
      // Element zaten kaldırılmış olabilir
     }
@@ -50,6 +50,8 @@ export function OrganizationSchema({ baseUrl }) {
 
 export function WebSiteSchema({ baseUrl }) {
  useEffect(() => {
+  if (typeof document === 'undefined' || !document.head) return;
+
   const currentBaseUrl = baseUrl || process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3000");
 
   const script = document.createElement("script");
@@ -69,14 +71,12 @@ export function WebSiteSchema({ baseUrl }) {
    },
   });
 
-  if (document.head) {
-   document.head.appendChild(script);
-  }
+  document.head.appendChild(script);
 
   return () => {
-   if (document.head && document.head.contains(script)) {
+   if (typeof document !== 'undefined' && script && script.parentNode) {
     try {
-     document.head.removeChild(script);
+     script.remove();
     } catch (e) {
      // Element zaten kaldırılmış olabilir
     }
@@ -89,7 +89,7 @@ export function WebSiteSchema({ baseUrl }) {
 
 export function ProductSchema({ product, baseUrl, productUrl: propProductUrl }) {
  useEffect(() => {
-  if (!product) return;
+  if (!product || typeof document === 'undefined' || !document.head) return;
 
   const finalPrice = product.discountPrice && product.discountPrice < product.price
    ? product.discountPrice
@@ -152,14 +152,12 @@ export function ProductSchema({ product, baseUrl, productUrl: propProductUrl }) 
    }),
   });
 
-  if (document.head) {
-   document.head.appendChild(script);
-  }
+  document.head.appendChild(script);
 
   return () => {
-   if (document.head && document.head.contains(script)) {
+   if (typeof document !== 'undefined' && script && script.parentNode) {
     try {
-     document.head.removeChild(script);
+     script.remove();
     } catch (e) {
      // Element zaten kaldırılmış olabilir
     }
@@ -172,7 +170,7 @@ export function ProductSchema({ product, baseUrl, productUrl: propProductUrl }) 
 
 export function BreadcrumbSchema({ items, baseUrl }) {
  useEffect(() => {
-  if (!items || items.length === 0) return;
+  if (!items || items.length === 0 || typeof document === 'undefined' || !document.head) return;
 
   const currentBaseUrl = baseUrl || process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3000");
 
@@ -189,14 +187,12 @@ export function BreadcrumbSchema({ items, baseUrl }) {
    })),
   });
 
-  if (document.head) {
-   document.head.appendChild(script);
-  }
+  document.head.appendChild(script);
 
   return () => {
-   if (document.head && document.head.contains(script)) {
+   if (typeof document !== 'undefined' && script && script.parentNode) {
     try {
-     document.head.removeChild(script);
+     script.remove();
     } catch (e) {
      // Element zaten kaldırılmış olabilir
     }

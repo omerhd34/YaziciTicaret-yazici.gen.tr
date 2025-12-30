@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiMail, HiX } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
 
@@ -19,13 +20,11 @@ export default function ForgotPasswordModal({ show, onClose }) {
   setLoading(true);
 
   try {
-   const res = await fetch("/api/user/forgot-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
+   const res = await axiosInstance.post("/api/user/forgot-password", {
+    email,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     setSuccess(data.message || "Şifre sıfırlama linki e-posta adresinize gönderildi. Lütfen e-postanızı kontrol edin.");

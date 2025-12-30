@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import axiosInstance from "@/lib/axios";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import PaymentHeader from "@/app/components/payment/PaymentHeader";
@@ -47,12 +48,11 @@ export default function OdemePage() {
  const fetchAddresses = useCallback(async () => {
   try {
    setAddressesLoading(true);
-   const res = await fetch("/api/user/addresses", {
-    credentials: "include",
+   const res = await axiosInstance.get("/api/user/addresses", {
     cache: "no-store",
    });
-   const data = await res.json().catch(() => ({}));
-   if (!res.ok || !data.success) {
+   const data = res.data || {};
+   if (!data.success) {
     setAddresses([]);
     return;
    }
@@ -71,12 +71,11 @@ export default function OdemePage() {
  const fetchCards = useCallback(async () => {
   try {
    setCardsLoading(true);
-   const res = await fetch("/api/user/cards", {
-    credentials: "include",
+   const res = await axiosInstance.get("/api/user/cards", {
     cache: "no-store",
    });
-   const data = await res.json().catch(() => ({}));
-   if (!res.ok || !data.success) {
+   const data = res.data || {};
+   if (!data.success) {
     setCards([]);
     return;
    }
@@ -158,25 +157,20 @@ export default function OdemePage() {
      };
     });
 
-    const res = await fetch("/api/user/orders", {
-     method: "POST",
-     headers: { "Content-Type": "application/json" },
-     credentials: "include",
-     body: JSON.stringify({
-      items: payloadItems,
-      total: grandTotal,
-      paymentMethod: { type: paymentMethod.type },
-      address: {
-       id: selectedAddressId,
-       summary: addressSummary,
-       shippingAddress,
-       billingAddress: shippingAddress,
-      },
-     }),
+    const res = await axiosInstance.post("/api/user/orders", {
+     items: payloadItems,
+     total: grandTotal,
+     paymentMethod: { type: paymentMethod.type },
+     address: {
+      id: selectedAddressId,
+      summary: addressSummary,
+      shippingAddress,
+      billingAddress: shippingAddress,
+     },
     });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.success) {
+    const data = res.data || {};
+    if (!data.success) {
      setError(data.message || "Sipariş oluşturulamadı.");
      setIsSubmitting(false);
      return;

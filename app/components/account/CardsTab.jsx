@@ -1,4 +1,5 @@
 "use client";
+import axiosInstance from "@/lib/axios";
 import { HiPlus } from "react-icons/hi";
 import { MdCreditCard } from "react-icons/md";
 import CardCard from "./CardCard";
@@ -36,19 +37,14 @@ export default function CardsTab({ cards, onAddNew, onEdit, onDelete, showToast,
        onSetDefault={async () => {
         try {
          const cardId = card._id?.toString ? card._id.toString() : card._id;
-         const res = await fetch(`/api/user/cards/${cardId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: 'include',
-          body: JSON.stringify({
-           cardName: card.cardName,
-           cardHolderName: card.cardHolderName,
-           expiryDate: card.expiryDate,
-           cvv: card.cvv,
-           isDefault: true,
-          }),
+         const res = await axiosInstance.put(`/api/user/cards/${cardId}`, {
+          cardName: card.cardName,
+          cardHolderName: card.cardHolderName,
+          expiryDate: card.expiryDate,
+          cvv: card.cvv,
+          isDefault: true,
          });
-         const data = await res.json();
+         const data = res.data;
          if (data.success) {
           showToast("Varsayılan kart güncellendi!", "success");
           await fetchCards();

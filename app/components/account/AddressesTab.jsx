@@ -1,4 +1,5 @@
 "use client";
+import axiosInstance from "@/lib/axios";
 import { HiPlus, HiLocationMarker } from "react-icons/hi";
 import AddressCard from "./AddressCard";
 
@@ -38,21 +39,16 @@ export default function AddressesTab({ addresses, onAddNew, onEdit, onDelete, sh
        onSetDefault={async () => {
         try {
          const addressId = address._id?.toString ? address._id.toString() : address._id;
-         const res = await fetch(`/api/user/addresses/${addressId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: 'include',
-          body: JSON.stringify({
-           title: address.title,
-           fullName: address.fullName,
-           phone: address.phone,
-           address: address.address,
-           city: address.city,
-           district: address.district,
-           isDefault: true,
-          }),
+         const res = await axiosInstance.put(`/api/user/addresses/${addressId}`, {
+          title: address.title,
+          fullName: address.fullName,
+          phone: address.phone,
+          address: address.address,
+          city: address.city,
+          district: address.district,
+          isDefault: true,
          });
-         const data = await res.json();
+         const data = res.data;
          if (data.success) {
           showToast("Varsayılan adres güncellendi!", "success");
           await fetchAddresses();

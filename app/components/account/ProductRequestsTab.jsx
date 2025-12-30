@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiShoppingBag, HiClock, HiCheckCircle, HiXCircle, HiInformationCircle, HiPlus, HiTrash, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import ProductRequestModal from "@/app/components/product/ProductRequestModal";
 import Toast from "@/app/components/ui/Toast";
@@ -15,11 +16,9 @@ export default function ProductRequestsTab() {
  const fetchRequests = useCallback(async () => {
   try {
    setLoading(true);
-   const res = await fetch("/api/product-requests", {
-    credentials: 'include',
-   });
+   const res = await axiosInstance.get("/api/product-requests");
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     setRequests(data.requests || []);
@@ -53,18 +52,12 @@ export default function ProductRequestsTab() {
     requestId = String(requestId);
    }
 
-   const res = await fetch(`/api/product-requests/${requestId}`, {
-    method: "DELETE",
-    credentials: 'include',
-    headers: {
-     'Content-Type': 'application/json',
-    },
-   });
+   const res = await axiosInstance.delete(`/api/product-requests/${requestId}`);
 
-   const data = await res.json();
+   const data = res.data;
 
-   if (!res.ok || !data.success) {
-    const errorMessage = data.message || `İstek iptal edilemedi (${res.status})`;
+   if (!data.success) {
+    const errorMessage = data.message || `İstek iptal edilemedi`;
     setToast({ show: true, message: errorMessage, type: "error" });
     return;
    }

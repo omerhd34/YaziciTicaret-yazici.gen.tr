@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import axiosInstance from "@/lib/axios";
 import ProductCard from "@/app/components/ui/ProductCard";
 import { HiSearch } from "react-icons/hi";
 
@@ -23,8 +24,8 @@ export default function AramaPage() {
  const fetchProducts = async () => {
   setLoading(true);
   try {
-   const res = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=100`);
-   const data = await res.json();
+   const res = await axiosInstance.get(`/api/products?search=${encodeURIComponent(query)}&limit=100`);
+   const data = res.data;
 
    if (data.success) {
     setProducts(data.data);

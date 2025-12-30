@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/lib/axios";
 import { HiMail, HiLockClosed, HiUser, HiPhone } from "react-icons/hi";
 import { FaAsterisk } from "react-icons/fa";
 import Link from "next/link";
@@ -69,18 +70,14 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
   setLoading(true);
 
   try {
-   const res = await fetch("/api/user/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     name: form.name,
-     email: form.email,
-     phone: form.phone,
-     password: form.password,
-    }),
+   const res = await axiosInstance.post("/api/user/register", {
+    name: form.name,
+    email: form.email,
+    phone: form.phone,
+    password: form.password,
    });
 
-   const data = await res.json();
+   const data = res.data;
 
    if (data.success) {
     if (data.requiresVerification) {

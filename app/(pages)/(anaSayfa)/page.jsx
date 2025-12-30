@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import axiosInstance from "@/lib/axios";
 import HeroSection from "@/app/components/home/HeroSection";
 import FeaturesSection from "@/app/components/home/FeaturesSection";
 import ProductSection from "@/app/components/home/ProductSection";
@@ -19,18 +20,14 @@ export default function AnaSayfa() {
  const fetchProducts = async () => {
   try {
    const [featuredRes, newRes, discountedRes] = await Promise.all([
-    fetch("/api/products?isFeatured=true"),
-    fetch("/api/products?isNew=true"),
-    fetch("/api/products?category=İndirimler"),
+    axiosInstance.get("/api/products?isFeatured=true"),
+    axiosInstance.get("/api/products?isNew=true"),
+    axiosInstance.get("/api/products?category=İndirimler"),
    ]);
 
-   const featuredData = await featuredRes.json();
-   const newData = await newRes.json();
-   const discountedData = await discountedRes.json();
-
-   if (featuredData.success) setFeaturedProducts(featuredData.data);
-   if (newData.success) setNewProducts(newData.data);
-   if (discountedData.success) setDiscountedProducts(discountedData.data);
+   if (featuredRes.data.success) setFeaturedProducts(featuredRes.data.data);
+   if (newRes.data.success) setNewProducts(newRes.data.data);
+   if (discountedRes.data.success) setDiscountedProducts(discountedRes.data.data);
   } catch (error) {
   } finally {
    setLoading(false);
