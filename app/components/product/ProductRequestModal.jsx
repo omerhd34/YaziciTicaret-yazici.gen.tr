@@ -282,7 +282,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
              value={form.phone || ""}
              onChange={handleChange}
              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-             placeholder="0532 123 45 67"
+             placeholder="0XXX XXX XX XX"
             />
            </div>
           </div>

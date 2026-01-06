@@ -14,8 +14,6 @@ import ReturnOrderModal from "@/app/components/account/ReturnOrderModal";
 import CancelReturnModal from "@/app/components/account/CancelReturnModal";
 import AddressesTab from "@/app/components/account/AddressesTab";
 import AddressModal from "@/app/components/account/AddressModal";
-import CardsTab from "@/app/components/account/CardsTab";
-import CardModal from "@/app/components/account/CardModal";
 import SettingsTab from "@/app/components/account/SettingsTab";
 import DeleteConfirmModal from "@/app/components/account/DeleteConfirmModal";
 import DeleteAccountModal from "@/app/components/account/DeleteAccountModal";
@@ -39,7 +37,7 @@ export default function Hesabim() {
   didInitTabFromUrl.current = true;
   if (!tab) return;
 
-  const allowedTabs = new Set(["profil", "siparisler", "favoriler", "adresler", "kartlar", "urun-istekleri", "ayarlar"]);
+  const allowedTabs = new Set(["profil", "siparisler", "favoriler", "adresler", "urun-istekleri", "ayarlar"]);
   if (allowedTabs.has(tab) && tab !== activeTab) {
    setActiveTab(tab);
   }
@@ -49,7 +47,7 @@ export default function Hesabim() {
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });  // type: "success" | "error"
 
  // Silme onay modal state'i
- const [deleteConfirm, setDeleteConfirm] = useState({ show: false, type: null, id: null }); // type: 'address' | 'card'
+ const [deleteConfirm, setDeleteConfirm] = useState({ show: false, type: null, id: null }); // type: 'address'
  const [deleteAccountConfirm, setDeleteAccountConfirm] = useState(false);
  const [deletingAccount, setDeletingAccount] = useState(false);
 
@@ -162,6 +160,8 @@ export default function Hesabim() {
  };
 
  const [userInfo, setUserInfo] = useState({
+  firstName: "",
+  lastName: "",
   name: "",
   email: "",
   phone: "",
@@ -182,7 +182,8 @@ export default function Hesabim() {
  const [addressErrors, setAddressErrors] = useState({});
  const [addressForm, setAddressForm] = useState({
   title: "",
-  fullName: "",
+  firstName: "",
+  lastName: "",
   phone: "",
   address: "",
   city: "",
@@ -190,19 +191,6 @@ export default function Hesabim() {
   isDefault: false,
  });
 
- // Kart state'leri
- const [cards, setCards] = useState([]);
- const [showCardModal, setShowCardModal] = useState(false);
- const [editingCard, setEditingCard] = useState(null);
- const [cardErrors, setCardErrors] = useState({});
- const [cardForm, setCardForm] = useState({
-  cardName: "",
-  cardNumber: "",
-  expiryDate: "",
-  cvv: "",
-  cardHolderName: "",
-  isDefault: false,
- });
 
  // Şifre değiştirme state'leri
  const [passwordForm, setPasswordForm] = useState({
@@ -222,7 +210,17 @@ export default function Hesabim() {
 
      const contentType = res.headers["content-type"];
      if (!contentType || !contentType.includes("application/json")) {
+      // Geriye dönük uyumluluk için: eğer firstName/lastName yoksa name'den ayır
+      let firstName = currentUser.firstName || '';
+      let lastName = currentUser.lastName || '';
+      if (!firstName && !lastName && currentUser.name) {
+       const parts = currentUser.name.trim().split(' ');
+       firstName = parts[0] || '';
+       lastName = parts.slice(1).join(' ') || '';
+      }
       setUserInfo({
+       firstName: firstName,
+       lastName: lastName,
        name: currentUser.name || "",
        email: currentUser.email || "",
        phone: currentUser.phone || "",
@@ -236,7 +234,18 @@ export default function Hesabim() {
      const data = res.data;
 
      if (data.success && data.user) {
+      let firstName = data.user.firstName || '';
+      let lastName = data.user.lastName || '';
+      if ((!firstName || firstName.trim() === '') && (!lastName || lastName.trim() === '') && data.user.name) {
+       const parts = data.user.name.trim().split(' ').filter(p => p.length > 0);
+       if (parts.length > 0) {
+        lastName = parts[parts.length - 1] || '';
+        firstName = parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0] || '';
+       }
+      }
       setUserInfo({
+       firstName: firstName,
+       lastName: lastName,
        name: data.user.name || "",
        email: data.user.email || "",
        phone: data.user.phone || "",
@@ -251,7 +260,17 @@ export default function Hesabim() {
        });
       }
      } else {
+      // Geriye dönük uyumluluk için: eğer firstName/lastName yoksa name'den ayır
+      let firstName = currentUser.firstName || '';
+      let lastName = currentUser.lastName || '';
+      if (!firstName && !lastName && currentUser.name) {
+       const parts = currentUser.name.trim().split(' ');
+       firstName = parts[0] || '';
+       lastName = parts.slice(1).join(' ') || '';
+      }
       setUserInfo({
+       firstName: firstName,
+       lastName: lastName,
        name: currentUser.name || "",
        email: currentUser.email || "",
        phone: currentUser.phone || "",
@@ -306,48 +325,11 @@ export default function Hesabim() {
   }
  }, [showToast]);
 
- const fetchCards = useCallback(async () => {
-  try {
-   const res = await axiosInstance.get("/api/user/cards");
-
-   const contentType = res.headers["content-type"];
-   if (!contentType || !contentType.includes("application/json")) {
-    showToast("Kartlar yüklenirken bir hata oluştu. Lütfen tekrar giriş yapın.", "error");
-    return;
-   }
-
-   const data = res.data;
-
-   if (data.success) {
-    const loadedCards = data.cards || [];
-
-    // Varsayılan kartı en başa taşı
-    const sortedCards = [...loadedCards].sort((a, b) => {
-     if (a.isDefault && !b.isDefault) return -1;
-     if (!a.isDefault && b.isDefault) return 1;
-     return 0;
-    });
-
-    setCards(sortedCards);
-   } else {
-    showToast(data.message || "Kartlar yüklenemedi", "error");
-   }
-  } catch (error) {
-   showToast("Kartlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.", "error");
-  }
- }, [showToast]);
-
  useEffect(() => {
   if (currentUser && activeTab === "adresler") {
    fetchAddresses();
   }
  }, [currentUser, activeTab, fetchAddresses]);
-
- useEffect(() => {
-  if (currentUser && activeTab === "kartlar") {
-   fetchCards();
-  }
- }, [currentUser, activeTab, fetchCards]);
 
  const handleAddressSubmit = async (e) => {
   e.preventDefault();
@@ -361,13 +343,17 @@ export default function Hesabim() {
    errors.title = "Adres başlığı zorunludur!";
   }
 
-  if (!addressForm.fullName || !addressForm.fullName.trim()) {
-   errors.fullName = "Ad Soyad alanı zorunludur!";
+  if (!addressForm.firstName || !addressForm.firstName.trim()) {
+   errors.firstName = "Ad alanı zorunludur!";
+  }
+
+  if (!addressForm.lastName || !addressForm.lastName.trim()) {
+   errors.lastName = "Soyad alanı zorunludur!";
   }
 
   const phoneDigits = addressForm.phone.replace(/\D/g, '');
   if (!phoneDigits || phoneDigits.length !== 11) {
-   errors.phone = "Telefon numarası 11 haneli olmalıdır! (Örn: 05321234567)";
+   errors.phone = "Telefon numarası 11 haneli olmalıdır! (Örn: 05XXXXXXXXX)";
   }
 
   if (!addressForm.city || !addressForm.city.trim()) {
@@ -397,7 +383,8 @@ export default function Hesabim() {
      ...addressForm,
      phone: phoneDigits,
      title: addressForm.title.trim(),
-     fullName: addressForm.fullName.trim(),
+     firstName: addressForm.firstName.trim(),
+     lastName: addressForm.lastName.trim(),
      city: addressForm.city.trim(),
      district: addressForm.district.trim(),
      address: addressForm.address.trim(),
@@ -406,7 +393,8 @@ export default function Hesabim() {
      ...addressForm,
      phone: phoneDigits,
      title: addressForm.title.trim(),
-     fullName: addressForm.fullName.trim(),
+     firstName: addressForm.firstName.trim(),
+     lastName: addressForm.lastName.trim(),
      city: addressForm.city.trim(),
      district: addressForm.district.trim(),
      address: addressForm.address.trim(),
@@ -466,18 +454,6 @@ export default function Hesabim() {
 
     showToast("Adres silindi!", "success");
     await fetchAddresses();
-   } else if (deleteConfirm.type === 'card') {
-    const res = await axiosInstance.delete(`/api/user/cards/${id}`);
-
-    const data = res.data;
-
-    if (!data.success) {
-     showToast(data.message || "Kart silinemedi!", "error");
-     return;
-    }
-
-    showToast("Kart silindi!", "success");
-    await fetchCards();
    }
 
    setDeleteConfirm({ show: false, type: null, id: null });
@@ -488,9 +464,18 @@ export default function Hesabim() {
 
  const handleEditAddress = (address) => {
   setEditingAddress(address);
+  // Geriye dönük uyumluluk için: eğer firstName/lastName yoksa fullName'den ayır
+  let firstName = address.firstName || '';
+  let lastName = address.lastName || '';
+  if (!firstName && !lastName && address.fullName) {
+   const parts = address.fullName.trim().split(' ');
+   firstName = parts[0] || '';
+   lastName = parts.slice(1).join(' ') || '';
+  }
   setAddressForm({
    title: address.title,
-   fullName: address.fullName,
+   firstName: firstName,
+   lastName: lastName,
    phone: address.phone,
    address: address.address,
    city: address.city,
@@ -503,7 +488,8 @@ export default function Hesabim() {
  const resetAddressForm = () => {
   setAddressForm({
    title: "",
-   fullName: "",
+   firstName: "",
+   lastName: "",
    phone: "",
    address: "",
    city: "",
@@ -595,8 +581,12 @@ export default function Hesabim() {
   // Validasyon
   const errors = {};
 
-  if (!userInfo.name || !userInfo.name.trim()) {
-   errors.name = "Ad Soyad alanı zorunludur!";
+  if (!userInfo.firstName || !userInfo.firstName.trim()) {
+   errors.firstName = "Ad alanı zorunludur!";
+  }
+
+  if (!userInfo.lastName || !userInfo.lastName.trim()) {
+   errors.lastName = "Soyad alanı zorunludur!";
   }
 
   if (!userInfo.email || !userInfo.email.trim()) {
@@ -624,7 +614,7 @@ export default function Hesabim() {
 
   const phoneDigits = userInfo.phone.replace(/\D/g, '');
   if (!phoneDigits || phoneDigits.length !== 11) {
-   errors.phone = "Telefon numarası 11 haneli olmalıdır! (Örn: 05321234567)";
+   errors.phone = "Telefon numarası 11 haneli olmalıdır! (Örn: 0XXXXXXXXXX)";
   }
 
   // Şehir ve Adres artık zorunlu değil 
@@ -638,7 +628,9 @@ export default function Hesabim() {
 
   try {
    const res = await axiosInstance.put("/api/user/profile", {
-    name: userInfo.name.trim(),
+    firstName: userInfo.firstName.trim(),
+    lastName: userInfo.lastName.trim(),
+    name: `${userInfo.firstName.trim()} ${userInfo.lastName.trim()}`.trim(), // Geriye dönük uyumluluk için
     email: userInfo.email.trim(),
     phone: phoneDigits, // Sadece rakamları gönder
     // city ve address artık gönderilmiyor - Adreslerim kısmından gelecek
@@ -652,15 +644,31 @@ export default function Hesabim() {
    }
 
    showToast("Profil başarıyla güncellendi!", "success");
+   // Geriye dönük uyumluluk için: eğer firstName/lastName yoksa name'den ayır
+   let firstName = data.user.firstName || '';
+   let lastName = data.user.lastName || '';
+   let name = data.user.name || '';
+   if (!firstName && !lastName && data.user.name) {
+    const parts = data.user.name.trim().split(' ');
+    firstName = parts[0] || '';
+    lastName = parts.slice(1).join(' ') || '';
+    name = data.user.name;
+   } else if (firstName && lastName && !name) {
+    name = `${firstName} ${lastName}`.trim();
+   }
    setCurrentUser({
     ...currentUser,
-    name: data.user.name,
+    name: name,
+    firstName: firstName,
+    lastName: lastName,
     email: data.user.email,
    });
    // Form'u da güncelle
    setUserInfo({
     ...userInfo,
-    name: data.user.name,
+    firstName: firstName,
+    lastName: lastName,
+    name: name,
     email: data.user.email,
     phone: data.user.phone || "",
     city: data.user.city || "",
@@ -674,109 +682,6 @@ export default function Hesabim() {
   }
  };
 
- const resetCardForm = () => {
-  setCardForm({
-   cardName: "",
-   cardNumber: "",
-   cardHolderName: "",
-   expiryDate: "",
-   cvv: "",
-   isDefault: false,
-  });
-  setCardErrors({});
-  setEditingCard(null);
- };
-
- const handleCardSubmit = async (e) => {
-  e.preventDefault();
-  setCardErrors({});
-
-  const errors = {};
-  if (!cardForm.cardName.trim()) errors.cardName = "Kart adı gereklidir!";
-
-  const cardNumberDigits = cardForm.cardNumber.replace(/\s/g, '');
-  const isMaskedCardNumber = cardNumberDigits.startsWith('****');
-
-  if (!isMaskedCardNumber && !cardNumberDigits.match(/^\d{16}$/)) {
-   errors.cardNumber = "Geçerli bir 16 haneli kart numarası giriniz!";
-  }
-
-  if (!cardForm.cardHolderName.trim()) errors.cardHolderName = "Kart sahibi adı gereklidir!";
-  if (!cardForm.expiryDate.match(/^(0[1-9]|1[0-2])\/\d{2}$/)) {
-   errors.expiryDate = "Geçerli bir son kullanma tarihi giriniz (AA/YY)!";
-  } else {
-   // Son kullanma tarihinin bugünden sonra olup olmadığını kontrol et
-   const [month, year] = cardForm.expiryDate.split('/');
-   const expiryMonth = parseInt(month, 10);
-   const expiryYear = 2000 + parseInt(year, 10); // YY -> YYYY
-   const currentDate = new Date();
-
-   // Son kullanma tarihini ayın son günü olarak hesapla
-   // new Date(year, month, 0) ayın son gününü verir (month 1-12 arası)
-   const expiryDate = new Date(expiryYear, expiryMonth, 0);
-
-   if (expiryDate <= currentDate) {
-    errors.expiryDate = "Son kullanma tarihi bugünün tarihinden sonra olmalıdır!";
-   }
-  }
-  if (!cardForm.cvv.match(/^\d{3}$/)) errors.cvv = "Geçerli bir 3 haneli CVV giriniz!";
-
-  if (Object.keys(errors).length > 0) {
-   setCardErrors(errors);
-   return;
-  }
-
-  try {
-   // Eğer kart numarası maskelenmiş formattaysa, API'ye gönderme (sadece diğer alanları güncelle)
-   const requestBody = {
-    cardName: cardForm.cardName.trim(),
-    cardHolderName: cardForm.cardHolderName.trim(),
-    expiryDate: cardForm.expiryDate,
-    cvv: cardForm.cvv,
-    isDefault: cardForm.isDefault,
-   };
-
-   // Sadece kart numarası değiştirilmişse (maskelenmiş değilse) ekle
-   if (!isMaskedCardNumber) {
-    requestBody.cardNumber = cardNumberDigits;
-   }
-
-   const res = editingCard
-    ? await axiosInstance.put(`/api/user/cards/${editingCard._id}`, requestBody)
-    : await axiosInstance.post("/api/user/cards", requestBody);
-
-   const data = res.data;
-
-   if (!data.success) {
-    showToast(data.message || "Kart kaydedilemedi!", "error");
-    return;
-   }
-
-   showToast(editingCard ? "Kart başarıyla güncellendi!" : "Kart başarıyla eklendi!", "success");
-   setShowCardModal(false);
-   resetCardForm();
-   fetchCards(); // Kartları yeniden yükle
-  } catch (error) {
-   showToast("Bir hata oluştu! Lütfen tekrar deneyin.", "error");
-  }
- };
-
- const handleDeleteCard = (cardId) => {
-  setDeleteConfirm({ show: true, type: 'card', id: cardId });
- };
-
- const handleEditCard = (card) => {
-  setEditingCard(card);
-  setCardForm({
-   cardName: card.cardName || "",
-   cardNumber: card.cardNumber || "",
-   cardHolderName: card.cardHolderName || "",
-   expiryDate: card.expiryDate || "",
-   cvv: card.cvv || "",
-   isDefault: card.isDefault || false,
-  });
-  setShowCardModal(true);
- };
 
  const handlePasswordChange = async (e) => {
   e.preventDefault();
@@ -1183,20 +1088,6 @@ export default function Hesabim() {
        />
       )}
 
-      {activeTab === "kartlar" && (
-       <CardsTab
-        cards={cards}
-        onAddNew={() => {
-         resetCardForm();
-         setShowCardModal(true);
-        }}
-        onEdit={handleEditCard}
-        onDelete={(id) => setDeleteConfirm({ show: true, type: 'card', id })}
-        showToast={showToast}
-        fetchCards={fetchCards}
-       />
-      )}
-
       {activeTab === "urun-istekleri" && (
        <ProductRequestsTab />
       )}
@@ -1230,20 +1121,6 @@ export default function Hesabim() {
      onClose={() => {
       setShowAddressModal(false);
       resetAddressForm();
-     }}
-    />
-
-    <CardModal
-     show={showCardModal}
-     editingCard={editingCard}
-     cardForm={cardForm}
-     setCardForm={setCardForm}
-     cardErrors={cardErrors}
-     setCardErrors={setCardErrors}
-     onSubmit={handleCardSubmit}
-     onClose={() => {
-      setShowCardModal(false);
-      resetCardForm();
      }}
     />
 

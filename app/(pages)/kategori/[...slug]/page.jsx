@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { HiArrowRight } from "react-icons/hi";
+import { HiArrowRight, HiCalendar } from "react-icons/hi";
 import axiosInstance from "@/lib/axios";
 import { MENU_ITEMS } from "@/app/utils/menuItems";
 import { useCart } from "@/context/CartContext";
@@ -23,6 +23,7 @@ import ProductFeatures from "@/app/components/product/ProductFeatures";
 import ProductAllFeatures from "@/app/components/product/ProductAllFeatures";
 import ProductImportantFeatures from "@/app/components/product/ProductImportantFeatures";
 import ProductBundleItems from "@/app/components/product/ProductBundleItems";
+import ProductSimilarProducts from "@/app/components/product/ProductSimilarProducts";
 import ProductLoading from "@/app/components/product/ProductLoading";
 import ProductNotFound from "@/app/components/product/ProductNotFound";
 import Toast from "@/app/components/ui/Toast";
@@ -652,14 +653,12 @@ export default function KategoriPage() {
   }
  };
 
- // Sayfa yüklendiğinde veya slug değiştiğinde scroll'u en üste al
  useEffect(() => {
   window.scrollTo({ top: 0, behavior: 'instant' });
  }, [slug]);
 
  useEffect(() => {
   if (isProductDetailPage) {
-   // Seri numarası son parçada (2 veya 3 parça olabilir)
    const serialNumber = decodeURIComponent(slug[slug.length - 1]);
    fetchProductBySerialNumber(serialNumber);
   } else {
@@ -892,11 +891,14 @@ export default function KategoriPage() {
     try {
      const res = await axiosInstance.get("/api/campaigns");
      const data = res.data;
-     if (data.success) {
+     if (data && data.success) {
       setCampaignsData(data.data || []);
+     } else {
+      setCampaignsData([]);
      }
     } catch (error) {
      console.error("Kampanyalar yüklenemedi:", error);
+     setCampaignsData([]);
     } finally {
      setCampaignsLoading(false);
     }
@@ -1054,6 +1056,9 @@ export default function KategoriPage() {
      <div className="mt-6 sm:mt-8 md:mt-12">
       <ProductAllFeatures product={product} selectedColor={selectedColor} />
      </div>
+
+     {/* Benzer Ürünler Bölümü */}
+     <ProductSimilarProducts product={product} />
     </div>
    </div>
   );
@@ -1089,7 +1094,7 @@ export default function KategoriPage() {
        {campaignsData.map((campaign) => (
         <div
          key={campaign._id}
-         className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+         className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 flex flex-col"
         >
          {/* Görsel Container */}
          <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
@@ -1106,20 +1111,39 @@ export default function KategoriPage() {
          </div>
 
          {/* İçerik */}
-         <div className="p-6 sm:p-8">
+         <div className="p-6 sm:p-8 flex flex-col grow">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
            {campaign.title}
           </h2>
-          <p className="text-gray-600 text-sm sm:text-base mb-4 line-clamp-2">
-           {campaign.description}
-          </p>
-          <button
-           className="inline-flex items-center px-6 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
-           onClick={() => router.push(campaign.link || '/kategori/indirim')}
-          >
-           Kampanyayı İncele
-           <HiArrowRight className="ml-2 w-5 h-5" />
-          </button>
+          {campaign.description && (
+           <p className="text-gray-600 text-sm sm:text-base mb-4 line-clamp-2">
+            {campaign.description}
+           </p>
+          )}
+          <div className="mt-auto flex items-center justify-between gap-4 flex-wrap">
+           <button
+            className="inline-flex items-center px-6 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+            onClick={() => router.push(`/kategori/kampanyalar/${campaign._id}`)}
+           >
+            İncele
+            <HiArrowRight className="ml-2 w-5 h-5" />
+           </button>
+           {campaign.endDate && (
+            <div className="flex items-center text-gray-600">
+             <HiCalendar className="w-5 h-5 mr-2 text-indigo-600" />
+             <span className="text-sm font-semibold">
+              Son Gün:{" "}
+              <span className="text-gray-900">
+               {new Date(campaign.endDate).toLocaleDateString("tr-TR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+               })}
+              </span>
+             </span>
+            </div>
+           )}
+          </div>
          </div>
         </div>
        ))}
@@ -1132,10 +1156,6 @@ export default function KategoriPage() {
 
  // Metadata for category listing page
  const categoryName = getCategoryName();
- const categoryTitle = categoryName ? `${categoryName} - Ürünler ve Fiyatları` : 'Kategori';
- const categoryDescription = categoryName
-  ? `${categoryName} kategorisindeki tüm ürünler. Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Hızlı kargo ve montaj hizmeti.`
-  : 'Yazıcı Ticaret ürün kategorileri. En uygun fiyatlarla beyaz eşya ve elektronik ürünler.';
 
  return (
   <div className="min-h-screen bg-gray-50">

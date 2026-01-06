@@ -7,7 +7,22 @@ export async function POST(request) {
  try {
   await dbConnect();
 
-  const { name, email, phone, password } = await request.json();
+  const { firstName, lastName, name, email, phone, password } = await request.json();
+
+  // Validasyon
+  if (!firstName || !firstName.trim()) {
+   return NextResponse.json(
+    { success: false, message: 'Ad alanı zorunludur.' },
+    { status: 400 }
+   );
+  }
+
+  if (!lastName || !lastName.trim()) {
+   return NextResponse.json(
+    { success: false, message: 'Soyad alanı zorunludur.' },
+    { status: 400 }
+   );
+  }
 
   const pw = String(password || "");
   if (pw.length < 10) {
@@ -72,6 +87,17 @@ export async function POST(request) {
    );
   }
 
+  // Telefon numarası kontrolü
+  if (phone && phone.trim()) {
+   const existingUserByPhone = await User.findOne({ phone: phone.trim() });
+   if (existingUserByPhone) {
+    return NextResponse.json(
+     { success: false, message: 'Bu telefon numarası zaten kullanılmaktadır.' },
+     { status: 400 }
+    );
+   }
+  }
+
   const hashedPassword = Buffer.from(password).toString('base64');
   const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
   const verificationCodeExpires = new Date();
@@ -79,8 +105,13 @@ export async function POST(request) {
 
   const codeString = String(verificationCode).trim();
 
+  // firstName ve lastName'den name oluştur (geriye dönük uyumluluk için)
+  const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
   const user = await User.create({
-   name,
+   firstName: firstName.trim(),
+   lastName: lastName.trim(),
+   name: fullName, // Geriye dönük uyumluluk için
    email: email.toLowerCase(),
    phone,
    password: hashedPassword,
@@ -144,7 +175,7 @@ export async function POST(request) {
   try {
    const emailResult = await sendEmailVerificationEmail({
     userEmail: email.toLowerCase(),
-    userName: name,
+    userName: fullName,
     verificationCode: codeString,
     verificationLink,
    });

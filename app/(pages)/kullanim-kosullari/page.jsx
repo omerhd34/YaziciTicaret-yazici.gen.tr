@@ -133,7 +133,6 @@ export default function KullanimKosullariPage() {
         <li>Siparişiniz onaylandığında sözleşme kurulmuş sayılır ve size e-posta ile bildirilir.</li>
         <li>Sipariş onayı e-posta ile gönderilir.</li>
         <li>Ödeme işlemleri güvenli ödeme sağlayıcıları aracılığıyla yapılır.</li>
-        <li>Kredi kartı bilgileriniz güvenli şekilde işlenir ve sistemlerimizde saklanmaz.</li>
         <li>Fiyatlar Türk Lirası (₺) cinsindendir ve KDV dahildir.</li>
         <li>Fiyatlar sipariş anındaki fiyatlardır ve değişiklik gösterebilir.</li>
         <li>Fiyat hatalarından kaynaklanan siparişleri iptal etme hakkımız saklıdır.</li>

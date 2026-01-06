@@ -50,7 +50,7 @@ export default function ContactForm() {
   }
 
   if (digits.length !== 11) {
-   return 'Telefon numarası 11 haneli olmalıdır! (Örn: 0532 123 45 67)';
+   return 'Telefon numarası 11 haneli olmalıdır! (Örn: 0XXXXXXXXXX)';
   }
 
   if (!digits.startsWith('0')) {
@@ -158,7 +158,7 @@ export default function ContactForm() {
       maxLength={14}
       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${phoneError ? 'border-red-500' : 'border-gray-300'
        }`}
-      placeholder="0532 123 45 67"
+      placeholder="0XXXXXXXXXX"
      />
      {phoneError && (
       <p className="text-xs text-red-500 mt-1">{phoneError}</p>

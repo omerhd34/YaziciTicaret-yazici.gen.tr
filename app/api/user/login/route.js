@@ -10,16 +10,14 @@ export async function POST(request) {
 
   const { email, password, rememberMe } = await request.json();
 
-  // Kullanıcı kontrolü
   const user = await User.findOne({ email: email.toLowerCase() });
   if (!user) {
    return NextResponse.json(
-    { success: false, message: 'E-posta veya şifre hatalı' },
+    { success: false, message: 'Böyle bir hesap bulunamamıştır.' },
     { status: 401 }
    );
   }
 
-  // Şifre kontrolü (basit - production'da bcrypt kullanın!)
   const hashedPassword = Buffer.from(password).toString('base64');
   if (user.password !== hashedPassword) {
    return NextResponse.json(

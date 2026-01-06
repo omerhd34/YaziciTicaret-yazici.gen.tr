@@ -36,7 +36,7 @@ export async function PUT(request, { params }) {
   }
 
   const body = await request.json();
-  const { title, description, image, link, isActive, order } = body;
+  const { title, description, image, link, isActive, order, endDate, productCodes, campaignPrice } = body;
 
   await dbConnect();
 
@@ -49,11 +49,14 @@ export async function PUT(request, { params }) {
   }
 
   if (title !== undefined) campaign.title = title;
-  if (description !== undefined) campaign.description = description;
+  if (description !== undefined) campaign.description = description || '';
   if (image !== undefined) campaign.image = image;
   if (link !== undefined) campaign.link = link;
   if (isActive !== undefined) campaign.isActive = isActive;
   if (order !== undefined) campaign.order = order;
+  if (endDate !== undefined) campaign.endDate = endDate || null;
+  if (productCodes !== undefined) campaign.productCodes = Array.isArray(productCodes) ? productCodes : [];
+  if (campaignPrice !== undefined) campaign.campaignPrice = campaignPrice !== null && campaignPrice !== '' ? parseFloat(campaignPrice) : null;
 
   await campaign.save();
 

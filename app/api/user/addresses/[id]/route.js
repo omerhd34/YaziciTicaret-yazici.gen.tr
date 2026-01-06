@@ -82,7 +82,22 @@ export async function PUT(request, { params }) {
 
   // Sadece gerekli alanları güncelle (MongoDB özel alanlarını hariç tut)
   if (body.title !== undefined) address.title = body.title;
-  if (body.fullName !== undefined) address.fullName = body.fullName;
+  if (body.firstName !== undefined) address.firstName = body.firstName;
+  if (body.lastName !== undefined) address.lastName = body.lastName;
+  if (body.firstName !== undefined || body.lastName !== undefined) {
+   // firstName veya lastName güncellenirse fullName'i de güncelle
+   const firstName = body.firstName !== undefined ? body.firstName : address.firstName || '';
+   const lastName = body.lastName !== undefined ? body.lastName : address.lastName || '';
+   address.fullName = `${firstName} ${lastName}`.trim();
+  }
+  // Geriye dönük uyumluluk için fullName de kontrol edilir
+  if (body.fullName !== undefined && body.firstName === undefined && body.lastName === undefined) {
+   address.fullName = body.fullName;
+   // fullName'den firstName ve lastName'i ayır
+   const parts = body.fullName.trim().split(' ');
+   address.firstName = parts[0] || '';
+   address.lastName = parts.slice(1).join(' ') || '';
+  }
   if (body.phone !== undefined) address.phone = body.phone;
   if (body.address !== undefined) address.address = body.address;
   if (body.city !== undefined) address.city = body.city;

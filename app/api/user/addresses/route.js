@@ -112,9 +112,26 @@ export async function POST(request) {
   }
 
   // Yeni adres oluştur
+  // Geriye dönük uyumluluk için: eğer firstName/lastName yoksa fullName'den ayır
+  let firstName = body.firstName || '';
+  let lastName = body.lastName || '';
+  let fullName = '';
+  
+  if (firstName && lastName) {
+   fullName = `${firstName} ${lastName}`.trim();
+  } else if (body.fullName) {
+   // Eski veriler için fullName'den ayır
+   const parts = body.fullName.trim().split(' ');
+   firstName = parts[0] || '';
+   lastName = parts.slice(1).join(' ') || '';
+   fullName = body.fullName;
+  }
+  
   user.addresses.push({
    title: body.title,
-   fullName: body.fullName,
+   firstName: firstName,
+   lastName: lastName,
+   fullName: fullName,
    phone: body.phone,
    address: body.address,
    city: body.city,

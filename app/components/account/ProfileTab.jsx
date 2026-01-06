@@ -9,24 +9,47 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
     <div className="grid md:grid-cols-2 gap-6">
      <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-       Ad Soyad <span className="text-red-500">*</span>
+       Ad <span className="text-red-500">*</span>
       </label>
       <input
        type="text"
-       value={userInfo.name}
+       value={userInfo.firstName}
        onChange={(e) => {
         const value = e.target.value.replace(/[^a-zA-ZçğıöşüÇĞIİÖŞÜ\s]/g, '');
-        setUserInfo({ ...userInfo, name: value });
-        if (profileErrors.name) {
-         setProfileErrors({ ...profileErrors, name: '' });
+        setUserInfo({ ...userInfo, firstName: value });
+        if (profileErrors.firstName) {
+         setProfileErrors({ ...profileErrors, firstName: '' });
         }
        }}
-       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.name ? 'border-red-500' : 'border-gray-300'
+       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.firstName ? 'border-red-500' : 'border-gray-300'
         }`}
        required
       />
-      {profileErrors.name && (
-       <p className="text-xs text-red-500 mt-1">{profileErrors.name}</p>
+      {profileErrors.firstName && (
+       <p className="text-xs text-red-500 mt-1">{profileErrors.firstName}</p>
+      )}
+     </div>
+
+     <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+       Soyad <span className="text-red-500">*</span>
+      </label>
+      <input
+       type="text"
+       value={userInfo.lastName}
+       onChange={(e) => {
+        const value = e.target.value.replace(/[^a-zA-ZçğıöşüÇĞIİÖŞÜ]/g, '').split(' ')[0];
+        setUserInfo({ ...userInfo, lastName: value });
+        if (profileErrors.lastName) {
+         setProfileErrors({ ...profileErrors, lastName: '' });
+        }
+       }}
+       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.lastName ? 'border-red-500' : 'border-gray-300'
+        }`}
+       required
+      />
+      {profileErrors.lastName && (
+       <p className="text-xs text-red-500 mt-1">{profileErrors.lastName}</p>
       )}
      </div>
 
@@ -88,7 +111,7 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
         }
        }}
        maxLength={11}
-       placeholder="05321234567"
+       placeholder="0XXXXXXXXXX"
        className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.phone ? 'border-red-500' : 'border-gray-300'
         }`}
        required

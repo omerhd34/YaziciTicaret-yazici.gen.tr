@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import ProductRequest from '@/models/ProductRequest';
+import User from '@/models/User';
 import Admin from '@/models/Admin';
 import { sendProductRequestApprovedEmail, sendProductRequestRejectedEmail } from '@/lib/email';
 
@@ -33,22 +34,39 @@ export async function GET(request) {
    filter.status = status;
   }
 
-  const requests = await ProductRequest.find(filter)
-   .populate('userId', 'name email')
+  const allRequests = await ProductRequest.find(filter)
+   .populate('userId', 'name email _id')
    .populate('respondedBy', 'username')
    .sort({ createdAt: -1 })
-   .skip(skip)
-   .limit(limit)
    .lean();
 
-  const total = await ProductRequest.countDocuments(filter);
+  const validUserIds = new Set();
+  const userIdsToCheck = allRequests
+   .map(req => req.userId)
+   .filter(id => id !== null && id !== undefined)
+   .map(id => typeof id === 'object' ? (id._id || id) : id);
 
-  const [pendingCount, approvedCount, rejectedCount, cancelledCount] = await Promise.all([
-   ProductRequest.countDocuments({ status: 'Beklemede' }),
-   ProductRequest.countDocuments({ status: 'Onaylandı' }),
-   ProductRequest.countDocuments({ status: 'Reddedildi' }),
-   ProductRequest.countDocuments({ status: 'İptal Edildi' }),
-  ]);
+  if (userIdsToCheck.length > 0) {
+   const validUsers = await User.find({ _id: { $in: userIdsToCheck } }).select('_id').lean();
+   validUsers.forEach(user => validUserIds.add(user._id.toString()));
+  }
+
+  const validRequests = allRequests.filter(req => {
+   if (!req.userId) return true;
+   const userIdStr = typeof req.userId === 'object' ? (req.userId._id?.toString() || req.userId.toString()) : req.userId.toString();
+   return validUserIds.has(userIdStr);
+  });
+
+  const requests = validRequests.slice(skip, skip + limit);
+
+  const total = validRequests.length;
+
+  const [pendingCount, approvedCount, rejectedCount, cancelledCount] = [
+   validRequests.filter(r => r.status === 'Beklemede').length,
+   validRequests.filter(r => r.status === 'Onaylandı').length,
+   validRequests.filter(r => r.status === 'Reddedildi').length,
+   validRequests.filter(r => r.status === 'İptal Edildi').length,
+  ];
 
   return NextResponse.json({
    success: true,

@@ -82,7 +82,7 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
      <h2 className="text-2xl font-bold text-gray-900">Email Doğrulama</h2>
      <button
       onClick={onClose}
-      className="text-gray-400 hover:text-gray-600"
+      className="text-gray-400 hover:text-gray-600 cursor-pointer"
      >
       <HiX size={24} />
      </button>
@@ -119,7 +119,7 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
         type="button"
         onClick={handleResendCode}
         disabled={resendLoading || !userId}
-        className="text-sm text-indigo-600 hover:text-indigo-800 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="text-sm text-indigo-600 hover:text-indigo-800 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
        >
         {resendLoading ? "Gönderiliyor..." : "Kodu bir daha gönder"}
        </button>
@@ -130,14 +130,14 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
       <button
        type="button"
        onClick={onClose}
-       className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition"
+       className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition cursor-pointer"
       >
        İptal
       </button>
       <button
        type="submit"
        disabled={verificationLoading || verificationCode.length !== 6}
-       className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+       className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
        {verificationLoading ? "Doğrulanıyor..." : "Doğrula"}
       </button>

@@ -162,12 +162,9 @@ export async function GET() {
    );
   }
 
-  // Hem userId hem de email ile eşleşen istekleri getir
+  // Sadece userId ile eşleşen istekleri getir (kullanıcı silindiğinde eski istekler görünmesin)
   const requests = await ProductRequest.find({
-   $or: [
-    { userId: user._id },
-    { email: user.email.toLowerCase() },
-   ],
+   userId: user._id,
   })
    .sort({ createdAt: -1 })
    .lean();

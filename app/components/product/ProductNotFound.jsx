@@ -7,7 +7,7 @@ export default function ProductNotFound() {
    <div className="text-center">
     <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">Ürün Bulunamadı</h2>
     <Link
-     href="/kategori"
+     href="/"
      className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-semibold"
     >
      Alışverişe Devam Et

@@ -23,7 +23,7 @@ export default function AddressesTab({ addresses, onAddNew, onEdit, onDelete, sh
      <p className="text-gray-500 text-lg mb-4">Henüz kayıtlı adresiniz yok</p>
      <button
       onClick={onAddNew}
-      className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+      className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition cursor-pointer"
      >
       İlk Adresinizi Ekleyin
      </button>
@@ -41,7 +41,8 @@ export default function AddressesTab({ addresses, onAddNew, onEdit, onDelete, sh
          const addressId = address._id?.toString ? address._id.toString() : address._id;
          const res = await axiosInstance.put(`/api/user/addresses/${addressId}`, {
           title: address.title,
-          fullName: address.fullName,
+          firstName: address.firstName || (address.fullName?.split(' ')[0] || ''),
+          lastName: address.lastName || (address.fullName?.split(' ').slice(1).join(' ') || ''),
           phone: address.phone,
           address: address.address,
           city: address.city,

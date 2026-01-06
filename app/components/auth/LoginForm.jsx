@@ -44,7 +44,12 @@ export default function LoginForm({ onLogin, onForgotPassword, onVerificationReq
     }
    }
   } catch (error) {
-   setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+   // API'den dönen hata mesajını kontrol et
+   if (error.response?.data?.message) {
+    setError(error.response.data.message);
+   } else {
+    setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+   }
    setLoading(false);
   }
  };

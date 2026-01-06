@@ -64,7 +64,7 @@ const categoryBrands = {
 
  "Televizyon": ["Profilo", "LG"],
 
- "Elektrikli Süpürge": ["Profilo", "LG"],
+ "Süpürge": ["Profilo", "LG"],
 
  "Ankastre Fırın": ["Profilo", "LG"],
  "Ankastre Mikrodalga Fırın": ["Profilo", "LG"],

@@ -64,6 +64,41 @@ export default function GirisPage() {
   handleLogout();
  }, [searchParams]);
 
+ // Giriş yapmış kullanıcıları kontrol et ve yönlendir
+ useEffect(() => {
+  const checkAuth = async () => {
+   if (searchParams.get('logout') === 'true') {
+    return;
+   }
+
+   if (typeof window !== 'undefined') {
+    const justLoggedOut = localStorage.getItem('just_logged_out');
+    if (justLoggedOut) {
+     const logoutTime = parseInt(justLoggedOut, 10);
+     const now = Date.now();
+     if (now - logoutTime < 300000) {
+      return;
+     }
+    }
+   }
+
+   try {
+    const res = await axiosInstance.get("/api/user/check", {
+     cache: 'no-store',
+    });
+
+    const data = res.data;
+
+    if (data.authenticated) {
+     router.replace("/hesabim");
+    }
+   } catch (error) {
+   }
+  };
+
+  checkAuth();
+ }, [router, searchParams]);
+
  const [verificationUserId, setVerificationUserId] = useState("");
  const [verificationUserEmail, setVerificationUserEmail] = useState("");
 
@@ -101,7 +136,7 @@ export default function GirisPage() {
  return (
   <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-12">
    <div className="container mx-auto px-4">
-    <div className="max-w-md mx-auto">
+    <div className="max-w-lg mx-auto">
      {/* Logo/Header */}
      <div className="text-center mb-8">
       <Link href="/" className="inline-block">
@@ -109,7 +144,7 @@ export default function GirisPage() {
         YAZICI TİCARET
        </h1>
       </Link>
-      <p className="text-gray-600">Hesabınıza Giriş Yapın veya yeni hesap oluşturun</p>
+      <p className="text-gray-600">Hesabınıza giriş yapın veya yeni hesap oluşturun.</p>
      </div>
 
      {/* Tab Switcher */}

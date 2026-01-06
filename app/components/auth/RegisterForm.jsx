@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
 import axiosInstance from "@/lib/axios";
-import { HiMail, HiLockClosed, HiUser, HiPhone } from "react-icons/hi";
+import { HiMail, HiLockClosed, HiUser, HiPhone, HiEye, HiEyeOff } from "react-icons/hi";
 import { FaAsterisk } from "react-icons/fa";
 import Link from "next/link";
 import AlertMessage from "./AlertMessage";
 
 export default function RegisterForm({ onRegister, onVerificationRequired }) {
  const [form, setForm] = useState({
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   password: "",
@@ -16,6 +17,8 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
  });
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState("");
+ const [showPassword, setShowPassword] = useState(false);
+ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
  const hasSequentialRun = (value, runLen = 3) => {
   const s = String(value || "").toLowerCase();
@@ -69,9 +72,22 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
 
   setLoading(true);
 
+  if (!form.firstName || !form.firstName.trim()) {
+   setError("Ad alanı zorunludur");
+   setLoading(false);
+   return;
+  }
+
+  if (!form.lastName || !form.lastName.trim()) {
+   setError("Soyad alanı zorunludur");
+   setLoading(false);
+   return;
+  }
+
   try {
    const res = await axiosInstance.post("/api/user/register", {
-    name: form.name,
+    firstName: form.firstName.trim(),
+    lastName: form.lastName.trim(),
     email: form.email,
     phone: form.phone,
     password: form.password,
@@ -84,9 +100,9 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
      if (onVerificationRequired) {
       onVerificationRequired(data.userId, form.email);
      }
-     // Formu temizle
      setForm({
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       password: "",
@@ -101,7 +117,11 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
     setError(data.message || "Kayıt başarısız");
    }
   } catch (error) {
-   setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+   if (error.response?.data?.message) {
+    setError(error.response.data.message);
+   } else {
+    setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+   }
   } finally {
    setLoading(false);
   }
@@ -111,23 +131,51 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
   <form onSubmit={handleSubmit} className="space-y-6">
    {error && <AlertMessage message={error} type="error" />}
 
-   <div>
-    <label className="block text-sm font-bold text-gray-700 mb-2">
-     Ad Soyad <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
-    </label>
-    <div className="relative">
-     <HiUser
-      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-      size={20}
-     />
-     <input
-      type="text"
-      value={form.name}
-      onChange={(e) => setForm({ ...form, name: e.target.value })}
-      className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-      placeholder="Ahmet Yılmaz"
-      required
-     />
+   <div className="grid md:grid-cols-2 gap-4">
+    <div>
+     <label className="block text-sm font-bold text-gray-700 mb-2">
+      Ad <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
+     </label>
+     <div className="relative">
+      <HiUser
+       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+       size={20}
+      />
+      <input
+       type="text"
+       value={form.firstName}
+       onChange={(e) => {
+        const value = e.target.value.replace(/[^a-zA-ZçğıöşüÇĞIİÖŞÜ\s]/g, '');
+        setForm({ ...form, firstName: value });
+       }}
+       className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+       placeholder="Adınız"
+       required
+      />
+     </div>
+    </div>
+
+    <div>
+     <label className="block text-sm font-bold text-gray-700 mb-2">
+      Soyad <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
+     </label>
+     <div className="relative">
+      <HiUser
+       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+       size={20}
+      />
+      <input
+       type="text"
+       value={form.lastName}
+       onChange={(e) => {
+        const value = e.target.value.replace(/[^a-zA-ZçğıöşüÇĞIİÖŞÜ]/g, '').split(' ')[0];
+        setForm({ ...form, lastName: value });
+       }}
+       className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+       placeholder="Soyadınız"
+       required
+      />
+     </div>
     </div>
    </div>
 
@@ -165,7 +213,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       value={form.phone}
       onChange={(e) => setForm({ ...form, phone: e.target.value })}
       className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-      placeholder="05321234567"
+      placeholder="0XXXXXXXXXX"
      />
     </div>
    </div>
@@ -180,14 +228,21 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       size={20}
      />
      <input
-      type="password"
+      type={showPassword ? "text" : "password"}
       value={form.password}
       onChange={(e) => setForm({ ...form, password: e.target.value })}
-      className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+      className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
       placeholder="••••••••••"
       required
       minLength={6}
      />
+     <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition cursor-pointer"
+     >
+      {showPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+     </button>
     </div>
    </div>
 
@@ -201,19 +256,26 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       size={20}
      />
      <input
-      type="password"
+      type={showConfirmPassword ? "text" : "password"}
       value={form.confirmPassword}
       onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-      className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+      className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
       placeholder="••••••••••"
       required
       minLength={6}
      />
+     <button
+      type="button"
+      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition cursor-pointer"
+     >
+      {showConfirmPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+     </button>
     </div>
    </div>
 
-   <div className="flex items-start gap-2">
-    <input type="checkbox" className="w-4 h-4 mt-1" required />
+   <div className="flex items-start gap-2 ">
+    <input type="checkbox" className="w-4 h-4 mt-1 cursor-pointer" required />
     <span className="text-sm text-gray-600">
      <Link href="/kullanim-kosullari" className="text-indigo-600 hover:text-indigo-800 font-semibold">
       Kullanım Koşulları
@@ -229,7 +291,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
    <button
     type="submit"
     disabled={loading}
-    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-lg font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-lg font-bold text-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl cursor-pointer"
    >
     {loading ? "Kayıt Yapılıyor..." : "Kayıt Ol"}
    </button>

@@ -1,53 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCart } from "@/context/CartContext";
-import axiosInstance from "@/lib/axios";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MdCheckCircle, MdShoppingBag } from "react-icons/md";
 
 export default function OdemeBasariliPage() {
  const router = useRouter();
- const searchParams = useSearchParams();
- const { clearCart } = useCart();
- const [loading, setLoading] = useState(true);
- const [orderId, setOrderId] = useState("");
 
-  useEffect(() => {
-  const token = searchParams.get("token");
-  const orderId = searchParams.get("orderId");
-
-  if (!token) {
-   router.push("/odeme");
-   return;
-  }
-
-  // Callback'i backend'e bildir
-  const handleCallback = async () => {
-   try {
-    const res = await axiosInstance.post("/api/payment/iyzico/callback", {
-     token: token,
-     orderId: orderId,
-    });
-
-    const data = res.data || {};
-    if (data.success) {
-     setOrderId(data.orderId || orderId || "");
-     clearCart();
-     setLoading(false);
-    } else {
-     // Ödeme başarısız, başarısız sayfaya yönlendir
-     router.push(`/odeme-basarisiz?orderId=${orderId || ""}&reason=${encodeURIComponent(data.message || "Ödeme işlemi tamamlanamadı")}`);
-    }
-   } catch (error) {
-    console.error("Callback error:", error);
-    router.push(`/odeme-basarisiz?orderId=${orderId || ""}&reason=${encodeURIComponent("Ödeme doğrulama hatası")}`);
-   }
-  };
-
-  handleCallback();
- }, [searchParams, router, clearCart]);
+ useEffect(() => {
+  router.push("/hesabim?tab=siparisler");
+ }, [router]);
 
  if (loading) {
   return (

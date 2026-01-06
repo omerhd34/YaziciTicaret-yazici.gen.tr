@@ -9,7 +9,7 @@ export default function PaymentEmptyCart() {
      <h1 className="text-2xl font-bold mb-2">Ödeme</h1>
      <p className="text-gray-600 mb-6">Sepetiniz boş görünüyor.</p>
      <Link
-      href="/kategori"
+      href="/"
       className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
      >
       Alışverişe Devam Et

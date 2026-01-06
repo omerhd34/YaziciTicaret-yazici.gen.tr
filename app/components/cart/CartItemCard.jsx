@@ -6,11 +6,22 @@ import { MdDelete } from "react-icons/md";
 import { getProductUrl } from "@/app/utils/productUrl";
 
 export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
- const hasDiscount = item.discountPrice && item.discountPrice < item.price;
- const itemPrice = hasDiscount ? item.discountPrice : item.price;
+ const hasCampaignPrice = item.campaignPrice !== undefined && item.campaignPrice !== null;
+ const hasDiscount = !hasCampaignPrice && item.discountPrice && item.discountPrice < item.price;
+ const itemPrice = hasCampaignPrice ? item.campaignPrice : (hasDiscount ? item.discountPrice : item.price);
  const itemTotal = itemPrice * item.quantity;
-
- const productUrl = getProductUrl(item, item.serialNumber);
+ // Orijinal fiyat: Kampanya fiyatı varsa ürünün normal fiyatı, yoksa indirimli fiyat varsa normal fiyat, yoksa normal fiyat
+ const originalPrice = hasCampaignPrice ? item.price : (hasDiscount ? item.price : item.price);
+ const allColors = item._allColors || item.colors;
+ const selectedColorObj = item.selectedColor && allColors && Array.isArray(allColors)
+  ? allColors.find(c => typeof c === 'object' && c.name === item.selectedColor)
+  : null;
+ const productImages = selectedColorObj?.images && selectedColorObj.images.length > 0
+  ? selectedColorObj.images
+  : (item.images && item.images.length > 0 ? item.images : ["/products/beyaz-esya.webp"]);
+ const displayImage = productImages[0];
+ const displaySerialNumber = selectedColorObj?.serialNumber || item.serialNumber;
+ const productUrl = getProductUrl(item, displaySerialNumber);
 
  return (
   <div className="bg-white rounded-xl shadow-sm p-4 flex gap-4">
@@ -18,7 +29,7 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
     <Image
      width={500}
      height={500}
-     src={item.images[0]}
+     src={displayImage}
      alt={item.name}
      className="w-24 h-24 object-contain rounded-lg"
     />
@@ -43,9 +54,9 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
        <span className="font-bold">Renk:</span> {item.selectedColor}
       </span>
      )}
-     {item.serialNumber && (
+     {displaySerialNumber && (
       <span className={`text-gray-600 ${item.selectedColor ? "ml-3" : ""}`}>
-       <span className="font-bold">Seri No:</span> <span className="font-mono">{item.serialNumber}</span>
+       <span className="font-bold">Seri No:</span> <span className="font-mono">{displaySerialNumber}</span>
       </span>
      )}
     </div>
@@ -92,12 +103,17 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
    </div>
 
    <div className="text-right">
+    {hasCampaignPrice && (
+     <p className="text-xs text-purple-600 font-semibold mb-1">
+      {item.campaignTitle || 'Kampanya'} Fiyatı
+     </p>
+    )}
     <p className="text-lg font-bold text-indigo-600">
      {itemTotal.toFixed(2)} ₺
     </p>
-    {hasDiscount && (
+    {(hasDiscount || hasCampaignPrice) && (
      <p className="text-sm text-gray-400 line-through">
-      {(item.price * item.quantity).toFixed(2)} ₺
+      {(originalPrice * item.quantity).toFixed(2)} ₺
      </p>
     )}
     <p className="text-xs text-gray-500 mt-1">

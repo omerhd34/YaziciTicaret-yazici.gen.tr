@@ -40,24 +40,46 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
       </div>
 
       <div>
-       <label className="block text-sm font-semibold mb-2">Ad Soyad <span className="text-red-500">*</span></label>
+       <label className="block text-sm font-semibold mb-2">Ad <span className="text-red-500">*</span></label>
        <input
         type="text"
-        value={addressForm.fullName}
+        value={addressForm.firstName}
         onChange={(e) => {
          const value = e.target.value.replace(/[^a-zA-ZçğıöşüÇĞIİÖŞÜ\s]/g, '');
-         setAddressForm({ ...addressForm, fullName: value });
-         if (addressErrors.fullName) {
-          setAddressErrors({ ...addressErrors, fullName: '' });
+         setAddressForm({ ...addressForm, firstName: value });
+         if (addressErrors.firstName) {
+          setAddressErrors({ ...addressErrors, firstName: '' });
          }
         }}
-        className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.fullName ? 'border-red-500' : 'border-gray-300'
+        className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.firstName ? 'border-red-500' : 'border-gray-300'
          }`}
-        placeholder="Ad Soyad"
+        placeholder="Ad"
         required
        />
-       {addressErrors.fullName && (
-        <p className="text-xs text-red-500 mt-1">{addressErrors.fullName}</p>
+       {addressErrors.firstName && (
+        <p className="text-xs text-red-500 mt-1">{addressErrors.firstName}</p>
+       )}
+      </div>
+
+      <div>
+       <label className="block text-sm font-semibold mb-2">Soyad <span className="text-red-500">*</span></label>
+       <input
+        type="text"
+        value={addressForm.lastName}
+        onChange={(e) => {
+         const value = e.target.value.replace(/[^a-zA-ZçğıöşüÇĞIİÖŞÜ]/g, '').split(' ')[0];
+         setAddressForm({ ...addressForm, lastName: value });
+         if (addressErrors.lastName) {
+          setAddressErrors({ ...addressErrors, lastName: '' });
+         }
+        }}
+        className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.lastName ? 'border-red-500' : 'border-gray-300'
+         }`}
+        placeholder="Soyad"
+        required
+       />
+       {addressErrors.lastName && (
+        <p className="text-xs text-red-500 mt-1">{addressErrors.lastName}</p>
        )}
       </div>
 
@@ -76,7 +98,7 @@ export default function AddressModal({ show, editingAddress, addressForm, setAdd
         maxLength={11}
         className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${addressErrors.phone ? 'border-red-500' : 'border-gray-300'
          }`}
-        placeholder="05321234567"
+        placeholder="0XXXXXXXXXX"
         required
        />
        {addressErrors.phone && (

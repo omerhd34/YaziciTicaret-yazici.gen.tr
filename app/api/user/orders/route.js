@@ -163,7 +163,18 @@ export async function POST(request) {
   const repricedItems = normalizedItems.map((it) => {
    const p = productById.get(String(it.productId));
    if (!p) return { ...it, _missingProduct: true };
-   const price = p.discountPrice && p.discountPrice < p.price ? p.discountPrice : p.price;
+
+   // İstemciden gelen fiyatı kullan (kampanya fiyatı dahil)
+   // Eğer istemciden fiyat gelmemişse, ürünün normal fiyatını kullan
+   let price = it.price;
+   if (!price || price === 0) {
+    // Kampanya fiyatı varsa onu kullan, yoksa indirimli veya normal fiyatı kullan
+    price = it.campaignPrice;
+    if (!price) {
+     price = p.discountPrice && p.discountPrice < p.price ? p.discountPrice : p.price;
+    }
+   }
+
    return {
     ...it,
     name: it.name || p.name,
@@ -171,6 +182,8 @@ export async function POST(request) {
     image: it.image || p?.images?.[0] || "",
     price: Number(price || 0),
     serialNumber: p.serialNumber || "",
+    campaignId: it.campaignId || null,
+    campaignTitle: it.campaignTitle || null,
    };
   });
   const missing = repricedItems.find((it) => it._missingProduct);
@@ -210,10 +223,13 @@ export async function POST(request) {
   }
 
   const orderId = `YZT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+  const pmType = paymentMethod?.type || '';
+  const orderStatus = pmType === 'mailorder' ? 'Beklemede' : 'Beklemede';
+
   const order = {
    orderId,
    date: new Date(),
-   status: 'Beklemede',
+   status: orderStatus,
    total: serverGrandTotal,
    items: repricedItems,
    payment: paymentMethod || { type: 'havale' },
@@ -245,13 +261,13 @@ export async function POST(request) {
    // Hata olsa bile sipariş oluşturulmuş sayılır
   }
 
-  // Admin'e e-posta bildirimi (best-effort)
   let adminEmailResult = null;
   try {
    const adminEmail = process.env.EMAIL_USER;
    const addrSummary = address.summary || '';
    const pmType = paymentMethod?.type || order.payment?.type || '';
-   const pmText = pmType === 'card' ? 'Kart ile Ödeme' : (pmType === 'havale' ? 'Havale ve EFT ile Ödeme' : (pmType || '-'));
+   const pmText = pmType === 'havale' ? 'Havale ve EFT ile Ödeme' :
+    (pmType === 'mailorder' ? 'Kapıda Ödeme' : (pmType || '-'));
 
    if (adminEmail) {
     adminEmailResult = await sendAdminNewOrderEmail({
@@ -279,7 +295,8 @@ export async function POST(request) {
    if (emailNotificationsEnabled && user.email) {
     const addrSummary = address.summary || '';
     const pmType = paymentMethod?.type || order.payment?.type || '';
-    const pmText = pmType === 'card' ? 'Kart ile Ödeme' : (pmType === 'havale' ? 'Havale ve EFT ile Ödeme' : (pmType || '-'));
+    const pmText = pmType === 'havale' ? 'Havale ve EFT ile Ödeme' :
+     (pmType === 'mailorder' ? 'Kapıda Ödeme' : (pmType || '-'));
 
     userEmailResult = await sendUserOrderConfirmationEmail({
      userEmail: user.email,

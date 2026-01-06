@@ -8,7 +8,7 @@ const CampaignSchema = new mongoose.Schema({
  },
  description: {
   type: String,
-  required: [true, 'Kampanya açıklaması gereklidir'],
+  default: '',
   trim: true,
  },
  image: {
@@ -27,6 +27,19 @@ const CampaignSchema = new mongoose.Schema({
  order: {
   type: Number,
   default: 0,
+ },
+ endDate: {
+  type: Date,
+  default: null,
+ },
+ productCodes: {
+  type: [String],
+  default: [],
+  trim: true,
+ },
+ campaignPrice: {
+  type: Number,
+  default: null,
  },
 }, {
  timestamps: true,

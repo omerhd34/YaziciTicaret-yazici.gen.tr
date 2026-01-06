@@ -13,7 +13,7 @@ export default function FAQSection() {
   },
   {
    question: "Ödeme ve Fatura İşlemleri",
-   answer: "Siparişlerinizde tüm kredi kartları ve banka kartları ile ödeme yapabilirsiniz. Taksit seçenekleri mevcuttur ve kartınıza göre taksit sayısı değişiklik gösterebilir. Ödeme işleminiz güvenli ödeme altyapısı üzerinden gerçekleştirilmektedir. E-fatura ve kağıt fatura seçenekleri mevcuttur."
+   answer: "Siparişlerinizde Havale ve EFT ile ödeme veya Kapıda Ödeme seçeneklerini kullanabilirsiniz. Havale ve EFT ile ödeme yapmak için sipariş verdiğinizde IBAN bilgilerimiz size iletilecektir. Kapıda ödeme seçeneğinde, ürün teslim edilirken kargo görevlisine nakit veya kredi kartı ile ödeme yapabilirsiniz. E-fatura ve kağıt fatura seçenekleri mevcuttur."
   },
   {
    question: "Garanti",
@@ -25,7 +25,7 @@ export default function FAQSection() {
   },
   {
    question: "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
-   answer: "Kredi kartı, banka kartı ve havale/EFT seçeneklerini kabul ediyoruz. Tüm ödemeler güvenli ödeme altyapısı ile korunmaktadır."
+   answer: "Havale ve EFT ile Ödeme ile Kapıda Ödeme seçeneklerini kabul ediyoruz. Havale ve EFT ile ödeme yapmak için sipariş verdiğinizde IBAN bilgilerimiz size iletilecektir. Kapıda ödeme seçeneğinde, ürün teslim edilirken kargo görevlisine nakit veya kredi kartı ile ödeme yapabilirsiniz."
   }
  ];
 

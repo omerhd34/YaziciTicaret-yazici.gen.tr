@@ -115,24 +115,6 @@ export default function AdminKampanyalarPage() {
   });
  };
 
- const toggleCampaignStatus = async (campaign) => {
-  try {
-   const res = await axiosInstance.put(`/api/admin/campaigns/${campaign._id}`, {
-    isActive: !campaign.isActive,
-   });
-   if (res.data?.success) {
-    setToast({
-     show: true,
-     message: campaign.isActive ? "Kampanya pasif edildi" : "Kampanya aktif edildi",
-     type: "success",
-    });
-    fetchCampaigns();
-   }
-  } catch {
-   setToast({ show: true, message: "Kampanya durumu güncellenemedi", type: "error" });
-  }
- };
-
  if (authLoading) {
   return (
    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -167,7 +149,7 @@ export default function AdminKampanyalarPage() {
      <div className="flex items-center justify-between mb-6">
       <div>
        <h1 className="text-2xl font-black text-gray-900">Kampanya Yönetimi</h1>
-       <p className="text-gray-600 mt-1">Kampanyaları ekleyin, düzenleyin ve yönetin</p>
+       <p className="text-gray-600 mt-1">Kampanyaları ekleyin, düzenleyin ve yönetin.</p>
       </div>
       <button
        onClick={() => {
@@ -200,11 +182,11 @@ export default function AdminKampanyalarPage() {
        </button>
       </div>
      ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
        {campaigns.map((campaign) => (
         <div
          key={campaign._id}
-         className="border rounded-xl overflow-hidden bg-white hover:shadow-lg transition-shadow"
+         className="border rounded-xl overflow-hidden bg-white hover:shadow-lg transition-shadow flex flex-col"
         >
          <div className="relative aspect-video bg-gray-100">
           <Image
@@ -212,7 +194,7 @@ export default function AdminKampanyalarPage() {
            alt={campaign.title}
            fill
            className="object-cover"
-           sizes="(max-width: 768px) 100vw, 50vw"
+           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
           <div className="absolute top-2 right-2">
            <span
@@ -225,31 +207,26 @@ export default function AdminKampanyalarPage() {
            </span>
           </div>
          </div>
-         <div className="p-4">
+         <div className="p-4 flex flex-col grow">
           <h3 className="text-lg font-bold text-gray-900 mb-2">{campaign.title}</h3>
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2">{campaign.description}</p>
-          <div className="flex items-center gap-2 flex-wrap">
-           <button
-            onClick={() => editCampaign(campaign)}
-            className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
-           >
-            Düzenle
-           </button>
-           <button
-            onClick={() => toggleCampaignStatus(campaign)}
-            className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${campaign.isActive
-             ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-             : "bg-green-100 text-green-700 hover:bg-green-200"
-             }`}
-           >
-            {campaign.isActive ? "Pasif Et" : "Aktif Et"}
-           </button>
-           <button
-            onClick={() => handleDeleteCampaign(campaign._id)}
-            className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
-           >
-            Sil
-           </button>
+          {campaign.description && (
+           <p className="text-gray-600 text-sm mb-4 line-clamp-2">{campaign.description}</p>
+          )}
+          <div className="mt-auto">
+           <div className="flex items-center gap-2 flex-wrap">
+            <button
+             onClick={() => editCampaign(campaign)}
+             className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+            >
+             Düzenle
+            </button>
+            <button
+             onClick={() => handleDeleteCampaign(campaign._id)}
+             className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
+            >
+             Sil
+            </button>
+           </div>
           </div>
          </div>
         </div>

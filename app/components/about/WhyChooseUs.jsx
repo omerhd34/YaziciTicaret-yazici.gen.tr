@@ -37,7 +37,7 @@ export default function WhyChooseUs() {
   {
    icon: HiShieldCheck,
    title: "Güvenli Ödeme",
-   description: "Tüm ödeme işlemleriniz güvenli bir şekilde gerçekleştirilmektedir. Kredi kartı bilgileriniz banka altyapısı üzerinden işlenir ve hiçbir şekilde saklanmaz. Tüm kartlarda taksit seçeneği mevcuttur.",
+   description: "Havale ve EFT ile Ödeme veya Kapıda Ödeme seçeneklerimizle güvenli ödeme yapabilirsiniz. Havale ve EFT ile ödeme yapmak için sipariş verdiğinizde IBAN bilgilerimiz size iletilecektir. Kapıda ödeme seçeneğinde, ürün teslim edilirken kargo görevlisine nakit veya kredi kartı ile ödeme yapabilirsiniz.",
    gradient: "from-orange-500 to-orange-700",
   },
  ];

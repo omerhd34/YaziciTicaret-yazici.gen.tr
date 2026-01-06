@@ -16,9 +16,15 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault, s
     <p className="text-sm text-gray-500 mb-1">Adres Başlığı:</p>
     <p className="font-semibold text-gray-800">{address.title}</p>
    </div>
-   <div className="mb-4">
-    <p className="text-sm text-gray-500 mb-1">Ad Soyad:</p>
-    <p className="font-semibold text-gray-800">{address.fullName}</p>
+   <div className="grid grid-cols-2 gap-4 mb-4">
+    <div>
+     <p className="text-sm text-gray-500 mb-1">Ad:</p>
+     <p className="font-semibold text-gray-800">{address.firstName || (address.fullName?.split(' ')[0] || '')}</p>
+    </div>
+    <div>
+     <p className="text-sm text-gray-500 mb-1">Soyad:</p>
+     <p className="font-semibold text-gray-800">{address.lastName || (address.fullName?.split(' ').slice(1).join(' ') || '')}</p>
+    </div>
    </div>
    <div className="mb-4">
     <p className="text-sm text-gray-500 mb-1">Adres:</p>
@@ -46,7 +52,8 @@ export default function AddressCard({ address, onEdit, onDelete, onSetDefault, s
         const addressId = address._id?.toString ? address._id.toString() : address._id;
         const res = await axiosInstance.put(`/api/user/addresses/${addressId}`, {
          title: address.title,
-         fullName: address.fullName,
+         firstName: address.firstName || (address.fullName?.split(' ')[0] || ''),
+         lastName: address.lastName || (address.fullName?.split(' ').slice(1).join(' ') || ''),
          phone: address.phone,
          address: address.address,
          city: address.city,

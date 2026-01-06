@@ -12,9 +12,11 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
   title: "",
   description: "",
   image: "",
-  link: "/kategori/indirim",
   isActive: true,
   order: 0,
+  endDate: "",
+  productCodes: "",
+  campaignPrice: "",
  });
 
  useEffect(() => {
@@ -23,9 +25,11 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
     title: campaign.title || "",
     description: campaign.description || "",
     image: campaign.image || "",
-    link: campaign.link || "/kategori/indirim",
     isActive: campaign.isActive !== undefined ? campaign.isActive : true,
     order: campaign.order || 0,
+    endDate: campaign.endDate ? new Date(campaign.endDate).toISOString().split('T')[0] : "",
+    productCodes: campaign.productCodes && Array.isArray(campaign.productCodes) ? campaign.productCodes.join(', ') : "",
+    campaignPrice: campaign.campaignPrice || "",
    });
   }
  }, [campaign]);
@@ -74,10 +78,6 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
    onError("Başlık gereklidir");
    return;
   }
-  if (!formData.description.trim()) {
-   onError("Açıklama gereklidir");
-   return;
-  }
   if (!formData.image) {
    onError("Kampanya görseli gereklidir");
    return;
@@ -85,9 +85,20 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
 
   setLoading(true);
   try {
+   const productCodesArray = formData.productCodes
+    ? formData.productCodes.split(',').map(code => code.trim()).filter(code => code !== '')
+    : [];
+
+   const submitData = {
+    ...formData,
+    endDate: formData.endDate ? new Date(formData.endDate).toISOString() : null,
+    productCodes: productCodesArray,
+    campaignPrice: formData.campaignPrice ? parseFloat(formData.campaignPrice) : null,
+   };
+
    if (campaign) {
     // Güncelle
-    const res = await axiosInstance.put(`/api/admin/campaigns/${campaign._id}`, formData);
+    const res = await axiosInstance.put(`/api/admin/campaigns/${campaign._id}`, submitData);
     if (res.data?.success) {
      onSuccess();
     } else {
@@ -95,7 +106,7 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
     }
    } else {
     // Yeni oluştur
-    const res = await axiosInstance.post("/api/admin/campaigns", formData);
+    const res = await axiosInstance.post("/api/admin/campaigns", submitData);
     if (res.data?.success) {
      onSuccess();
     } else {
@@ -122,7 +133,7 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
      </h2>
      <button
       onClick={onClose}
-      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+      className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
      >
       <HiX size={24} />
      </button>
@@ -147,7 +158,7 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
      {/* Açıklama */}
      <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-       Açıklama <span className="text-red-500">*</span>
+       Açıklama
       </label>
       <textarea
        value={formData.description}
@@ -155,7 +166,6 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
        placeholder="Kampanya açıklaması"
        rows={3}
-       required
       />
      </div>
 
@@ -177,7 +187,7 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
         <button
          type="button"
          onClick={() => setFormData({ ...formData, image: "" })}
-         className="mt-2 text-red-600 text-sm font-semibold hover:text-red-700"
+         className="mt-2 text-red-600 text-sm font-semibold hover:text-red-700 cursor-pointer"
         >
          Görseli Kaldır
         </button>
@@ -200,18 +210,50 @@ export default function CampaignModal({ campaign, onClose, onSuccess, onError })
       </label>
      </div>
 
-     {/* Link */}
+     {/* Son Gün Tarihi */}
      <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-       Link (Kampanyaya tıklanınca gidilecek sayfa)
+       Kampanya Son Günü
       </label>
       <input
-       type="text"
-       value={formData.link}
-       onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+       type="date"
+       value={formData.endDate}
+       onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-       placeholder="/kategori/indirim"
       />
+      <p className="mt-1 text-xs text-gray-500">Boş bırakılırsa kampanya son günü gösterilmez</p>
+     </div>
+
+     {/* Ürün Kodları */}
+     <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+       Ürün Kodları
+      </label>
+      <textarea
+       value={formData.productCodes}
+       onChange={(e) => setFormData({ ...formData, productCodes: e.target.value.toUpperCase() })}
+       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
+       placeholder="Ürün kodlarını virgülle ayırarak girin (örn: ABC123, XYZ456, DEF789)"
+       rows={3}
+      />
+      <p className="mt-1 text-xs text-gray-500">Ürün kodlarını virgülle ayırarak girin. Bu kodlara sahip ürünler kampanya sayfasında görüntülenecektir.</p>
+     </div>
+
+     {/* Kampanya Fiyatı */}
+     <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+       Kampanya Özel Fiyatı (Opsiyonel)
+      </label>
+      <input
+       type="number"
+       value={formData.campaignPrice}
+       onChange={(e) => setFormData({ ...formData, campaignPrice: e.target.value })}
+       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+       placeholder="Kampanyadaki tüm ürünler için geçerli özel fiyat (TL)"
+       min="0"
+       step="0.01"
+      />
+      <p className="mt-1 text-xs text-gray-500">Bu fiyat, kampanyadaki tüm ürünler için geçerli olacaktır. Boş bırakılırsa ürünlerin normal fiyatları kullanılır.</p>
      </div>
 
      {/* Sıra */}

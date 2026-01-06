@@ -12,7 +12,9 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
   if (!a || !b) return true;
   const pick = (x) => ({
    title: x?.title || "",
-   fullName: x?.fullName || "",
+   firstName: x?.firstName || "",
+   lastName: x?.lastName || "",
+   fullName: x?.fullName || (x?.firstName && x?.lastName ? `${x.firstName} ${x.lastName}` : ""),
    phone: x?.phone || "",
    address: x?.address || "",
    district: x?.district || "",
@@ -87,10 +89,10 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
       <div className="bg-white border rounded-xl p-4">
        <div className="text-xs text-gray-500 mb-1">Ödeme</div>
        <div className="font-bold text-gray-900">
-        {order?.payment?.type === "card"
-         ? "Kart ile Ödeme"
-         : order?.payment?.type === "havale"
-          ? "Havale ve EFT ile Ödeme"
+        {order?.payment?.type === "havale"
+         ? "Havale ve EFT ile Ödeme"
+         : order?.payment?.type === "mailorder"
+          ? "Kapıda Ödeme"
           : (order?.payment?.type ? String(order.payment.type) : "-")}
        </div>
       </div>
@@ -107,7 +109,7 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
        {shipping ? (
         <div className="text-sm text-gray-800">
          <div className="font-semibold">{shipping.title || "Adres"}</div>
-         <div>{shipping.fullName}</div>
+         <div>{shipping.firstName && shipping.lastName ? `${shipping.firstName} ${shipping.lastName}` : shipping.fullName || ''}</div>
          <div className="text-gray-600">{shipping.address}</div>
          <div className="text-gray-600">{shipping.district} / {shipping.city}</div>
          <div className="text-gray-600">{shipping.phone}</div>
@@ -127,7 +129,7 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
         {billing ? (
          <div className="text-sm text-gray-800">
           <div className="font-semibold">{billing.title || "Adres"}</div>
-          <div>{billing.fullName}</div>
+          <div>{billing.firstName && billing.lastName ? `${billing.firstName} ${billing.lastName}` : billing.fullName || ''}</div>
           <div className="text-gray-600">{billing.address}</div>
           <div className="text-gray-600">{billing.district} / {billing.city}</div>
           <div className="text-gray-600">{billing.phone}</div>

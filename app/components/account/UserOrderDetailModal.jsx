@@ -2,9 +2,11 @@
 import { useMemo, useState, useEffect } from "react";
 import { HiX } from "react-icons/hi";
 import normalizeText from "@/lib/normalizeText";
+import axiosInstance from "@/lib/axios";
 
 export default function UserOrderDetailModal({ show, order, addresses, onClose, onCancel, onReturn, onCancelReturn, formatOrderStatus }) {
  const [currentTime, setCurrentTime] = useState(() => Date.now());
+ const [productsData, setProductsData] = useState(new Map());
 
  useEffect(() => {
   const timer = setInterval(() => {
@@ -12,6 +14,54 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
   }, 1000);
   return () => clearInterval(timer);
  }, []);
+
+ // Kampanyadaki ürünlerin orijinal fiyatlarını bulmak için ürünleri API'den çek
+ useEffect(() => {
+  const fetchProducts = async () => {
+   const items = Array.isArray(order?.items) ? order.items : [];
+   const campaignItems = items.filter(item => item.campaignId && item.campaignTitle);
+   if (campaignItems.length === 0) return;
+
+   // Ürün ID'lerini topla
+   const productIds = campaignItems
+    .map(item => item.productId || item._id || item.id)
+    .filter(Boolean)
+    .map(id => String(id));
+
+   if (productIds.length === 0) return;
+
+   try {
+    const res = await axiosInstance.get("/api/products?limit=1000");
+    const data = res.data;
+    const allProducts = data.data || data.products || [];
+
+    if (data.success && allProducts.length > 0) {
+     const productsMap = new Map();
+     allProducts.forEach(product => {
+      const productId = String(product._id);
+      if (productIds.includes(productId)) {
+       // Orijinal fiyatı hesapla: discountPrice varsa ve price'dan küçükse onu kullan, yoksa price'ı kullan
+       const originalPrice = product.discountPrice && product.discountPrice < product.price
+        ? product.discountPrice
+        : product.price;
+       productsMap.set(productId, {
+        price: product.price,
+        discountPrice: product.discountPrice,
+        originalPrice: originalPrice,
+       });
+      }
+     });
+     setProductsData(productsMap);
+    }
+   } catch (error) {
+    console.error("Ürünler yüklenirken hata:", error);
+   }
+  };
+
+  if (show && order) {
+   fetchProducts();
+  }
+ }, [show, order]);
 
  const addrFromSaved = useMemo(() => {
   if (!order?.addressId) return null;
@@ -21,7 +71,9 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
  const shipping = useMemo(() => {
   return order?.shippingAddress || (addrFromSaved ? {
    title: addrFromSaved.title,
-   fullName: addrFromSaved.fullName,
+   firstName: addrFromSaved.firstName,
+   lastName: addrFromSaved.lastName,
+   fullName: addrFromSaved.fullName || (addrFromSaved.firstName && addrFromSaved.lastName ? `${addrFromSaved.firstName} ${addrFromSaved.lastName}` : ''),
    phone: addrFromSaved.phone,
    address: addrFromSaved.address,
    district: addrFromSaved.district,
@@ -35,7 +87,9 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
   if (!shipping || !billing) return true;
   const pick = (x) => ({
    title: x?.title || "",
-   fullName: x?.fullName || "",
+   firstName: x?.firstName || "",
+   lastName: x?.lastName || "",
+   fullName: x?.fullName || (x?.firstName && x?.lastName ? `${x.firstName} ${x.lastName}` : ""),
    phone: x?.phone || "",
    address: x?.address || "",
    district: x?.district || "",
@@ -46,10 +100,44 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
 
  const payment = order?.payment || null;
  const finalPayment = payment;
- const paymentText = finalPayment?.type === "card" ? "Kart ile Ödeme" : finalPayment?.type === "havale" ? "Havale ve EFT ile Ödeme" : (finalPayment?.type ? String(finalPayment.type) : "Bilinmiyor");
+ const paymentText = finalPayment?.type === "havale" ? "Havale ve EFT ile Ödeme" : finalPayment?.type === "mailorder" ? "Kapıda Ödeme" : (finalPayment?.type ? String(finalPayment.type) : "Bilinmiyor");
 
- const items = Array.isArray(order?.items) ? order.items : [];
+ const items = useMemo(() => Array.isArray(order?.items) ? order.items : [], [order]);
  const groups = new Map();
+
+ // Kampanya bilgilerini topla
+ const campaignInfo = useMemo(() => {
+  const campaignItems = items.filter(item => item.campaignId && item.campaignTitle);
+  if (campaignItems.length === 0) return null;
+
+  const campaignGroups = {};
+  campaignItems.forEach(item => {
+   const key = `${item.campaignId}_${item.campaignTitle}`;
+   if (!campaignGroups[key]) {
+    campaignGroups[key] = {
+     campaignId: item.campaignId,
+     campaignTitle: item.campaignTitle,
+     items: [],
+     originalTotal: 0,
+     campaignTotal: 0,
+    };
+   }
+   const qty = Number(item.quantity || 1);
+   const campaignPrice = Number(item.price || 0);
+
+   // Orijinal fiyatı bul: API'den çekilen ürün verilerini kullan
+   const productId = String(item.productId || item._id || item.id || "");
+   const productInfo = productsData.get(productId);
+   const originalPrice = productInfo ? productInfo.originalPrice : campaignPrice;
+
+   campaignGroups[key].items.push(item);
+   campaignGroups[key].originalTotal += originalPrice * qty;
+   campaignGroups[key].campaignTotal += campaignPrice * qty;
+  });
+
+  return Object.values(campaignGroups);
+ }, [items, productsData]);
+
  for (const it of items) {
   const name = it?.name || it?.productName || it?.title || "Ürün";
   const key = `${name}`;
@@ -57,18 +145,41 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
   const price = Number(it?.price || 0) || 0;
   const color = it?.color ? String(it.color).trim() : "";
   const serialNumber = it?.serialNumber ? String(it.serialNumber).trim() : "";
+  const campaignId = it?.campaignId || null;
+  const campaignTitle = it?.campaignTitle || null;
+
   if (!groups.has(key)) {
-   groups.set(key, { name, totalQty: 0, totalAmount: 0, colorCounts: new Map(), serialNumber: serialNumber || "" });
+   groups.set(key, {
+    name,
+    totalQty: 0,
+    totalAmount: 0,
+    originalAmount: 0,
+    colorCounts: new Map(),
+    serialNumber: serialNumber || "",
+    campaignId,
+    campaignTitle,
+   });
   }
   const g = groups.get(key);
   g.totalQty += qty;
   g.totalAmount += price * qty;
+
+  // Orijinal fiyatı hesapla
+  const productId = String(it?.productId || it?._id || it?.id || "");
+  const productInfo = productsData.get(productId);
+  const originalPrice = productInfo ? productInfo.originalPrice : price;
+  g.originalAmount += originalPrice * qty;
   if (color) {
    g.colorCounts.set(color, (g.colorCounts.get(color) || 0) + qty);
   }
   // Seri numarasını ilk bulunan değerle set et (eğer yoksa)
   if (serialNumber && !g.serialNumber) {
    g.serialNumber = serialNumber;
+  }
+  // Kampanya bilgisini ilk bulunan değerle set et
+  if (campaignId && !g.campaignId) {
+   g.campaignId = campaignId;
+   g.campaignTitle = campaignTitle;
   }
  }
  const grouped = Array.from(groups.values());
@@ -142,7 +253,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
        <p className="text-sm text-gray-500">Sipariş No: {order.orderId}</p>
       )}
      </div>
-     <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition">
+     <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition cursor-pointer">
       <HiX size={24} />
      </button>
     </div>
@@ -156,7 +267,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
        {shipping ? (
         <div className="text-sm text-gray-800">
          <p className="font-semibold">{shipping.title || "Adres"}</p>
-         <p>{shipping.fullName}</p>
+         <p>{shipping.firstName && shipping.lastName ? `${shipping.firstName} ${shipping.lastName}` : shipping.fullName || ''}</p>
          <p className="text-gray-600">{shipping.address}</p>
          <p className="text-gray-600">{shipping.district} / {shipping.city}</p>
          <p className="text-gray-600">{shipping.phone}</p>
@@ -180,7 +291,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
         {billing ? (
          <div className="text-sm text-gray-800">
           <p className="font-semibold">{billing.title || "Adres"}</p>
-          <p>{billing.fullName}</p>
+          <p>{billing.firstName && billing.lastName ? `${billing.firstName} ${billing.lastName}` : billing.fullName || ''}</p>
           <p className="text-gray-600">{billing.address}</p>
           <p className="text-gray-600">{billing.district} / {billing.city}</p>
           <p className="text-gray-600">{billing.phone}</p>
@@ -199,9 +310,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
       <div className="bg-gray-50 rounded-lg p-4">
        <p className="text-xs text-gray-500 mb-1">Ödeme</p>
        <p className="font-semibold text-gray-900">{paymentText}</p>
-       {payment?.type === "card" && payment?.cardId && (
-        <p className="text-sm text-gray-600 mt-1">Kart: {String(payment.cardId).slice(-6)}</p>
-       )}
       </div>
      </div>
 
@@ -235,8 +343,13 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
          : "";
         return (
          <div key={`${g.name}-${idx}`} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-4">
-          <div>
+          <div className="flex-1">
            <p className="font-semibold text-gray-900">{g.name}</p>
+           {g.campaignTitle && (
+            <p className="text-xs text-purple-600 font-semibold mt-1">
+             {g.campaignTitle} Kampanyası
+            </p>
+           )}
            <p className="text-sm text-gray-600">
             {g.serialNumber && (
              <span>
@@ -247,12 +360,48 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
           </div>
           <div className="text-right">
            <p className="text-sm text-gray-600">Adet: {g.totalQty}</p>
-           <p className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</p>
+           {g.campaignId && g.originalAmount > g.totalAmount ? (
+            <div className="flex flex-col items-end gap-1">
+             <p className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</p>
+             <p className="text-sm text-gray-400 line-through">{g.originalAmount.toFixed(2)} ₺</p>
+            </div>
+           ) : (
+            <p className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</p>
+           )}
           </div>
          </div>
         );
        })}
       </div>
+      {campaignInfo && campaignInfo.length > 0 && (
+       <div className="mt-4 space-y-2">
+        {campaignInfo.map((campaign, index) => {
+         const discount = campaign.originalTotal - campaign.campaignTotal;
+         const discountPercentage = campaign.originalTotal > 0
+          ? ((discount / campaign.originalTotal) * 100).toFixed(1)
+          : 0;
+         return (
+          <div key={campaign.campaignId || index} className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+           <p className="text-xs font-semibold text-purple-800 mb-1">
+            {campaign.campaignTitle} Kampanyası
+           </p>
+           <div className="text-xs text-purple-700 space-y-1">
+            <p>Bu siparişte kampanya fiyatı uygulanmıştır.</p>
+            {campaign.originalTotal > campaign.campaignTotal && (
+             <div className="flex items-center gap-2 mt-2">
+              <span className="line-through text-gray-500">{campaign.originalTotal.toFixed(2)} ₺</span>
+              <span className="font-semibold text-purple-800">{campaign.campaignTotal.toFixed(2)} ₺</span>
+              {discount > 0 && (
+               <span className="text-green-600 font-semibold">%{discountPercentage} indirim</span>
+              )}
+             </div>
+            )}
+           </div>
+          </div>
+         );
+        })}
+       </div>
+      )}
      </div>
     </div>
 

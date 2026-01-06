@@ -28,7 +28,11 @@ export default function PaymentAddressCard({ address, selected, onSelect }) {
        </span>
       )}
      </div>
-     <p className="text-sm text-gray-700 mt-2 font-semibold">{address.fullName}</p>
+     <p className="text-sm text-gray-700 mt-2 font-semibold">
+      {address.firstName && address.lastName
+       ? `${address.firstName} ${address.lastName}`
+       : address.fullName || ''}
+     </p>
      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{address.address}</p>
      <p className="text-sm text-gray-600 mt-1">
       {address.district} / {address.city}

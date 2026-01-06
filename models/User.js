@@ -5,9 +5,17 @@ const AddressSchema = new mongoose.Schema({
   type: String,
   required: true,
  },
- fullName: {
+ firstName: {
   type: String,
   required: true,
+ },
+ lastName: {
+  type: String,
+  required: true,
+ },
+ fullName: {
+  type: String,
+  required: false,
  },
  phone: {
   type: String,
@@ -31,37 +39,20 @@ const AddressSchema = new mongoose.Schema({
  },
 }, { _id: true });
 
-const CardSchema = new mongoose.Schema({
- cardName: {
-  type: String,
-  required: true,
- },
- cardNumber: {
-  type: String,
-  required: true,
- },
- cardHolderName: {
-  type: String,
-  required: true,
- },
- expiryDate: {
-  type: String,
-  required: true,
- },
- cvv: {
-  type: String,
-  required: true,
- },
- isDefault: {
-  type: Boolean,
-  default: false,
- },
-}, { _id: true });
-
 const UserSchema = new mongoose.Schema({
  name: {
   type: String,
-  required: [true, 'Ad Soyad gereklidir'],
+  required: false,
+  trim: true,
+ },
+ firstName: {
+  type: String,
+  required: [true, 'Ad gereklidir'],
+  trim: true,
+ },
+ lastName: {
+  type: String,
+  required: [true, 'Soyad gereklidir'],
   trim: true,
  },
  email: {
@@ -84,7 +75,6 @@ const UserSchema = new mongoose.Schema({
   default: '',
  },
  addresses: [AddressSchema],
- cards: [CardSchema],
  orders: [{
   orderId: String,
   date: Date,
@@ -126,7 +116,6 @@ const UserSchema = new mongoose.Schema({
   items: Array,
   total: Number,
   address: mongoose.Schema.Types.Mixed,
-  cardId: String,
   createdAt: Date,
  }],
  notificationPreferences: {

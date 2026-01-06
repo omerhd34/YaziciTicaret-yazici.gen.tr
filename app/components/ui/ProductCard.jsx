@@ -2,14 +2,14 @@
 import Link from "next/link";
 import { HiHeart, HiChevronLeft, HiChevronRight, HiSwitchHorizontal } from "react-icons/hi";
 import { FaShoppingCart, FaStar, FaRegStar } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useComparison } from "@/context/ComparisonContext";
 import Image from "next/image";
 import { getProductUrl } from "@/app/utils/productUrl";
 import { getColorHex } from "@/app/utils/colorUtils";
 
-export default function ProductCard({ product, priority = false }) {
+export default function ProductCard({ product, priority = false, onColorChange, selectedColorName }) {
  const [isImageHovered, setIsImageHovered] = useState(false);
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
  const { addToFavorites, removeFromFavorites, isFavorite: checkFavorite, addToCart, removeFromCart, cart } = useCart();
@@ -20,9 +20,15 @@ export default function ProductCard({ product, priority = false }) {
  const allColors = product._allColors || product.colors;
  const validColors = allColors ? allColors.filter(c => typeof c === 'object' && c.serialNumber) : [];
  const initialColor = validColors.length > 0 ? validColors[0] : null;
- const [selectedColorState, setSelectedColorState] = useState({ productId: product._id, color: null });
+
+ // Eğer parent'tan seçili renk geliyorsa onu kullan, yoksa initialColor'ı kullan
+ const defaultColor = selectedColorName
+  ? validColors.find(c => c.name === selectedColorName) || initialColor
+  : initialColor;
+
+ const [selectedColorState, setSelectedColorState] = useState({ productId: product._id, color: defaultColor });
  const selectedColor = selectedColorState.productId === product._id ? selectedColorState.color : null;
- const currentColor = selectedColor || initialColor;
+ const currentColor = selectedColor || defaultColor;
  const images = currentColor?.images && currentColor.images.length > 0
   ? currentColor.images
   : (product.images && product.images.length > 0 ? product.images : ["/products/beyaz-esya.webp"]);
@@ -63,11 +69,34 @@ export default function ProductCard({ product, priority = false }) {
   if (currentImageIndex >= newColorImages.length) {
    setCurrentImageIndex(Math.max(0, newColorImages.length - 1));
   }
+  // Parent component'e seçili rengi bildir
+  if (onColorChange) {
+   onColorChange(product._id, color?.name || null);
+  }
  };
 
  const hasDiscount = colorDiscountPrice && colorDiscountPrice < colorPrice;
 
  const productUrl = getProductUrl(product, colorSerialNumber);
+
+ // İlk yüklendiğinde varsayılan rengi parent'a bildir
+ useEffect(() => {
+  if (onColorChange && currentColor) {
+   onColorChange(product._id, currentColor.name || null);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, []); // Sadece ilk render'da çalış
+
+ // selectedColorName değiştiğinde rengi güncelle
+ useEffect(() => {
+  if (selectedColorName && validColors.length > 0) {
+   const colorToSelect = validColors.find(c => c.name === selectedColorName);
+   if (colorToSelect) {
+    setSelectedColorState({ productId: product._id, color: colorToSelect });
+   }
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, [selectedColorName, product._id]);
 
  return (
   <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative h-full flex flex-col">

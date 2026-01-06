@@ -50,11 +50,11 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { title, description, image, link, isActive, order } = body;
+  const { title, description, image, link, isActive, order, endDate, productCodes, campaignPrice } = body;
 
-  if (!title || !description || !image) {
+  if (!title || !image) {
    return NextResponse.json(
-    { success: false, error: 'Başlık, açıklama ve görsel gereklidir' },
+    { success: false, error: 'Başlık ve görsel gereklidir' },
     { status: 400 }
    );
   }
@@ -63,11 +63,14 @@ export async function POST(request) {
 
   const campaign = new Campaign({
    title,
-   description,
+   description: description || '',
    image,
    link: link || '/kategori/indirim',
    isActive: isActive !== undefined ? isActive : true,
    order: order || 0,
+   endDate: endDate || null,
+   productCodes: productCodes && Array.isArray(productCodes) ? productCodes : [],
+   campaignPrice: campaignPrice !== undefined && campaignPrice !== null && campaignPrice !== '' ? parseFloat(campaignPrice) : null,
   });
 
   await campaign.save();

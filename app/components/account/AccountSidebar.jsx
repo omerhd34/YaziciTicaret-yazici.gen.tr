@@ -1,9 +1,9 @@
 "use client";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { HiUser, HiLocationMarker, HiCog, HiCamera, HiShoppingBag } from "react-icons/hi";
-import { MdInventory2, MdCreditCard } from "react-icons/md";
+import { MdInventory2 } from "react-icons/md";
 import { FaHeart } from "react-icons/fa";
 
 export default function AccountSidebar({ userInfo, activeTab, onTabChange, onImageUpload, uploadingImage }) {
@@ -93,17 +93,6 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange, onIma
      >
       <HiLocationMarker size={20} />
       Adreslerim
-     </button>
-
-     <button
-      onClick={() => onTabChange("kartlar")}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold cursor-pointer transition ${activeTab === "kartlar"
-       ? "bg-indigo-50 text-indigo-600"
-       : "text-gray-700 hover:bg-gray-50"
-       }`}
-     >
-      <MdCreditCard size={20} />
-      Kayıtlı Kartlarım
      </button>
 
      <button

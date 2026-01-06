@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import ProductRequest from '@/models/ProductRequest';
 
 // GET - Kullanıcı profil bilgilerini getir
 export async function GET() {
@@ -44,11 +45,41 @@ export async function GET() {
    );
   }
 
+  // Eğer firstName ve lastName yoksa name'den ayır ve veritabanına kaydet
+  if ((!user.firstName || user.firstName.trim() === '') && (!user.lastName || user.lastName.trim() === '') && user.name) {
+   const parts = user.name.trim().split(' ').filter(p => p.length > 0);
+   if (parts.length > 0) {
+    // Son kelime soyad, geri kalanı ad
+    user.lastName = parts[parts.length - 1] || '';
+    user.firstName = parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0] || '';
+    // name'i de güncelle
+    user.name = user.name.trim();
+    await user.save();
+   }
+  }
+
+  let firstName = user.firstName || '';
+  let lastName = user.lastName || '';
+  let name = user.name || '';
+  if ((!firstName || firstName.trim() === '') && (!lastName || lastName.trim() === '') && user.name) {
+   const parts = user.name.trim().split(' ').filter(p => p.length > 0);
+   if (parts.length > 0) {
+    // Son kelime soyad, geri kalanı ad
+    lastName = parts[parts.length - 1] || '';
+    firstName = parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0] || '';
+    name = user.name;
+   }
+  } else if (firstName && lastName && !name) {
+   name = `${firstName} ${lastName}`.trim();
+  }
+
   return NextResponse.json({
    success: true,
    user: {
     id: user._id,
-    name: user.name,
+    firstName: firstName,
+    lastName: lastName,
+    name: name,
     email: user.email,
     phone: user.phone || '',
     profileImage: user.profileImage || '',
@@ -144,7 +175,22 @@ export async function PUT(request) {
   }
 
   // Profil bilgilerini güncelle
-  if (body.name) user.name = body.name;
+  if (body.firstName) user.firstName = body.firstName.trim();
+  if (body.lastName) user.lastName = body.lastName.trim();
+  // Geriye dönük uyumluluk için name'i de güncelle
+  if (body.firstName || body.lastName) {
+   const firstName = body.firstName !== undefined ? body.firstName.trim() : (user.firstName || '');
+   const lastName = body.lastName !== undefined ? body.lastName.trim() : (user.lastName || '');
+   user.name = `${firstName} ${lastName}`.trim();
+  } else if (body.name) {
+   user.name = body.name.trim();
+   // Eğer sadece name gönderilmişse firstName ve lastName'i de güncelle
+   if (!user.firstName && !user.lastName) {
+    const parts = body.name.trim().split(' ');
+    user.firstName = parts[0] || '';
+    user.lastName = parts.slice(1).join(' ') || '';
+   }
+  }
   if (body.email) user.email = body.email.toLowerCase();
   if (body.phone !== undefined) user.phone = body.phone || '';
   if (body.profileImage !== undefined) user.profileImage = body.profileImage || '';
@@ -165,10 +211,11 @@ export async function PUT(request) {
   await user.save();
 
   // Session'ı güncelle
+  const sessionName = user.name || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : '');
   cookieStore.set('user-session', JSON.stringify({
    id: user._id.toString(),
    email: user.email,
-   name: user.name,
+   name: sessionName,
   }), {
    httpOnly: true,
    secure: process.env.NODE_ENV === 'production',
@@ -177,12 +224,17 @@ export async function PUT(request) {
    path: '/',
   });
 
+  // Geriye dönük uyumluluk için name'i oluştur
+  const responseName = user.name || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : '');
+
   return NextResponse.json({
    success: true,
    message: 'Profil güncellendi',
    user: {
     id: user._id,
-    name: user.name,
+    firstName: user.firstName || '',
+    lastName: user.lastName || '',
+    name: responseName,
     email: user.email,
     phone: user.phone || '',
     profileImage: user.profileImage || '',
@@ -240,6 +292,9 @@ export async function DELETE() {
     { status: 404 }
    );
   }
+
+  // Kullanıcıya ait ürün isteklerini sil
+  await ProductRequest.deleteMany({ userId: user._id });
 
   // Kullanıcıyı veritabanından sil
   await User.findByIdAndDelete(userData.id);

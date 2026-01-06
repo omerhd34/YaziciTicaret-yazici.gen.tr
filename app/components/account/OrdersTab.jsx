@@ -25,7 +25,7 @@ export default function OrdersTab({ orders, ordersLoading, showAllOrders, setSho
      <FaShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
      <p className="text-gray-500 text-lg mb-4">Henüz siparişiniz yok</p>
      <Link
-      href="/kategori"
+      href="/"
       className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
      >
       Alışverişe Başla
@@ -66,9 +66,12 @@ export default function OrdersTab({ orders, ordersLoading, showAllOrders, setSho
 
       const itemsArr = Array.isArray(order.items) ? order.items : [];
       const itemCount = itemsArr.length;
-      const firstProductName = itemsArr[0]?.name || itemsArr[0]?.productName || itemsArr[0]?.title;
-      const orderTitle = firstProductName
-       ? firstProductName
+      // Ürün kodlarını topla
+      const productCodes = itemsArr
+       .map(item => item.serialNumber || item.serial || '')
+       .filter(code => code && code.trim() !== '');
+      const orderTitle = productCodes.length > 0
+       ? productCodes.join(', ')
        : `Sipariş #${order.orderId || (order._id ? order._id.toString().slice(-6).toUpperCase() : '')}`;
 
       return (
