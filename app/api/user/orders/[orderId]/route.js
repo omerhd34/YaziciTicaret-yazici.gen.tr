@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import Product from "@/models/Product";
 import normalizeText from "@/lib/normalizeText";
 import { sendAdminOrderCancelledEmail } from "@/lib/notifications";
 
@@ -69,14 +70,59 @@ export async function PATCH(request, { params }) {
    );
   }
 
+  const order = user.orders[idx];
   user.orders[idx].status = "İptal Edildi";
   user.orders[idx].updatedAt = new Date();
   await user.save();
 
+  // Sipariş iptal edildiğinde stokları geri ekle
+  try {
+   const items = order?.items || [];
+   for (const item of items) {
+    const productId = item.productId;
+    const quantity = item.quantity || 1;
+    
+    if (productId) {
+     // Önce ürünü getir
+     const product = await Product.findById(productId);
+     if (!product) continue;
+
+     // Ana ürünün stokunu geri ekle
+     await Product.findByIdAndUpdate(
+      productId,
+      {
+       $inc: { 
+        stock: quantity,
+        soldCount: -quantity 
+       }
+      },
+      { new: true }
+     );
+
+     // Eğer renk seçilmişse, o rengin stokunu da geri ekle
+     if (item.color && product.colors && Array.isArray(product.colors)) {
+      const colorName = String(item.color).trim();
+      await Product.updateOne(
+       { 
+        _id: productId,
+        'colors.name': colorName 
+       },
+       { 
+        $inc: { 'colors.$.stock': quantity }
+       }
+      );
+     }
+    }
+   }
+  } catch (stockRestoreError) {
+   // Stock restore error - silently fail
+   // Hata olsa bile sipariş iptal edilmiş sayılır
+   console.error('Stok geri ekleme hatası:', stockRestoreError);
+  }
+
   // Admin'e e-posta bildirimi (best-effort)
   try {
    const adminEmail = process.env.EMAIL_USER;
-   const order = user.orders[idx];
 
    await sendAdminOrderCancelledEmail({
     adminEmail,

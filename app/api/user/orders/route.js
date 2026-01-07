@@ -244,21 +244,57 @@ export async function POST(request) {
   user.orders.unshift(order);
   await user.save();
 
-  // Ürünlerin soldCount değerlerini güncelle
+  // Ürünlerin soldCount ve stock değerlerini güncelle
   try {
    for (const item of repricedItems) {
     const productId = item.productId;
+    const quantity = item.quantity || 1;
+
     if (productId) {
+     // Önce ürünü getir
+     const product = await Product.findById(productId);
+     if (!product) continue;
+
+     // Ana ürünün stokunu azalt
+     const updateData = {
+      $inc: {
+       soldCount: quantity,
+       stock: -quantity
+      }
+     };
+
+     // Stok negatif olmaması için kontrol et
+     const newStock = (product.stock || 0) - quantity;
+     if (newStock < 0) {
+      // Stok yetersiz, ama sipariş zaten oluşturuldu, sadece log
+      console.warn(`Ürün ${productId} için stok yetersiz. Mevcut stok: ${product.stock}, İstenen: ${quantity}`);
+     }
+
+     // Ana ürün stokunu güncelle
      await Product.findByIdAndUpdate(
       productId,
-      { $inc: { soldCount: item.quantity || 1 } },
+      updateData,
       { new: true }
      );
+
+     // Eğer renk seçilmişse, o rengin stokunu da azalt
+     if (item.color && product.colors && Array.isArray(product.colors)) {
+      const colorName = String(item.color).trim();
+      // Renk bazlı stok güncellemesi - positional operator kullan
+      await Product.updateOne(
+       {
+        _id: productId,
+        'colors.name': colorName
+       },
+       {
+        $inc: { 'colors.$.stock': -quantity }
+       }
+      );
+     }
     }
    }
-  } catch (soldCountError) {
-   // soldCount update error - silently fail
-   // Hata olsa bile sipariş oluşturulmuş sayılır
+  } catch (stockUpdateError) {
+   console.error('Stok güncelleme hatası:', stockUpdateError);
   }
 
   let adminEmailResult = null;
@@ -267,7 +303,7 @@ export async function POST(request) {
    const addrSummary = address.summary || '';
    const pmType = paymentMethod?.type || order.payment?.type || '';
    const pmText = pmType === 'havale' ? 'Havale ve EFT ile Ödeme' :
-    (pmType === 'mailorder' ? 'Kapıda Ödeme' : (pmType || '-'));
+    (pmType === 'mailorder' ? 'Kart ile Ödeme' : (pmType || '-'));
 
    if (adminEmail) {
     adminEmailResult = await sendAdminNewOrderEmail({
@@ -296,7 +332,7 @@ export async function POST(request) {
     const addrSummary = address.summary || '';
     const pmType = paymentMethod?.type || order.payment?.type || '';
     const pmText = pmType === 'havale' ? 'Havale ve EFT ile Ödeme' :
-     (pmType === 'mailorder' ? 'Kapıda Ödeme' : (pmType || '-'));
+     (pmType === 'mailorder' ? 'Kart ile Ödeme' : (pmType || '-'));
 
     userEmailResult = await sendUserOrderConfirmationEmail({
      userEmail: user.email,

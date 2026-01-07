@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import Product from "@/models/Product";
 import normalizeText from "@/lib/normalizeText";
 import { sendUserReturnApprovedEmail, sendUserReturnRejectedEmail, sendUserOrderStatusUpdateEmail } from "@/lib/notifications";
 
@@ -132,6 +133,58 @@ export async function PATCH(request, { params }) {
     { success: false, message: "Sipariş bulunamadı (güncelleme yapılamadı)" },
     { status: 404 }
    );
+  }
+
+  // Sipariş iptal edildiğinde veya iade tamamlandığında stokları geri ekle
+  const order = user.orders[idx];
+  const shouldRestoreStock = 
+   (hasStatusUpdate && statusNorm.includes("iptal")) ||
+   (hasReturnUpdate && normalizeText(String(returnRequestStatus).trim()) === normalizeText("Tamamlandı"));
+
+  if (shouldRestoreStock) {
+   try {
+    const items = order?.items || [];
+    for (const item of items) {
+     const productId = item.productId;
+     const quantity = item.quantity || 1;
+     
+     if (productId) {
+      // Önce ürünü getir
+      const product = await Product.findById(productId);
+      if (!product) continue;
+
+      // Ana ürünün stokunu geri ekle
+      await Product.findByIdAndUpdate(
+       productId,
+       {
+        $inc: { 
+         stock: quantity,
+         soldCount: -quantity 
+        }
+       },
+       { new: true }
+      );
+
+      // Eğer renk seçilmişse, o rengin stokunu da geri ekle
+      if (item.color && product.colors && Array.isArray(product.colors)) {
+       const colorName = String(item.color).trim();
+       await Product.updateOne(
+        { 
+         _id: productId,
+         'colors.name': colorName 
+        },
+        { 
+         $inc: { 'colors.$.stock': quantity }
+        }
+       );
+      }
+     }
+    }
+   } catch (stockRestoreError) {
+    // Stock restore error - silently fail
+    // Hata olsa bile sipariş güncellemesi yapılmış sayılır
+    console.error('Stok geri ekleme hatası:', stockRestoreError);
+   }
   }
 
   // Müşteriye e-posta: iade onayı/reddi (best-effort)

@@ -100,7 +100,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
 
  const payment = order?.payment || null;
  const finalPayment = payment;
- const paymentText = finalPayment?.type === "havale" ? "Havale ve EFT ile Ödeme" : finalPayment?.type === "mailorder" ? "Kapıda Ödeme" : (finalPayment?.type ? String(finalPayment.type) : "Bilinmiyor");
+ const paymentText = finalPayment?.type === "havale" ? "Havale ve EFT ile Ödeme" : finalPayment?.type === "mailorder" ? "Kart ile Ödeme" : (finalPayment?.type ? String(finalPayment.type) : "Bilinmiyor");
 
  const items = useMemo(() => Array.isArray(order?.items) ? order.items : [], [order]);
  const groups = new Map();

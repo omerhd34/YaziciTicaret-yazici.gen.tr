@@ -92,7 +92,7 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
         {order?.payment?.type === "havale"
          ? "Havale ve EFT ile Ödeme"
          : order?.payment?.type === "mailorder"
-          ? "Kapıda Ödeme"
+          ? "Kart İle Ödeme"
           : (order?.payment?.type ? String(order.payment.type) : "-")}
        </div>
       </div>

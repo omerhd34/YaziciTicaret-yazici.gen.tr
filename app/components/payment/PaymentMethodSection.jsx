@@ -1,4 +1,5 @@
 "use client";
+import { FaCreditCard } from "react-icons/fa";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { MdWarning, MdPayment } from "react-icons/md";
 
@@ -34,7 +35,7 @@ export default function PaymentMethodSection({
        <div className="bg-gray-50 rounded-lg p-3 space-y-1.5 mt-3">
         <div className="text-sm">
          <span className="font-semibold text-gray-700">IBAN: </span>
-         <span className="text-gray-900 font-mono">TR33 0006 1005 0000 0006 6123 45</span>
+         <span className="text-gray-900 font-mono">TR53 0006 7010 0000 0049 8897 36</span>
         </div>
         <div className="text-sm">
          <span className="font-semibold text-gray-700">Alıcı Adı ve Soyadı: </span>
@@ -44,7 +45,7 @@ export default function PaymentMethodSection({
        <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-3">
         <MdWarning className="text-amber-600 shrink-0 mt-0.5" size={20} />
         <p className="text-sm text-amber-700 font-medium leading-relaxed">
-         Sipariş verdiğinde 1 saat içersinde ödeme yapılmazsa sipariş otomatik olarak iptal edilecektir. Ödeme işleminizi tamamladıktan sonra lütfen ödeme dekontunuzu saklayınız.
+         Sipariş verdiğinde 1 saat içerisinde ödeme yapılmazsa sipariş otomatik olarak iptal edilecektir. Ödeme işleminizi tamamladıktan sonra lütfen ödeme dekontunuzu saklayınız.
          Ödeme onayı için dekontunuzu müşteri hizmetlerimizle paylaşmanız gerekebilir.
         </p>
        </div>
@@ -60,20 +61,19 @@ export default function PaymentMethodSection({
        checked={paymentMethod.type === "mailorder"}
        onChange={() => onPaymentMethodChange({ type: "mailorder" })}
       />
-      <FaMoneyBillTransfer className="text-indigo-600" size={20} />
-      Kapıda Ödeme
+      <FaCreditCard className="text-indigo-600" size={20} />
+      Kart ile Ödeme
      </label>
-
      {paymentMethod.type === "mailorder" && (
       <div className="mt-4 space-y-2">
        <p className="text-sm text-gray-600">
-        Siparişiniz teslim edilirken kapıda nakit veya kredi kartı ile ödeme yapabilirsiniz.
+        Siparişiniz alındıktan sonra müşteri temsilcimiz sizinle iletişime geçerek <b>Mail Order</b> yöntemiyle ödeme işlemini gerçekleştirecektir. <b>Mail Order</b> yönteminde kredi kartı bilgileriniz, bankanın yetkilendirdiği POS sistemi üzerinden manuel olarak çekim yapılması için alınır.
        </p>
        <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-3">
         <MdWarning className="text-amber-600 shrink-0 mt-0.5" size={20} />
         <p className="text-sm text-amber-700 font-medium leading-relaxed">
-         Kapıda ödeme ile sipariş verdiğinizde, kargo teslimatı sırasında ürün bedelini kargo görevlisine ödeyebilirsiniz.
-         Kapıda ödeme siparişlerinde ekstra bir ücret talep edilmez.
+         Kart ile ödeme seçeneğini tercih ettiğinizde, müşteri temsilcimiz sizinle iletişime geçerek kredi kartı bilgilerinizi <b>Mail Order</b> kapsamında alacaktır. Ödeme işlemi tamamlandıktan sonra siparişiniz hazırlık sürecine alınacaktır.
+         <b> Mail Order</b> işlemlerinde 3D Secure doğrulaması bulunmamaktadır.
         </p>
        </div>
       </div>
