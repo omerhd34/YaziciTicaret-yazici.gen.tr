@@ -222,20 +222,25 @@ export default function OdemePage() {
  const [addressesLoading, setAddressesLoading] = useState(true);
  const [selectedAddressId, setSelectedAddressId] = useState("");
 
-const [paymentMethod, setPaymentMethod] = useState({ type: "3dsecure" });
-const [selectedCardId, setSelectedCardId] = useState(null);
-const [cardData, setCardData] = useState({
- cardNumber: "",
- cardNumberFormatted: "",
- cardHolder: "",
- month: "",
- year: "",
- cvc: "",
-});
+ const [paymentMethod, setPaymentMethod] = useState({ type: "3dsecure" });
+ const [selectedCardId, setSelectedCardId] = useState(null);
+ const [cardData, setCardData] = useState({
+  cardNumber: "",
+  cardNumberFormatted: "",
+  cardHolder: "",
+  month: "",
+  year: "",
+  cvc: "",
+ });
 
  const [acceptedTerms, setAcceptedTerms] = useState(false);
  const [error, setError] = useState("");
  const [isSubmitting, setIsSubmitting] = useState(false);
+
+ const [savedCardsRefreshTrigger, setSavedCardsRefreshTrigger] = useState(0);
+ const [saveCardLoading, setSaveCardLoading] = useState(false);
+ const [saveCardError, setSaveCardError] = useState("");
+ const [saveCardSuccess, setSaveCardSuccess] = useState(false);
 
  const fetchAddresses = useCallback(async () => {
   try {
@@ -266,41 +271,43 @@ const [cardData, setCardData] = useState({
   }
  }, [cart, fetchAddresses]);
 
-const canPay = useMemo(() => {
- if (!cart || cart.length === 0 || !acceptedTerms || !selectedAddressId) {
-  return false;
- }
- 
- // 3D Secure için kart bilgileri kontrolü
- // Eğer kayıtlı kart seçilmişse, CVC kontrolü yapılmaz (güvenli ödeme yöntemi)
- if (selectedCardId) {
-  return true;
- }
- 
- // Yeni kart girişi için tüm alanlar kontrol edilmeli
- if (!cardData.cardNumber || !cardData.cardHolder || !cardData.month || !cardData.year || !cardData.cvc) {
-  return false;
- }
- 
- // Kart numarası kontrolü (Amex için 15, diğerleri için 16)
- const cardNumberCleaned = cardData.cardNumber.replaceAll(" ", "");
- const getCardType = (cardNumber) => {
-  if (!cardNumber || cardNumber.length === 0) return 'Kart';
-  const firstTwoDigits = cardNumber.substring(0, 2);
-  if (firstTwoDigits === '34' || firstTwoDigits === '37') return 'Amex';
-  return 'Other';
- };
- const cardType = getCardType(cardNumberCleaned);
- const expectedLength = cardType === 'Amex' ? 15 : 16;
- const expectedCvcLen = cardType === 'Amex' ? 4 : 3;
+ const canPay = useMemo(() => {
+  if (!cart || cart.length === 0 || !acceptedTerms || !selectedAddressId) {
+   return false;
+  }
 
- return cardNumberCleaned.length === expectedLength && cardData.cvc.length === expectedCvcLen;
-}, [acceptedTerms, cart, selectedAddressId, cardData, selectedCardId]);
+  // 3D Secure için kart bilgileri kontrolü
+  // Eğer kayıtlı kart seçilmişse, CVC kontrolü yapılmaz (güvenli ödeme yöntemi)
+  if (selectedCardId) {
+   return true;
+  }
+
+  // Yeni kart girişi için tüm alanlar kontrol edilmeli
+  if (!cardData.cardNumber || !cardData.cardHolder || !cardData.month || !cardData.year || !cardData.cvc) {
+   return false;
+  }
+
+  // Kart numarası kontrolü (Amex için 15, diğerleri için 16)
+  const cardNumberCleaned = cardData.cardNumber.replaceAll(" ", "");
+  const getCardType = (cardNumber) => {
+   if (!cardNumber || cardNumber.length === 0) return 'Kart';
+   const firstTwoDigits = cardNumber.substring(0, 2);
+   if (firstTwoDigits === '34' || firstTwoDigits === '37') return 'Amex';
+   return 'Other';
+  };
+  const cardType = getCardType(cardNumberCleaned);
+  const expectedLength = cardType === 'Amex' ? 15 : 16;
+  const expectedCvcLen = cardType === 'Amex' ? 4 : 3;
+
+  return cardNumberCleaned.length === expectedLength && cardData.cvc.length === expectedCvcLen;
+ }, [acceptedTerms, cart, selectedAddressId, cardData, selectedCardId]);
 
  const handleCardSelect = (card) => {
   if (!card) {
    // Yeni kart girişi
    setSelectedCardId(null);
+   setSaveCardError("");
+   setSaveCardSuccess(false);
    setCardData({
     cardNumber: "",
     cardNumberFormatted: "",
@@ -311,10 +318,9 @@ const canPay = useMemo(() => {
    });
    return;
   }
-  
+
   // Kayıtlı kart seçildi
   setSelectedCardId(card._id?.toString ? card._id.toString() : String(card._id || ''));
-  // Kart numarasını masked format'tan al veya last digits'ten oluştur (Amex: •••• •••••• 51251, diğer: •••• •••• •••• 1234)
   const isAmex = (card.cardType || "").toLowerCase() === "amex";
   const fallbackMasked = isAmex
    ? `•••• •••••• ${card.cardNumberLast4 || ""}`
@@ -323,13 +329,54 @@ const canPay = useMemo(() => {
    ? String(card.cardNumberMasked).replace(/\*/g, "•")
    : fallbackMasked;
   setCardData({
-   cardNumber: "", // Kayıtlı kartlarda tam kart numarası saklanmıyor, API'den alınacak
+   cardNumber: "",
    cardNumberFormatted: cardNumberMasked,
    cardHolder: card.cardHolder || "",
    month: card.month || "",
    year: card.year || "",
-   cvc: "", // CVC her zaman kullanıcıdan alınmalı
+   cvc: "",
   });
+ };
+
+ const handleSaveCard = async () => {
+  setSaveCardError("");
+  setSaveCardSuccess(false);
+  if (typeof globalThis.window !== "undefined" && globalThis.window.cardFormValidate) {
+   if (!globalThis.window.cardFormValidate()) {
+    setSaveCardError("Lütfen tüm kart bilgilerini doğru girin.");
+    return;
+   }
+  }
+  const raw = (cardData.cardNumber || "").replace(/\s/g, "");
+  const two = raw.substring(0, 2);
+  const isAmex = two === "34" || two === "37";
+  const last = isAmex ? raw.slice(-5) : raw.slice(-4);
+  const title = `Kart •••• ${last}`;
+
+  setSaveCardLoading(true);
+  try {
+   const res = await axiosInstance.post("/api/user/cards", {
+    title,
+    cardNumber: raw,
+    cardHolder: cardData.cardHolder?.trim() || "",
+    month: String(cardData.month || ""),
+    year: String(cardData.year || ""),
+    cvc: String(cardData.cvc || "").trim(),
+    isDefault: false,
+   });
+   const data = res.data || {};
+   if (data.success) {
+    setSaveCardSuccess(true);
+    setSavedCardsRefreshTrigger((t) => t + 1);
+   } else {
+    setSaveCardError(data.message || "Kart kaydedilemedi.");
+   }
+  } catch (e) {
+   const msg = e.response?.data?.message || "Kart kaydedilemedi.";
+   setSaveCardError(msg);
+  } finally {
+   setSaveCardLoading(false);
+  }
  };
 
  const handlePay = async () => {
@@ -342,10 +389,8 @@ const canPay = useMemo(() => {
 
   // 3D Secure için kart bilgileri kontrolü
   if (selectedCardId) {
-   // Kayıtlı kart seçilmişse, CVC kontrolü yapılmaz (güvenli ödeme yöntemi)
-   // Doğrudan devam edebilir
+
   } else if (!cardData.cardNumber || !cardData.cardHolder || !cardData.month || !cardData.year || !cardData.cvc) {
-   // Yeni kart girişi için tüm alanlar kontrol edilmeli
    setError("Lütfen tüm kart bilgilerini doldurun.");
    setIsSubmitting(false);
    return;
@@ -446,7 +491,7 @@ const canPay = useMemo(() => {
     cardData: cardPayload,
     address: {
      phone: selectedAddress?.phone || "",
-     email: "", // Kullanıcı email'i session'dan alınabilir
+     email: "",
     },
     items: payloadItems,
    });
@@ -507,33 +552,39 @@ const canPay = useMemo(() => {
        onAddressSelect={setSelectedAddressId}
       />
 
-      <PaymentMethodSection
-       paymentMethod={paymentMethod}
-       onPaymentMethodChange={setPaymentMethod}
-      />
-
-      <div className="bg-white rounded-xl shadow-sm p-6">
-       <h2 className="text-xl font-bold text-gray-900 mb-4">Kart Bilgileri</h2>
+      <PaymentMethodSection>
        <SavedCardsSection
         onSelectCard={handleCardSelect}
         selectedCardId={selectedCardId}
-        cardData={cardData}
+        title="Kart Bilgileri"
+        refreshTrigger={savedCardsRefreshTrigger}
        />
        {!selectedCardId && (
-        <CardForm
-         cardData={cardData}
-         onCardDataChange={setCardData}
-         isSavedCard={false}
-        />
-       )}
-       {selectedCardId && (
-        <div className="mt-4">
-         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-          <p className="text-sm text-green-700">Kayıtlı kart seçildi. Güvenli ödeme yöntemi ile devam edebilirsiniz.</p>
+        <>
+         <CardForm
+          cardData={cardData}
+          onCardDataChange={setCardData}
+          isSavedCard={false}
+         />
+         <div className="mt-4 space-y-2">
+          <button
+           type="button"
+           onClick={handleSaveCard}
+           disabled={saveCardLoading}
+           className="text-sm px-4 py-2 rounded-lg border border-indigo-600 bg-white text-indigo-600 hover:bg-indigo-50 hover:border-indigo-400 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+           {saveCardLoading ? "Kaydediliyor…" : "Kartı Kaydet"}
+          </button>
+          {saveCardError && (
+           <p className="text-sm text-red-600">{saveCardError}</p>
+          )}
+          {saveCardSuccess && (
+           <p className="text-sm text-green-600">Kart kayıtlı kartlara eklendi.</p>
+          )}
          </div>
-        </div>
+        </>
        )}
-      </div>
+      </PaymentMethodSection>
      </div>
 
      <div className="lg:col-span-1">

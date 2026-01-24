@@ -456,6 +456,11 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
   setLoading(true);
 
   const nameVal = String(form.name || "").trim();
+  if (!nameVal) {
+   if (onError) onError("Ürün adı zorunludur.");
+   setLoading(false);
+   return;
+  }
   if (nameVal.length > MAX_NAME) {
    if (onError) onError(`Ürün adı en fazla ${MAX_NAME} karakter olabilir.`);
    setLoading(false);
@@ -468,29 +473,27 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
    return;
   }
 
-  const desc = String(form.description || "");
+  const desc = String(form.description || "").trim();
+  if (!desc) {
+   if (onError) onError("Açıklama zorunludur.");
+   setLoading(false);
+   return;
+  }
   if (desc.length > MAX_DESCRIPTION) {
    if (onError) onError(`Açıklama en fazla ${MAX_DESCRIPTION} karakter olabilir.`);
    setLoading(false);
    return;
   }
 
-  const priceValue = parseFloat(form.price);
-  const discountPriceValue = form.discountPrice ? parseFloat(form.discountPrice) : null;
-  if (isNaN(priceValue) || priceValue <= 0) {
-   if (onError) onError("Fiyat geçerli bir pozitif sayı olmalıdır!");
-   setLoading(false);
-   return;
-  }
-  if (discountPriceValue !== null && (isNaN(discountPriceValue) || discountPriceValue <= 0)) {
-   if (onError) onError("İndirimli fiyat geçerli bir sayı olmalıdır!");
+  if (!form.category || !String(form.category || "").trim()) {
+   if (onError) onError("Kategori seçiniz.");
    setLoading(false);
    return;
   }
 
-  // Renk validasyonu
+  // Renk validasyonu (fiyat için ilk rengi kullanacağız)
   if (!form.colors || form.colors.length === 0) {
-   if (onError) onError("En az bir renk eklemelisiniz!");
+   if (onError) onError("En az bir renk eklemelisiniz! Önce \"Renk Ekle\" ile bir varyant ekleyin.");
    setLoading(false);
    return;
   }
@@ -524,6 +527,33 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
     setLoading(false);
     return;
    }
+  }
+
+  // Fiyat: form fiyatı yoksa ilk rengin fiyatını kullan (yeni üründe sadece renk fiyatı var)
+  let priceValue = Number.parseFloat(form.price);
+  if (Number.isNaN(priceValue) || priceValue <= 0) {
+   priceValue = Number.parseFloat(form.colors[0]?.price);
+  }
+  if (Number.isNaN(priceValue) || priceValue <= 0) {
+   if (onError) onError("Fiyat geçerli bir pozitif sayı olmalıdır! Renk bölümünde fiyat girin.");
+   setLoading(false);
+   return;
+  }
+
+  let discountPriceValue = form.discountPrice ? Number.parseFloat(form.discountPrice) : null;
+  if (discountPriceValue === null && form.colors[0]?.discountPrice) {
+   const cv = Number.parseFloat(form.colors[0].discountPrice);
+   if (!Number.isNaN(cv) && cv > 0 && cv < priceValue) discountPriceValue = cv;
+  }
+  if (discountPriceValue !== null && (Number.isNaN(discountPriceValue) || discountPriceValue <= 0)) {
+   if (onError) onError("İndirimli fiyat geçerli bir sayı olmalıdır!");
+   setLoading(false);
+   return;
+  }
+  if (discountPriceValue !== null && discountPriceValue >= priceValue) {
+   if (onError) onError("İndirimli fiyat normal fiyattan küçük olmalıdır!");
+   setLoading(false);
+   return;
   }
 
   try {
