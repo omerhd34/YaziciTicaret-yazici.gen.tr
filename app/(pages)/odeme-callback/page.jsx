@@ -13,26 +13,28 @@ export default function OdemeCallbackPage() {
  const [status, setStatus] = useState("processing"); // processing, success, error
  const [message, setMessage] = useState("Ödeme işlemi kontrol ediliyor...");
 
- useEffect(() => {
-  const processPayment = async () => {
-   try {
-    // URL'den gelen parametreleri al
-    const sessionId = searchParams.get("session_id");
-    const tokenId = searchParams.get("token_id");
-    const orderId = searchParams.get("orderId") || sessionStorage.getItem("pendingOrderId");
+  useEffect(() => {
+   const processPayment = async () => {
+    try {
+     // URL'den gelen parametreleri al (iyzico formatı)
+     const paymentId = searchParams.get("paymentId");
+     const conversationId = searchParams.get("conversationId");
+     const conversationData = searchParams.get("conversationData");
+     const orderId = searchParams.get("orderId") || sessionStorage.getItem("pendingOrderId");
 
-    if (!sessionId || !tokenId || !orderId) {
-     setStatus("error");
-     setMessage("Ödeme bilgileri bulunamadı. Lütfen tekrar deneyin.");
-     return;
-    }
+     if (!paymentId || !orderId) {
+      setStatus("error");
+      setMessage("Ödeme bilgileri bulunamadı. Lütfen tekrar deneyin.");
+      return;
+     }
 
-    // 3D Secure charge işlemini tamamla
-    const response = await axiosInstance.post("/api/payment/3ds-charge", {
-     sessionId,
-     tokenId,
-     orderId,
-    });
+     // 3D Secure charge işlemini tamamla
+     const response = await axiosInstance.post("/api/payment/3ds-charge", {
+      paymentId,
+      conversationId,
+      conversationData,
+      orderId,
+     });
 
     const data = response.data;
 

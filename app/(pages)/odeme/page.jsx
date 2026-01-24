@@ -508,17 +508,30 @@ export default function OdemePage() {
     globalThis.window.sessionStorage.setItem("pendingOrderId", orderId);
    }
 
-   // 3D Secure sayfasına yönlendir
-   if (tdsData.postUrl) {
-    globalThis.window.location.href = `${tdsData.postUrl}&orderId=${orderId}`;
-   } else if (tdsData.htmlContent) {
-    // HTML content varsa form oluştur ve submit et
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = tdsData.postUrl || "";
-    form.innerHTML = tdsData.htmlContent;
-    document.body.appendChild(form);
-    form.submit();
+   // 3D Secure sayfasına yönlendir (iyzico htmlContent kullanır)
+   if (tdsData.htmlContent) {
+    // iyzico htmlContent'i direkt olarak bir form içerir, sayfaya ekle ve submit et
+    const div = document.createElement("div");
+    div.innerHTML = tdsData.htmlContent;
+    document.body.appendChild(div);
+    
+    // Form'u bul ve submit et
+    const form = div.querySelector("form");
+    if (form) {
+     form.submit();
+    } else {
+     // Eğer form yoksa, script tag'leri çalıştırılabilir
+     const scripts = div.querySelectorAll("script");
+     scripts.forEach(script => {
+      const newScript = document.createElement("script");
+      if (script.src) {
+       newScript.src = script.src;
+      } else {
+       newScript.textContent = script.textContent;
+      }
+      document.body.appendChild(newScript);
+     });
+    }
    } else {
     setError("3D Secure sayfasına yönlendirilemedi.");
     setIsSubmitting(false);

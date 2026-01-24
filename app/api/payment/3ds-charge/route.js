@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import axios from 'axios';
+import Iyzipay from 'iyzipay';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 
@@ -36,46 +36,32 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { sessionId, tokenId, orderId } = body || {};
+  const { paymentId, conversationId, conversationData, orderId } = body || {};
 
-  if (!sessionId || !tokenId || !orderId) {
+  if (!paymentId || !orderId) {
    return NextResponse.json(
-    { success: false, message: 'Eksik bilgi' },
+    { success: false, message: 'Eksik bilgi (paymentId ve orderId gerekli)' },
     { status: 400 }
    );
   }
 
-  const paynetSecretKey = process.env.PAYNET_API_SECRET_KEY;
-  const paynetBaseUrl = process.env.PAYNET_API_BASE_URL || 'https://pts-api.paynet.com.tr';
+  const iyzicoApiKey = process.env.IYZICO_API_KEY;
+  const iyzicoSecretKey = process.env.IYZICO_SECRET_KEY;
+  const iyzicoUri = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
 
-  if (!paynetSecretKey) {
+  if (!iyzicoApiKey || !iyzicoSecretKey || iyzicoApiKey === 'your_api_key_here' || iyzicoSecretKey === 'your_secret_key_here') {
    return NextResponse.json(
     { success: false, message: 'Ödeme sistemi yapılandırılmamış' },
     { status: 500 }
    );
   }
 
-  // 3D Secure charge isteği
-  const requestData = {
-   session_id: sessionId,
-   token_id: tokenId,
-  };
-
-  // Paynet API Basic Authentication için secret key'i base64 encode et
-  const authHeader = Buffer.from(paynetSecretKey).toString('base64');
-
-  // API isteği gönder
-  const apiUrl = `${paynetBaseUrl}/v2/transaction/tds_charge`;
-
-  const response = await axios.post(apiUrl, requestData, {
-   headers: {
-    'Accept': 'application/json; charset=UTF-8',
-    'Content-Type': 'application/json; charset=UTF-8',
-    'Authorization': `Basic ${authHeader}`,
-   },
+  // iyzico client'ı oluştur
+  const iyzipay = new Iyzipay({
+   apiKey: iyzicoApiKey,
+   secretKey: iyzicoSecretKey,
+   uri: iyzicoUri
   });
-
-  const responseData = response.data;
 
   // Kullanıcıyı bul ve siparişi güncelle
   const user = await User.findById(session.id);
@@ -95,62 +81,134 @@ export async function POST(request) {
    );
   }
 
-  if (responseData.code === 0 && responseData.is_succeed) {
-   // Ödeme başarılı
-   const updateData = {
-    $set: {
-     'orders.$.status': 'Ödeme Alındı',
-     'orders.$.payment': {
-      type: '3dsecure',
-      transactionId: responseData.xact_id,
-      bankAuthorizationCode: responseData.bank_authorization_code,
-      bankReferenceCode: responseData.bank_reference_code,
-      cardNoMasked: responseData.card_no_masked,
-      paidAt: new Date(),
-     },
-     'orders.$.updatedAt': new Date(),
-    },
-   };
+  // iyzico Auth 3DS request
+  const iyzicoRequest = {
+   locale: 'tr',
+   paymentId: paymentId,
+   conversationId: conversationId || orderId,
+   conversationData: conversationData || ''
+  };
 
-   await User.updateOne(
-    { _id: user._id, 'orders.orderId': orderId },
-    updateData
-   );
+  // iyzico Auth 3DS API çağrısı (Promise wrapper)
+  return new Promise((resolve) => {
+   iyzipay.threedsPayment.create(iyzicoRequest, async (err, result) => {
+    if (err) {
+     console.error('iyzico 3D Secure auth hatası:', err);
+     
+     // Kullanıcıyı bul ve siparişi güncelle
+     const user = await User.findById(session.id);
+     if (user) {
+      const updateData = {
+       $set: {
+        'orders.$.status': 'Ödeme Başarısız',
+        'orders.$.payment': {
+         type: '3dsecure',
+         error: err.message || 'Ödeme işlemi başarısız',
+         failedAt: new Date(),
+        },
+        'orders.$.updatedAt': new Date(),
+       },
+      };
+      await User.updateOne(
+       { _id: user._id, 'orders.orderId': orderId },
+       updateData
+      );
+     }
 
-   return NextResponse.json({
-    success: true,
-    message: 'Ödeme başarıyla tamamlandı',
-    transactionId: responseData.xact_id,
-    orderId: orderId,
+     resolve(NextResponse.json(
+      {
+       success: false,
+       message: err.message || 'Ödeme işlemi başarısız',
+       error: err
+      },
+      { status: 400 }
+     ));
+     return;
+    }
+
+    // Kullanıcıyı bul ve siparişi güncelle
+    const user = await User.findById(session.id);
+    if (!user) {
+     resolve(NextResponse.json(
+      { success: false, message: 'Kullanıcı bulunamadı' },
+      { status: 404 }
+     ));
+     return;
+    }
+
+    // Siparişi bul
+    const order = user.orders?.find(o => o.orderId === orderId);
+    if (!order) {
+     resolve(NextResponse.json(
+      { success: false, message: 'Sipariş bulunamadı' },
+      { status: 404 }
+     ));
+     return;
+    }
+
+    if (result.status === 'success') {
+     // Ödeme başarılı
+     const updateData = {
+      $set: {
+       'orders.$.status': 'Ödeme Alındı',
+       'orders.$.payment': {
+        type: '3dsecure',
+        transactionId: result.paymentId,
+        paymentId: result.paymentId,
+        conversationId: result.conversationId,
+        cardType: result.cardType,
+        cardAssociation: result.cardAssociation,
+        cardFamily: result.cardFamily,
+        binNumber: result.binNumber,
+        lastFourDigits: result.lastFourDigits,
+        paidAt: new Date(),
+       },
+       'orders.$.updatedAt': new Date(),
+      },
+     };
+
+     await User.updateOne(
+      { _id: user._id, 'orders.orderId': orderId },
+      updateData
+     );
+
+     resolve(NextResponse.json({
+      success: true,
+      message: 'Ödeme başarıyla tamamlandı',
+      transactionId: result.paymentId,
+      orderId: orderId,
+     }));
+    } else {
+     // Ödeme başarısız
+     const updateData = {
+      $set: {
+       'orders.$.status': 'Ödeme Başarısız',
+       'orders.$.payment': {
+        type: '3dsecure',
+        error: result.errorMessage || 'Ödeme işlemi başarısız',
+        errorCode: result.errorCode,
+        failedAt: new Date(),
+       },
+       'orders.$.updatedAt': new Date(),
+      },
+     };
+
+     await User.updateOne(
+      { _id: user._id, 'orders.orderId': orderId },
+      updateData
+     );
+
+     resolve(NextResponse.json(
+      {
+       success: false,
+       message: result.errorMessage || 'Ödeme işlemi başarısız',
+       errorCode: result.errorCode
+      },
+      { status: 400 }
+     ));
+    }
    });
-  } else {
-   // Ödeme başarısız
-   const updateData = {
-    $set: {
-     'orders.$.status': 'Ödeme Başarısız',
-     'orders.$.payment': {
-      type: '3dsecure',
-      error: responseData.bank_error_message || responseData.message,
-      failedAt: new Date(),
-     },
-     'orders.$.updatedAt': new Date(),
-    },
-   };
-
-   await User.updateOne(
-    { _id: user._id, 'orders.orderId': orderId },
-    updateData
-   );
-
-   return NextResponse.json(
-    {
-     success: false,
-     message: responseData.bank_error_message || responseData.message || 'Ödeme işlemi başarısız',
-     code: responseData.code
-    },
-    { status: 400 }
-   );
-  }
+  });
  } catch (error) {
   console.error('3D Secure charge hatası:', error);
   return NextResponse.json(

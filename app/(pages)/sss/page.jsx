@@ -21,7 +21,7 @@ export default function SSSPage() {
   },
   {
    question: "Ödeme ve Fatura İşlemleri",
-   answer: "Siparişlerinizde Kart ile Ödeme (3D Secure) seçeneğini kullanabilirsiniz. Banka veya kredi kartınızla 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır. Fatura işlemleri için fatura bilgilerinizi sipariş sırasında belirtmeniz gerekmektedir. E-fatura ve kağıt fatura seçenekleri mevcuttur. Faturalarınız siparişinizle birlikte gönderilmektedir. Fatura düzenleme talepleriniz için müşteri hizmetlerimizle iletişime geçebilirsiniz."
+   answer: "Siparişlerinizde iyzico aracılığıyla Kart ile Ödeme (3D Secure) seçeneğini kullanabilirsiniz. Banka veya kredi kartınızla iyzico üzerinden 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır. iyzico güvenli ödeme altyapısı sayesinde tüm ödeme işlemleriniz güvenli bir şekilde gerçekleştirilmektedir. Fatura işlemleri için fatura bilgilerinizi sipariş sırasında belirtmeniz gerekmektedir. E-fatura ve kağıt fatura seçenekleri mevcuttur. Faturalarınız siparişinizle birlikte gönderilmektedir. Fatura düzenleme talepleriniz için müşteri hizmetlerimizle iletişime geçebilirsiniz."
   },
   {
    question: "Kargo ve Teslimat",
@@ -58,10 +58,6 @@ export default function SSSPage() {
   {
    question: "Ürün iade edebilir miyim?",
    answer: "Evet, ürünlerinizi 14 gün içinde iade edebilirsiniz. Ürünün kullanılmamış, etiketli ve orijinal ambalajında olması gerekmektedir. İade işlemleri için 'İade ve Değişim' sayfasından başvuru yapabilirsiniz."
-  },
-  {
-   question: "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
-   answer: "Kart ile Ödeme (3D Secure) seçeneğini kabul ediyoruz. Banka veya kredi kartınızla 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır."
   },
   {
    question: "Ürün stokta yoksa ne yapabilirim?",

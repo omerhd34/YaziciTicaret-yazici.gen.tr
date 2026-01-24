@@ -1,6 +1,7 @@
 "use client";
 import { FaCreditCard } from "react-icons/fa";
 import { MdWarning, MdPayment } from "react-icons/md";
+import Image from "next/image";
 
 export default function PaymentMethodSection({ children }) {
  return (
@@ -18,13 +19,48 @@ export default function PaymentMethodSection({ children }) {
      </div>
      <div className="mt-4 space-y-2">
       <p className="text-sm text-gray-600">
-       Banka veya kredi kartı bilgilerinizi girerek <b>3D Secure</b> doğrulaması ile güvenli bir şekilde ödeme yapabilirsiniz. Ödeme işlemi bankanızın güvenlik sayfasında doğrulanacaktır.
+       <b>iyzico</b> aracılığıyla banka veya kredi kartı bilgilerinizi girerek <b>3D Secure</b> doğrulaması ile güvenli bir şekilde ödeme yapabilirsiniz. Ödeme işlemi bankanızın güvenlik sayfasında doğrulanacaktır.
       </p>
       <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg p-3 mt-3">
        <MdWarning className="text-green-600 shrink-0 mt-0.5" size={20} />
        <p className="text-sm text-green-700 font-medium leading-relaxed">
-        <b>3D Secure</b> ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır.
+        <b>iyzico</b> üzerinden <b>3D Secure</b> ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır. iyzico güvenli ödeme altyapısı sayesinde tüm ödeme işlemleriniz güvenli bir şekilde gerçekleştirilmektedir.
        </p>
+      </div>
+
+      {/* Ödeme Logoları */}
+      <div className="mt-4 pt-4 border-t border-gray-200">
+       <p className="text-xs text-gray-500 mb-3 text-center">Güvenli Ödeme Yöntemleri</p>
+       <div className="flex items-center justify-center gap-y-4 gap-x-8 flex-wrap">
+        <Image
+         src="/visa.png"
+         alt="Visa"
+         width={50}
+         height={32}
+         className="object-contain opacity-80"
+        />
+        <Image
+         src="/mastercard.webp"
+         alt="Mastercard"
+         width={50}
+         height={32}
+         className="object-contain opacity-80"
+        />
+        <Image
+         src="/troy.png"
+         alt="Troy"
+         width={50}
+         height={32}
+         className="object-contain opacity-80"
+        />
+        <Image
+         src="/iyzico.png"
+         alt="iyzico ile Öde"
+         width={100}
+         height={32}
+         className="object-contain opacity-80"
+        />
+       </div>
       </div>
      </div>
     </div>

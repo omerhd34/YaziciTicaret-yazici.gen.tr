@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaCcVisa, FaCcMastercard } from "react-icons/fa";
 import { HiMail, HiLocationMarker } from "react-icons/hi";
 
 const SOCIAL_LINKS = [
@@ -129,35 +129,76 @@ const Footer = () => {
 
    <div className="border-t border-gray-800">
     <div className="container mx-auto px-4 py-6">
-     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-      <div className="flex flex-col gap-1">
-       <p className="text-sm text-gray-400">
-        © {currentYear} YAZICI TİCARET. Tüm hakları saklıdır.
-       </p>
-       <p className="text-xs text-gray-500 inline-flex items-center gap-2">
-        Site tasarımı ve geliştirme:{" "}
-        <Link
-         href="https://www.omerhalisdemir.com.tr/"
-         target="_blank"
-         rel="noopener noreferrer"
-         className="text-indigo-400 font-semibold hover:text-indigo-300 transition inline-flex items-center gap-1.5"
-        >
-         <Image
-          src="/OHD-favicon.svg"
-          alt="OHD Logo"
-          width={24}
-          height={24}
-          className="object-contain"
+     <div className="flex flex-col gap-6">
+      {/* Ödeme Logoları */}
+      <div className="flex flex-col items-center gap-5 py-4">
+       <p className="text-sm text-gray-400 font-medium tracking-wide">Güvenli Ödeme</p>
+       <div className="flex items-center justify-center gap-6 flex-wrap">
+        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-16 w-20">
+         <FaCcVisa
+          size={48}
+          className="text-blue-600"
+          title="Visa"
          />
-        </Link>
-       </p>
+        </div>
+        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-16 w-20">
+         <FaCcMastercard
+          size={48}
+          className="text-orange-500"
+          title="Mastercard"
+         />
+        </div>
+        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-16 w-20">
+         <Image
+          src="/troy.png"
+          alt="Troy"
+          width={48}
+          height={48}
+          className="object-contain w-full h-full"
+         />
+        </div>
+        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-16 w-20">
+         <Image
+          src="/iyzico.png"
+          alt="iyzico ile Öde"
+          width={80}
+          height={48}
+          className="object-contain w-full h-full"
+         />
+        </div>
+       </div>
       </div>
-      <div className="flex gap-6 text-sm">
-       {POLICY_LINKS.map((link) => (
-        <Link key={link.href} href={link.href} className="hover:text-indigo-400 transition">
-         {link.name}
-        </Link>
-       ))}
+
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+       <div className="flex flex-col gap-1">
+        <p className="text-sm text-gray-400">
+         © {currentYear} YAZICI TİCARET. Tüm hakları saklıdır.
+        </p>
+        <p className="text-xs text-gray-500 inline-flex items-center gap-2">
+         Site tasarımı ve geliştirme:{" "}
+         <Link
+          href="https://www.omerhalisdemir.com.tr/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-400 font-semibold hover:text-indigo-300 transition inline-flex items-center gap-1.5"
+         >
+          <Image
+           src="/OHD-favicon.svg"
+           alt="OHD Logo"
+           width={24}
+           height={24}
+           className="object-contain"
+          />
+         </Link>
+        </p>
+       </div>
+       <div className="flex gap-6 text-sm">
+        {POLICY_LINKS.map((link) => (
+         <Link key={link.href} href={link.href} className="hover:text-indigo-400 transition">
+          {link.name}
+         </Link>
+        ))}
+       </div>
       </div>
      </div>
     </div>

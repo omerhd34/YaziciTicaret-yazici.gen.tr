@@ -13,7 +13,7 @@ export default function WhyChooseUs() {
   {
    icon: FaTurkishLiraSign,
    title: "Uygun Fiyat",
-   description: "Doğrudan üretici ve distribütörlerle kurduğumuz güçlü iş ortaklıkları sayesinde kaliteli ürünleri en uygun fiyatlarla sunuyoruz. Size en iyi fiyat garantisi veriyoruz ve bütçenize uygun ödeme seçenekleri sağlıyoruz.",
+   description: "Doğrudan üretici ve distribütörlerle kurduğumuz güçlü iş ortaklıkları sayesinde kaliteli ürünleri en uygun fiyatlarla sunuyoruz. Size en iyi fiyat garantisi veriyoruz ve bütçenize uygun ödeme seçenekleri sağlıyoruz. iyzico aracılığıyla kart ile ödeme yapabilmektedir.",
    gradient: "from-green-500 to-green-700",
   },
   {
@@ -37,7 +37,7 @@ export default function WhyChooseUs() {
   {
    icon: HiShieldCheck,
    title: "Güvenli Ödeme",
-   description: "Kart ile Ödeme (3D Secure) seçeneğimizle güvenli ödeme yapabilirsiniz. Banka veya kredi kartınızla 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır.",
+   description: "iyzico aracılığıyla Kart ile Ödeme (3D Secure) seçeneğimizle güvenli ödeme yapabilirsiniz. Banka veya kredi kartınızla iyzico üzerinden 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır. iyzico güvenli ödeme altyapısı sayesinde tüm ödeme işlemleriniz güvenli bir şekilde gerçekleştirilmektedir.",
    gradient: "from-orange-500 to-orange-700",
   },
  ];
