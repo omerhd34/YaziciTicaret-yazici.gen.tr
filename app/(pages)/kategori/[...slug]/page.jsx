@@ -4,6 +4,9 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { HiArrowRight, HiCalendar } from "react-icons/hi";
 import axiosInstance from "@/lib/axios";
+
+// Force dynamic rendering - tamamen client-side
+export const dynamic = 'force-dynamic';
 import { MENU_ITEMS } from "@/app/utils/menuItems";
 import { useCart } from "@/context/CartContext";
 import { useComparison } from "@/context/ComparisonContext";
@@ -81,8 +84,6 @@ export default function KategoriPage() {
  const { addToCart, addToFavorites, removeFromFavorites, isFavorite } = useCart();
  const { addToComparison, removeFromComparison, isInComparison } = useComparison();
 
- const slugString = useMemo(() => slug.join('/'), [slug]);
-
  const isProductDetailPage = useMemo(() => {
   if (slug.length === 3) {
    return true;
@@ -95,6 +96,9 @@ export default function KategoriPage() {
  }, [slug]);
 
  const fetchProducts = useCallback(async () => {
+  // Sadece browser'da çalıştır
+  if (typeof window === 'undefined') return;
+  
   setLoading(true);
   try {
    let category = "";
@@ -489,9 +493,9 @@ export default function KategoriPage() {
      });
     }
    }
- } catch (error) {
-  setProducts([]);
- } finally {
+  } catch (error) {
+   setProducts([]);
+  } finally {
    setLoading(false);
   }
  }, [slug, filters.sortBy, filters.brands, filters.categories, filters.bagTypes, filters.screenSizes, filters.coolingCapacities, filters.minPrice, filters.maxPrice]);
