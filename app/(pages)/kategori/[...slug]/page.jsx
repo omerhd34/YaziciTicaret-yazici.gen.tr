@@ -191,6 +191,16 @@ export default function KategoriPage() {
    const res = await axiosInstance.get(url);
    const data = res.data;
 
+   console.log('API Response:', {
+    url: url,
+    baseURL: axiosInstance.defaults.baseURL,
+    fullURL: `${axiosInstance.defaults.baseURL}${url}`,
+    status: res.status,
+    success: data.success,
+    dataLength: data.data?.length || 0,
+    data: data,
+   });
+
    if (data.success) {
     let filteredProducts = data.data;
 
@@ -482,17 +492,34 @@ export default function KategoriPage() {
      const prices = data.data.map((p) => {
       // Sadece gerçek indirim varsa discountPrice kullan
       return (p.discountPrice && p.discountPrice < p.price) ? p.discountPrice : p.price;
-     });
-     setPriceRange({
-      min: Math.min(...prices),
-      max: Math.max(...prices),
-     });
-    }
+    });
+    setPriceRange({
+     min: Math.min(...prices),
+     max: Math.max(...prices),
+    });
    }
-  } catch (error) {
-  } finally {
-   setLoading(false);
   }
+ } catch (error) {
+  console.error('Ürünler yüklenirken hata oluştu:', {
+   message: error.message,
+   response: error.response?.data,
+   status: error.response?.status,
+   url: error.config?.url,
+   baseURL: error.config?.baseURL,
+   fullError: error,
+  });
+  setProducts([]);
+  // Hata durumunda kullanıcıya bilgi ver
+  if (error.response?.status === 404) {
+   console.warn('API endpoint bulunamadı:', error.config?.url);
+  } else if (error.response?.status >= 500) {
+   console.error('Sunucu hatası:', error.response?.status);
+  } else if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+   console.error('Ağ hatası: API\'ye bağlanılamıyor. URL kontrol edin:', error.config?.baseURL);
+  }
+ } finally {
+  setLoading(false);
+ }
  }, [slug, filters.sortBy, filters.brands, filters.categories, filters.bagTypes, filters.screenSizes, filters.coolingCapacities, filters.minPrice, filters.maxPrice]);
 
  // Ürün detay sayfası için fetch
