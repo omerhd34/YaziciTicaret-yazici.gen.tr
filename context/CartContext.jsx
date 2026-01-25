@@ -370,9 +370,7 @@ export function CartProvider({ children }) {
     const productIds = newCart.map(item => String(item._id || item.id)).filter(Boolean);
     await axiosInstance.put("/api/user/cart", { productIds });
    } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-     console.log('Sepet veritabanına kaydedilemedi:', error);
-    }
+    // Sepet veritabanına kaydedilemedi - sessizce handle et
    }
   }
  };

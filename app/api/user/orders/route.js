@@ -265,8 +265,7 @@ export async function POST(request) {
      // Stok negatif olmaması için kontrol et
      const newStock = (product.stock || 0) - quantity;
      if (newStock < 0) {
-      // Stok yetersiz, ama sipariş zaten oluşturuldu, sadece log
-      console.warn(`Ürün ${productId} için stok yetersiz. Mevcut stok: ${product.stock}, İstenen: ${quantity}`);
+      // Stok yetersiz, ama sipariş zaten oluşturuldu
      }
 
      // Ana ürün stokunu güncelle
@@ -293,7 +292,7 @@ export async function POST(request) {
     }
    }
   } catch (stockUpdateError) {
-   console.error('Stok güncelleme hatası:', stockUpdateError);
+   // Stok güncelleme hatası - sessizce handle et
   }
 
   let adminEmailResult = null;
