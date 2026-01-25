@@ -12,12 +12,10 @@ import {
  HiCheck,
  HiTrash,
  HiReply,
- HiPaperAirplane,
- HiDotsVertical,
  HiClock,
  HiCalendar
 } from "react-icons/hi";
-import { MdDelete, MdReplyAll } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 export default function AdminMesajlarPage() {
  const router = useRouter();

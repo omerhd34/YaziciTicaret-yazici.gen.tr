@@ -193,9 +193,21 @@ const Header = () => {
   return () => document.removeEventListener('click', handleClickOutside);
  }, []);
 
+ useEffect(() => {
+  if (isMobileMenuOpen) {
+   document.body.style.overflow = 'hidden';
+  } else {
+   document.body.style.overflow = '';
+  }
+
+  return () => {
+   document.body.style.overflow = '';
+  };
+ }, [isMobileMenuOpen]);
+
  return (
   <header className="w-full bg-white shadow-sm sticky top-0 z-50 font-sans">
-   <div className="bg-slate-900 text-white text-[10px] sm:text-[11px] font-medium py-2 sm:py-2.5 tracking-wide">
+   <div className="bg-slate-900 text-white text-[10px] sm:text-[11px] font-medium py-2 sm:py-2.5 tracking-wide" onMouseEnter={() => setActiveMenu(null)}>
     <div className="container mx-auto px-3 sm:px-4 flex justify-between items-center">
      <p className="hidden sm:flex items-center gap-1 sm:gap-1.5 text-xs sm:text-[11px]">
       <HiTruck color="red" size={18} />
@@ -217,7 +229,7 @@ const Header = () => {
     </div>
    </div>
 
-   <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-5">
+   <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-5" onMouseEnter={() => setActiveMenu(null)}>
     <div className="flex justify-between items-center gap-2 sm:gap-4 lg:gap-6">
      <Link href="/" className="flex items-center group shrink-0" onClick={closeMenu}>
       <div className="flex flex-col leading-tight">
@@ -236,7 +248,7 @@ const Header = () => {
        </div>
       </div>
      </Link>
-     <div className="flex items-center md:gap-2 lg:gap-3 xl:gap-4 text-slate-700">
+     <div className="flex items-center gap-1 md:gap-2 lg:gap-3 xl:gap-4 text-slate-700">
       <button
        onClick={() => setIsSearchModalOpen(true)}
        className="search-icon-button flex flex-col items-center group hover:bg-slate-50 p-1 sm:p-2 rounded-lg transition cursor-pointer"
@@ -285,18 +297,17 @@ const Header = () => {
 
    <nav className="hidden md:block border-t relative border-gray-100 bg-gray-100 z-40">
     <div className="container mx-auto px-4">
-     <ul className="flex items-center gap-4 md:gap-6 lg:gap-8 xl:gap-10 text-[14px] md:text-[15px] xl:text-[16px] font-bold text-slate-700 tracking-tight">
+     <ul className="flex items-center gap-3 md:gap-4 lg:gap-6 xl:gap-8 2xl:gap-10 text-[13px] md:text-[14px] lg:text-[15px] xl:text-[16px] font-bold text-slate-700 tracking-tight">
       {MENU_ITEMS.map((item) => (
        <li
         key={item.path}
-        className={`py-4 ${item.isSpecial ? 'hidden lg:block' : ''}`}
-        onMouseEnter={item.subCategories ? () => setActiveMenu(item.name) : undefined}
-        onMouseLeave={item.subCategories ? () => setActiveMenu(null) : undefined}
+        className={`py-3 lg:py-4 ${item.isSpecial ? 'hidden lg:block' : ''}`}
        >
         <Link
          href={item.path}
          onClick={closeMenu}
-         className={`flex items-center gap-2 transition-colors py-1 border-b-2 border-transparent ${item.isSpecial
+         onMouseEnter={item.subCategories ? () => setActiveMenu(item.name) : undefined}
+         className={`flex items-center gap-1 lg:gap-2 transition-colors py-1 border-b-2 border-transparent whitespace-nowrap ${item.isSpecial
           ? "text-red-600 hover:border-red-600"
           : "hover:text-indigo-600 hover:border-indigo-600"
           } ${activeMenu === item.name ? "text-indigo-600 border-indigo-600" : ""}`}
@@ -316,13 +327,11 @@ const Header = () => {
          <div
           className={`absolute top-full left-0 w-full bg-white border-t border-slate-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out transform z-50 
                     ${activeMenu === item.name ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-2"}`}
-          onMouseEnter={() => setActiveMenu(item.name)}
           onMouseLeave={() => setActiveMenu(null)}
           suppressHydrationWarning
          >
           <div className="container mx-auto p-8">
            <div className="flex gap-12">
-
             <div className="flex-1">
              <h3 className="font-bold text-slate-900 mb-6 text-sm uppercase tracking-wider flex items-center gap-2">
               {item.name} Koleksiyonu
@@ -394,13 +403,7 @@ const Header = () => {
      <div className="md:hidden fixed inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-y-auto">
       {/* Header */}
       <div className="sticky top-0 bg-linear-to-r from-indigo-600 to-purple-600 text-white z-10 shadow-lg">
-       <div className="flex items-center justify-between px-4 sm:px-5 py-4">
-        <div className="flex items-center gap-2">
-         <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-          <HiMenu size={18} className="text-white" />
-         </div>
-         <h2 className="text-lg font-bold text-white">Menü</h2>
-        </div>
+       <div className="flex items-center justify-end px-4 sm:px-5 py-3">
         <button
          onClick={closeMenu}
          className="p-2 hover:bg-white/20 rounded-lg transition-all duration-200 cursor-pointer active:scale-95"

@@ -40,7 +40,7 @@ const Footer = () => {
   <footer className="bg-gray-900 text-gray-300 mt-auto">
    <div className="container mx-auto px-4 py-12">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-     <div>
+     <div className="md:pr-10">
       <div className="mb-4">
        <Link href="/" className="font-[Open_Sans] text-xl sm:text-2xl font-extrabold tracking-[0.25em] text-white select-none duration-1000 ease-out hover:text-indigo-600">
         YAZICI TİCARET
@@ -116,23 +116,7 @@ const Footer = () => {
        </li>
        <li className="flex items-start gap-3">
         <HiLocationMarker size={18} className="mt-0.5 text-indigo-400 shrink-0" />
-        <div className="text-sm">
-         <p className="text-gray-300">
-          Kemalpaşa mahallesi, Atatürk bulvarı,
-          <br />
-          No:54/E, İnegöl/Bursa
-         </p>
-        </div>
-       </li>
-       <li className="flex items-start gap-3">
-        <HiLocationMarker size={18} className="mt-0.5 text-indigo-400 shrink-0" />
-        <div className="text-sm">
-         <p className="text-gray-300">
-          Cuma mahallesi, Atatürk bulvarı,
-          <br />
-          No:51, İnegöl/Bursa
-         </p>
-        </div>
+        <p className="text-sm text-gray-300">Atatürk Bulvarı, İnegöl/Bursa</p>
        </li>
       </ul>
      </div>
@@ -141,40 +125,40 @@ const Footer = () => {
 
    <div className="border-t border-gray-800">
     <div className="container mx-auto px-4 py-6">
-     <div className="flex flex-col gap-6">
+     <div className="flex flex-col gap-4 sm:gap-6">
       {/* Ödeme Logoları */}
-      <div className="flex flex-col items-center gap-5 py-4">
-       <p className="text-sm text-gray-400 font-medium tracking-wide">Güvenli Ödeme</p>
-       <div className="flex items-center justify-center gap-6 flex-wrap">
-        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-12 w-20">
+      <div className="flex flex-col items-center gap-3 sm:gap-5 py-2 sm:py-4">
+       <p className="text-xs sm:text-sm text-gray-400 font-medium tracking-wide">Güvenli Ödeme</p>
+       <div className="flex items-center justify-center gap-3 sm:gap-6 flex-wrap">
+        <div className="flex items-center justify-center bg-white rounded-lg p-2 sm:p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-10 w-16 sm:h-12 sm:w-20">
          <FaCcVisa
-          size={48}
-          className="text-blue-600"
+          size={36}
+          className="text-blue-600 sm:w-12 sm:h-12"
           title="Visa"
          />
         </div>
-        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-12 w-20">
+        <div className="flex items-center justify-center bg-white rounded-lg p-2 sm:p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-10 w-16 sm:h-12 sm:w-20">
          <FaCcMastercard
-          size={48}
-          className="text-orange-500"
+          size={36}
+          className="text-orange-500 sm:w-12 sm:h-12"
           title="Mastercard"
          />
         </div>
-        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-12 w-20">
+        <div className="flex items-center justify-center bg-white rounded-lg p-2 sm:p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-10 w-16 sm:h-12 sm:w-20">
          <Image
           src="/troy.png"
           alt="Troy"
-          width={48}
-          height={48}
+          width={36}
+          height={36}
           className="object-contain w-full h-full"
          />
         </div>
-        <div className="flex items-center justify-center bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-12 w-20">
+        <div className="flex items-center justify-center bg-white rounded-lg p-2 sm:p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 h-10 w-16 sm:h-12 sm:w-20">
          <Image
           src="/iyzico.png"
           alt="iyzico ile Öde"
-          width={80}
-          height={48}
+          width={60}
+          height={36}
           className="object-contain w-full h-full"
          />
         </div>
@@ -182,11 +166,11 @@ const Footer = () => {
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-       <div className="flex flex-col gap-1">
-        <p className="text-sm text-gray-400">
+       <div className="flex flex-col gap-1 text-center md:text-left">
+        <p className="text-xs sm:text-sm text-gray-400">
          © {currentYear} YAZICI TİCARET. Tüm hakları saklıdır.
         </p>
-        <p className="text-xs text-gray-500 inline-flex items-center gap-2">
+        <p className="text-[10px] sm:text-xs text-gray-500 inline-flex items-center justify-center md:justify-start gap-2">
          Site tasarımı ve geliştirme:{" "}
          <Link
           href="https://www.omerhalisdemir.com.tr/"
@@ -197,14 +181,14 @@ const Footer = () => {
           <Image
            src="/OHD-favicon.svg"
            alt="OHD Logo"
-           width={24}
-           height={24}
-           className="object-contain"
+           width={20}
+           height={20}
+           className="object-contain sm:w-6 sm:h-6"
           />
          </Link>
         </p>
        </div>
-       <div className="flex gap-6 text-sm">
+       <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs sm:text-sm text-center">
         {POLICY_LINKS.map((link) => (
          <Link key={link.href} href={link.href} className="hover:text-indigo-400 transition">
           {link.name}

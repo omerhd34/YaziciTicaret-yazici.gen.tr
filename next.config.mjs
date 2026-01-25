@@ -8,6 +8,7 @@ const nextConfig = {
     hostname: 'res.cloudinary.com',
    },
   ],
+  qualities: [70, 75], // Görüntü kalite seviyeleri
  },
  // iyzipay paketi için webpack config
  webpack: (config, { isServer }) => {
