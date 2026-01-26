@@ -24,8 +24,14 @@ export default function ProductActions({
       : "bg-gray-300 text-gray-500 cursor-not-allowed"
      }`}
    >
-    <FaShoppingCart size={20} className="sm:w-6 sm:h-6" />
-    <span className="hidden sm:inline">{addedToCart ? "Sepete Eklendi!" : "Sepete Ekle"}</span>
+    {stock === 0 ? (
+     <span>Stokta bulunmamaktadır</span>
+    ) : (
+     <>
+      <FaShoppingCart size={20} className="sm:w-6 sm:h-6" />
+      <span className="hidden sm:inline">{addedToCart ? "Sepete Eklendi!" : "Sepete Ekle"}</span>
+     </>
+    )}
    </button>
    <button
     onClick={onComparisonToggle}

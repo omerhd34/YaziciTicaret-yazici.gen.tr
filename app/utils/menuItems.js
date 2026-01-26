@@ -30,20 +30,9 @@ export const MENU_ITEMS = [
    { name: "Ankastre Setler", path: "/kategori/ankastre/ankastre-setler" },
   ]
  },
- {
-  name: "Klima",
-  path: "/kategori/klima",
-  isSpecial: false,
-  bannerImg: "/products/klima/klima.webp",
-  subCategories: [
-   { name: "Klima İç Ünite", path: "/kategori/klima/klima-ic-unite" },
-   { name: "Klima Dış Ünite", path: "/kategori/klima/klima-dis-unite" },
-   { name: "Klima Takımı", path: "/kategori/klima/klima-takimi" },
-  ]
- },
 
  {
-  name: "Sebil ve Arıtma", path: "/kategori/su-sebili-ve-su-aritma-cihazi", isSpecial: false,
+  name: "Sebil ve Su Arıtma", path: "/kategori/su-sebili-ve-su-aritma-cihazi", isSpecial: false,
   bannerImg: "/products/suSebiliSuAritma/suSebiliSuAritma.png",
   subCategories: [
    { name: "Su Sebili", path: "/kategori/su-sebili-ve-su-aritma-cihazi/su-sebili" },
@@ -51,6 +40,7 @@ export const MENU_ITEMS = [
   ]
  },
 
+ { name: "Klima", path: "/kategori/klima", isSpecial: false },
  { name: "Televizyon", path: "/kategori/televizyon", isSpecial: false },
  { name: "Süpürge", path: "/kategori/elektrikli-supurge", isSpecial: false },
  { name: "Kahve Makinesi", path: "/kategori/turk-kahve-makineleri", isSpecial: false },

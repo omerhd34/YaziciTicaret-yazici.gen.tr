@@ -1,13 +1,9 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
-import axiosInstance from "@/lib/axios";
+import { useState, useMemo } from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
 export default function ProductAllFeatures({ product, selectedColor = null }) {
  const [expandedCategories, setExpandedCategories] = useState({});
- const [selectedBundleProductIndex, setSelectedBundleProductIndex] = useState(0);
- const [bundleProducts, setBundleProducts] = useState([]);
- const [loadingBundleProducts, setLoadingBundleProducts] = useState(false);
 
  const toggleCategory = (index) => {
   setExpandedCategories(prev => ({
@@ -16,114 +12,14 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
   }));
  };
 
- // Takım içindeki ürünleri kontrol et
- const currentColorObj = useMemo(() => {
-  if (!product || !product.colors || product.colors.length === 0) return null;
-  return selectedColor
-   ? product.colors.find(c => typeof c === 'object' && c.name === selectedColor)
-   : (typeof product.colors[0] === 'object' ? product.colors[0] : null);
- }, [product, selectedColor]);
-
- const productsInside = currentColorObj?.productsInside;
- const hasBundleProducts = productsInside && Array.isArray(productsInside) && productsInside.length > 0;
-
- // Serial number'lardan ürünleri bul
- useEffect(() => {
-  if (!hasBundleProducts || !productsInside) {
-   setBundleProducts([]);
-   return;
-  }
-
-  // productsInside artık string array (serial number'lar) mi yoksa object array mi kontrol et
-  const isStringArray = productsInside.length > 0 && typeof productsInside[0] === 'string';
-  
-  if (!isStringArray) {
-   // Eski format (object array) - direkt kullan
-   setBundleProducts(productsInside);
-   return;
-  }
-
-  // Yeni format (string array) - serial number'lardan ürünleri bul
-  const fetchBundleProducts = async () => {
-   setLoadingBundleProducts(true);
-   try {
-    const res = await axiosInstance.get("/api/products?limit=1000");
-    const data = res.data;
-    
-    if (data.success) {
-     const foundProducts = [];
-     for (const serialNumber of productsInside) {
-      // Tüm ürünlerde bu serial number'ı ara
-      const foundProduct = data.data.find((p) => {
-       if (!p.colors || !Array.isArray(p.colors)) return false;
-       return p.colors.some(c => {
-        if (typeof c === 'object' && c.serialNumber) {
-         return c.serialNumber === serialNumber;
-        }
-        return false;
-       });
-      });
-      
-      if (foundProduct) {
-       // Serial number'a sahip rengi bul
-       const colorWithSerial = foundProduct.colors.find(c => {
-        if (typeof c === 'object' && c.serialNumber) {
-         return c.serialNumber === serialNumber;
-        }
-        return false;
-       });
-       
-       if (colorWithSerial) {
-        foundProducts.push(foundProduct);
-       }
-      }
-     }
-     setBundleProducts(foundProducts);
-    }
-   } catch (error) {
-    console.error("Bundle products fetch error:", error);
-    setBundleProducts([]);
-   } finally {
-    setLoadingBundleProducts(false);
-   }
-  };
-
-  fetchBundleProducts();
- }, [hasBundleProducts, productsInside]);
-
- // Eğer takım ürünü varsa, seçilen ürünü kullan
+ // Artık her zaman ana ürünü kullanıyoruz
  const displayProduct = useMemo(() => {
-  if (!product) return null;
-  if (hasBundleProducts && bundleProducts.length > 0 && bundleProducts[selectedBundleProductIndex]) {
-   return bundleProducts[selectedBundleProductIndex];
-  }
   return product;
- }, [hasBundleProducts, bundleProducts, selectedBundleProductIndex, product]);
+ }, [product]);
 
  const displaySelectedColor = useMemo(() => {
-  if (hasBundleProducts && bundleProducts.length > 0 && bundleProducts[selectedBundleProductIndex]) {
-   // Takım içindeki ürünün serial number'ına sahip rengini bul
-   const bundleProduct = bundleProducts[selectedBundleProductIndex];
-   const serialNumber = productsInside[selectedBundleProductIndex];
-   
-   if (bundleProduct.colors && bundleProduct.colors.length > 0) {
-    const colorWithSerial = bundleProduct.colors.find(c => {
-     if (typeof c === 'object' && c.serialNumber) {
-      return c.serialNumber === serialNumber;
-     }
-     return false;
-    });
-    
-    if (colorWithSerial) {
-     return colorWithSerial.name || null;
-    }
-    
-    // Serial number'a sahip renk bulunamazsa ilk rengi kullan
-    return bundleProduct.colors[0].name || null;
-   }
-  }
   return selectedColor;
- }, [hasBundleProducts, bundleProducts, selectedBundleProductIndex, productsInside, selectedColor]);
+ }, [selectedColor]);
 
  if (!product) return null;
 
@@ -311,56 +207,6 @@ export default function ProductAllFeatures({ product, selectedColor = null }) {
  return (
   <div className="mt-6 sm:mt-8 md:mt-12">
    <h2 className="font-bold text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 md:mb-6 text-gray-900">Tüm Özellikler</h2>
-
-   {/* Takım İçindeki Ürünler Seçimi */}
-   {hasBundleProducts && (
-    <div className="mb-3 sm:mb-4 md:mb-6">
-     {loadingBundleProducts ? (
-      <div className="text-sm text-gray-600">Yükleniyor...</div>
-     ) : (
-      <div className="flex flex-wrap gap-2">
-       {bundleProducts.length > 0 ? (
-        bundleProducts.map((bundleProduct, index) => {
-         const bundleProductName = bundleProduct.name || `Ürün ${index + 1}`;
-         const isSelected = selectedBundleProductIndex === index;
-         return (
-          <button
-           key={index}
-           onClick={() => {
-            setSelectedBundleProductIndex(index);
-           }}
-           className={`px-2.5 py-1.5 sm:px-3 md:px-4 md:py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium transition-colors cursor-pointer ${isSelected
-            ? "bg-indigo-600 text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-           {bundleProductName}
-          </button>
-         );
-        })
-       ) : (
-        productsInside.map((serialNumber, index) => {
-         const isSelected = selectedBundleProductIndex === index;
-         return (
-          <button
-           key={index}
-           onClick={() => {
-            setSelectedBundleProductIndex(index);
-           }}
-           className={`px-2.5 py-1.5 sm:px-3 md:px-4 md:py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium transition-colors cursor-pointer ${isSelected
-             ? "bg-indigo-600 text-white"
-             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-             }`}
-          >
-           Ürün {index + 1}
-          </button>
-         );
-        })
-       )}
-      </div>
-     )}
-    </div>
-   )}
 
    <div className="space-y-2 sm:space-y-3 md:space-y-4">
     {processedSpecifications && processedSpecifications.length > 0 ? (

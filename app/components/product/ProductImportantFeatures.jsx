@@ -466,11 +466,23 @@ export default function ProductImportantFeatures({ product, selectedColor = null
   if (agBaglantiTipi) {
    importantFeatures.push({ key: "Ağ bağlantı tipi", value: agBaglantiTipi });
   }
- } else if (isWaterPurification) {
-  // Su Arıtma için 3 özellik: Tank Kapasitesi (Litre), Pompalı Sistem, Günlük Arıtma Kapasitesi (Litre)
-  // Filtre Tipleri görünmemeli
+ } else if (isAirConditionerKit) {
+  // Klima Takımı için 3 özellik
+  const kompresorTipi = findSpecValueMultiple(["kompresör tipi"]);
+  if (kompresorTipi) {
+   importantFeatures.push({ key: "Kompresör Tipi", value: kompresorTipi });
+  }
 
-  // Tank Kapasitesi (Litre) - verilerde tam olarak "Tank Kapasitesi (Litre)" olarak kayıtlı
+  const sogutmaKapasitesi = findSpecValueMultiple(["soğutma kapasitesi"]);
+  if (sogutmaKapasitesi) {
+   importantFeatures.push({ key: "Soğutma Kapasitesi (BTU/h)", value: sogutmaKapasitesi });
+  }
+
+  const isitmaKapasitesi = findSpecValueMultiple(["ısıtma kapasitesi", "isitma kapasitesi", "isıtma kapasitesi"]);
+  if (isitmaKapasitesi) {
+   importantFeatures.push({ key: "Isıtma Kapasitesi (BTU/h)", value: isitmaKapasitesi });
+  }
+ } else if (isWaterPurification) {
   for (const spec of allSpecifications) {
    if (spec.items) {
     const tankItem = spec.items.find(item => {
@@ -550,7 +562,7 @@ export default function ProductImportantFeatures({ product, selectedColor = null
  // Grid class'ını ürün tipine göre belirle
  const gridClass = isAirConditionerIndoorUnit
   ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-5 md:p-6"
-  : isAirConditionerOutdoorUnit
+  : isAirConditionerOutdoorUnit || isAirConditionerKit
    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 p-4 sm:p-5 md:p-6"
    : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 p-4 sm:p-5 md:p-6";
 
@@ -562,7 +574,7 @@ export default function ProductImportantFeatures({ product, selectedColor = null
     <div className={gridClass}>
      {importantFeatures.map((feature, index) => {
       // Her 4. öğede (klima iç ünite için) veya her 3. öğede (diğer ürünler için) border olmasın
-      const columnsPerRow = isAirConditionerIndoorUnit ? 4 : (isAirConditionerOutdoorUnit ? 3 : 3);
+      const columnsPerRow = isAirConditionerIndoorUnit ? 4 : (isAirConditionerOutdoorUnit || isAirConditionerKit ? 3 : 3);
       const isLastInRow = (index + 1) % columnsPerRow === 0;
       // Border'ı sadece lg ekranlarda göster (desktop'ta 4 veya 3 sütunlu grid)
       const borderClass = !isLastInRow ? 'lg:border-r lg:border-gray-200 lg:pr-4' : '';
@@ -570,7 +582,7 @@ export default function ProductImportantFeatures({ product, selectedColor = null
       return (
        <div key={index} className={`flex flex-col ${borderClass}`}>
         <dt className="font-semibold text-indigo-900 text-xs sm:text-sm mb-1">{feature.key}</dt>
-        <dd className="text-gray-600 font-medium text-xs sm:text-sm md:text-base break-words">{feature.value}</dd>
+        <dd className="text-gray-600 font-medium text-xs sm:text-sm md:text-base wrap-break-word">{feature.value}</dd>
        </div>
       );
      })}

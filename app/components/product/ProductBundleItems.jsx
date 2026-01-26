@@ -1,8 +1,8 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { getProductUrl } from "@/app/utils/productUrl";
 
@@ -152,22 +152,17 @@ export default function ProductBundleItems({ product, selectedColor }) {
      const p = item.product;
      const color = item.color;
      const serialNumber = item.serialNumber;
-
-     const colorPrice = color?.price || p.price;
-     const colorDiscountPrice = color?.discountPrice !== undefined ? color.discountPrice : p.discountPrice;
      const colorImages = color?.images && color.images.length > 0 ? color.images : p.images;
-     const colorStock = color?.stock !== undefined ? color.stock : p.stock;
-     const hasDiscount = colorDiscountPrice && colorDiscountPrice < colorPrice;
-     const displayPrice = hasDiscount ? colorDiscountPrice : colorPrice;
-
+     const isVerticalLayout = product?.subCategory === "Ankastre Setler";
      const productUrl = getProductUrl(p, serialNumber);
 
-     // Ankastre Setler için dikey layout, Klimalar için yatay layout
-     const isVerticalLayout = product?.subCategory === "Ankastre Setler";
-
      return (
-      <div key={index} className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
-       <Link href={productUrl} className="h-full flex flex-col">
+      <Link 
+       key={index} 
+       href={productUrl}
+       className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden h-full flex flex-col hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+      >
+       <div className="h-full flex flex-col">
         <div className={isVerticalLayout ? "flex flex-col flex-1" : "flex flex-col md:flex-row flex-1"}>
          <div className={`relative bg-gray-100 shrink-0 ${isVerticalLayout ? "w-full h-32 sm:h-40 md:h-48" : "w-full md:w-40 h-32 sm:h-40 md:h-auto"}`}>
           {colorImages && colorImages.length > 0 ? (
@@ -205,35 +200,10 @@ export default function ProductBundleItems({ product, selectedColor }) {
             </p>
            )}
           </div>
-          <div className="flex items-center justify-between mt-auto pt-2 sm:pt-3 md:pt-4">
-           <div>
-            {hasDiscount ? (
-             <div className="flex flex-col md:flex-row md:items-center gap-0.5 sm:gap-1 md:gap-0">
-              <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-indigo-600">
-               {displayPrice.toLocaleString('tr-TR')} ₺
-              </span>
-              <span className="text-xs sm:text-xs md:text-sm text-gray-500 line-through md:ml-2">
-               {colorPrice.toLocaleString('tr-TR')} ₺
-              </span>
-             </div>
-            ) : (
-             <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-indigo-600">
-              {displayPrice.toLocaleString('tr-TR')} ₺
-             </span>
-            )}
-           </div>
-           <div className="text-xs sm:text-xs md:text-sm text-gray-600">
-            {colorStock > 0 ? (
-             <span className="text-green-600 font-semibold">Stokta Var</span>
-            ) : (
-             <span className="text-red-600 font-semibold">Stokta Yok</span>
-            )}
-           </div>
-          </div>
          </div>
         </div>
-       </Link>
-      </div>
+       </div>
+      </Link>
      );
     })}
    </div>
