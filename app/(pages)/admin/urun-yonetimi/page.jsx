@@ -192,6 +192,35 @@ export default function AdminUrunYonetimiPage() {
     newProducts={(() => {
      return products.filter((product) => product.isNewProduct === true).length;
     })()}
+    discountedProducts={(() => {
+     // İndirimli ürünleri say
+     let count = 0;
+     products.forEach((product) => {
+      let hasDiscount = false;
+      
+      // Renk varyantları varsa kontrol et
+      if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
+       const colorVariants = product.colors.filter(c => typeof c === 'object' && c.serialNumber);
+       if (colorVariants.length > 0) {
+        // En az bir renk varyantında indirim varsa ürün indirimli sayılır
+        hasDiscount = colorVariants.some(color => {
+         const colorPrice = color.price !== undefined ? Number(color.price) : product.price;
+         const colorDiscountPrice = color.discountPrice !== undefined ? color.discountPrice : null;
+         return colorDiscountPrice !== null && colorDiscountPrice < colorPrice;
+        });
+       } else {
+        // Renk varyantı yoksa ana ürünün indirimini kontrol et
+        hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined && product.discountPrice < product.price;
+       }
+      } else {
+       // Renk yoksa ana ürünün indirimini kontrol et
+       hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined && product.discountPrice < product.price;
+      }
+      
+      if (hasDiscount) count++;
+     });
+     return count;
+    })()}
    />
 
    <div className="container mx-auto px-4">

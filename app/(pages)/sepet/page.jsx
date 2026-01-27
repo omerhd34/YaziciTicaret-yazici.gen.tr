@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
@@ -13,116 +13,167 @@ export default function SepetPage() {
  const router = useRouter();
  const [cartItems, setCartItems] = useState([]);
  const [loading, setLoading] = useState(true);
+ const [hasInitialLoad, setHasInitialLoad] = useState(false);
 
- const fetchCartProducts = useCallback(async () => {
-  const cart = localStorageCart;
-  if (cart.length === 0) {
-   setCartItems([]);
-   setLoading(false);
-   return;
-  }
+ // Sadece ilk yüklemede fetchCartProducts çalışsın
+ useEffect(() => {
+  if (hasInitialLoad) return; // Zaten yüklendiyse tekrar çalıştırma
 
-  setLoading(true);
-  try {
-   const cartProductIds = cart.map(item => String(item._id || item.id)).filter(Boolean);
-
-   // Ürünleri yükle
-   const productsRes = await axiosInstance.get("/api/products?limit=1000");
-
-   const productsData = productsRes.data;
-
-   const allProducts = productsData.data || productsData.products || [];
-
-   if (productsData.success && allProducts.length > 0) {
-    // Önce sepetteki tüm ürünlerin serialNumber'larını hesapla
-    const cartWithSerialNumbers = cart.map(cartItem => {
-     const productId = String(cartItem._id || cartItem.id);
-     const currentProduct = allProducts.find(p => String(p._id) === productId);
-     if (!currentProduct) return null;
-
-     const allColors = currentProduct._allColors || currentProduct.colors;
-     const selectedColorObj = cartItem.selectedColor && allColors && Array.isArray(allColors)
-      ? allColors.find(c => typeof c === 'object' && c.name === cartItem.selectedColor)
-      : null;
-
-     const colorSerialNumber = selectedColorObj?.serialNumber || currentProduct.serialNumber;
-
-     return {
-      ...cartItem,
-      product: currentProduct,
-      serialNumber: colorSerialNumber,
-     };
-    }).filter(Boolean);
-
-    // Sepetteki ürünleri güncelle
-    const updatedCart = cart.map(cartItem => {
-     const productId = String(cartItem._id || cartItem.id);
-     const currentProduct = allProducts.find(p => String(p._id) === productId);
-
-     if (currentProduct) {
-      const allColors = currentProduct._allColors || currentProduct.colors;
-      const selectedColorObj = cartItem.selectedColor && allColors && Array.isArray(allColors)
-       ? allColors.find(c => typeof c === 'object' && c.name === cartItem.selectedColor)
-       : null;
-
-      const colorSerialNumber = selectedColorObj?.serialNumber || currentProduct.serialNumber;
-
-      return {
-       ...cartItem,
-       ...currentProduct,
-       selectedSize: cartItem.selectedSize,
-       selectedColor: cartItem.selectedColor,
-       serialNumber: colorSerialNumber,
-       quantity: cartItem.quantity,
-       addedAt: cartItem.addedAt,
-      };
-     }
-     return cartItem;
-    });
-
-    setCartItems(updatedCart);
-
-    if (typeof window !== "undefined") {
-     window.dispatchEvent(new Event("cartUpdated"));
-    }
-   } else {
-    setCartItems(cart);
+  const fetchCartProducts = async () => {
+   const cart = localStorageCart;
+   if (cart.length === 0) {
+    setCartItems([]);
+    setLoading(false);
+    setHasInitialLoad(true);
+    return;
    }
-  } catch (error) {
-   setCartItems(cart);
-  } finally {
-   setLoading(false);
-  }
- }, [localStorageCart]);
 
- useEffect(() => {
+   setLoading(true);
+   try {
+    // Ürünleri yükle
+    const productsRes = await axiosInstance.get("/api/products?limit=1000");
+
+    const productsData = productsRes.data;
+
+    const allProducts = productsData.data || productsData.products || [];
+
+    if (productsData.success && allProducts.length > 0) {
+     // Sepetteki ürünleri güncelle
+     const updatedCart = cart.map(cartItem => {
+      const productId = String(cartItem._id || cartItem.id);
+      const currentProduct = allProducts.find(p => String(p._id) === productId);
+
+      if (currentProduct) {
+       const allColors = currentProduct._allColors || currentProduct.colors;
+       const selectedColorObj = cartItem.selectedColor && allColors && Array.isArray(allColors)
+        ? allColors.find(c => typeof c === 'object' && c.name === cartItem.selectedColor)
+        : null;
+
+       const colorSerialNumber = selectedColorObj?.serialNumber || currentProduct.serialNumber;
+
+       return {
+        ...cartItem,
+        ...currentProduct,
+        selectedSize: cartItem.selectedSize,
+        selectedColor: cartItem.selectedColor,
+        serialNumber: colorSerialNumber,
+        quantity: cartItem.quantity,
+        addedAt: cartItem.addedAt,
+       };
+      }
+      return cartItem;
+     });
+
+     setCartItems(updatedCart);
+    } else {
+     setCartItems(cart);
+    }
+   } catch (error) {
+    setCartItems(cart);
+   } finally {
+    setLoading(false);
+    setHasInitialLoad(true);
+   }
+  };
+
   fetchCartProducts();
- }, [fetchCartProducts]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, []); // Sadece component mount olduğunda çalışsın
 
+ // localStorageCart değiştiğinde sadece quantity değerlerini güncelle (API çağrısı yapmadan)
+ // Sadece ilk yükleme tamamlandıktan sonra çalışsın
  useEffect(() => {
+  if (!hasInitialLoad) return; // İlk yükleme tamamlanana kadar bekle
+
   if (localStorageCart.length === 0) {
    setCartItems([]);
    return;
   }
 
   setCartItems(prevItems => {
-   return localStorageCart.map(cartItem => {
-    const existingItem = prevItems.find(item =>
-     String(item._id || item.id) === String(cartItem._id || cartItem.id) &&
-     item.selectedSize === cartItem.selectedSize &&
-     item.selectedColor === cartItem.selectedColor
+   // Eğer prevItems boşsa veya uzunlukları farklıysa, fetchCartProducts çalışsın
+   if (prevItems.length === 0 || prevItems.length !== localStorageCart.length) {
+    return prevItems; // fetchCartProducts bu durumu handle edecek
+   }
+
+   // Sadece quantity değerlerini güncelle
+   return prevItems.map(existingItem => {
+    const matchingCartItem = localStorageCart.find(cartItem =>
+     String(existingItem._id || existingItem.id) === String(cartItem._id || cartItem.id) &&
+     existingItem.selectedSize === cartItem.selectedSize &&
+     existingItem.selectedColor === cartItem.selectedColor
     );
 
-    if (existingItem) {
+    if (matchingCartItem) {
      return {
       ...existingItem,
-      quantity: cartItem.quantity,
+      quantity: matchingCartItem.quantity,
      };
     }
-    return cartItem;
+    return existingItem;
    });
   });
- }, [localStorageCart]);
+ }, [localStorageCart, hasInitialLoad]);
+
+ // updateQuantity için özel handler - cartItems state'ini anında güncelle
+ const handleUpdateQuantity = (productId, selectedSize, selectedColor, newQuantity) => {
+  // Önce context'teki updateQuantity'yi çağır
+  updateQuantity(productId, selectedSize, selectedColor, newQuantity);
+
+  // Sonra cartItems state'ini anında güncelle (sayfa yenilenmeden)
+  setCartItems(prevItems => {
+   if (newQuantity <= 0) {
+    // Ürünü sepetten kaldır
+    return prevItems.filter(item =>
+     !(String(item._id || item.id) === String(productId) &&
+      item.selectedSize === selectedSize &&
+      item.selectedColor === selectedColor)
+    );
+   }
+
+   const maxQuantity = Math.min(10, 10); // Stock kontrolü için item.stock kullanılabilir
+   const finalQuantity = Math.min(newQuantity, maxQuantity);
+
+   return prevItems.map(item => {
+    if (
+     String(item._id || item.id) === String(productId) &&
+     item.selectedSize === selectedSize &&
+     item.selectedColor === selectedColor
+    ) {
+     const itemMaxQuantity = Math.min(item.stock || 10, 10);
+     return {
+      ...item,
+      quantity: Math.min(finalQuantity, itemMaxQuantity),
+     };
+    }
+    return item;
+   });
+  });
+ };
+
+ // removeFromCart için özel handler - cartItems state'ini anında güncelle
+ const handleRemoveFromCart = (productId, selectedSize, selectedColor) => {
+  // Önce context'teki removeFromCart'ı çağır
+  removeFromCart(productId, selectedSize, selectedColor);
+
+  // Sonra cartItems state'ini anında güncelle (sayfa yenilenmeden)
+  setCartItems(prevItems =>
+   prevItems.filter(item =>
+    !(String(item._id || item.id) === String(productId) &&
+     item.selectedSize === selectedSize &&
+     item.selectedColor === selectedColor)
+   )
+  );
+ };
+
+ // clearCart için özel handler - cartItems state'ini anında güncelle
+ const handleClearCart = () => {
+  // Önce context'teki clearCart'ı çağır
+  clearCart();
+
+  // Sonra cartItems state'ini anında güncelle (sayfa yenilenmeden)
+  setCartItems([]);
+ };
 
  const getCartTotal = () => {
   return cartItems.reduce((total, item) => {
@@ -157,9 +208,9 @@ export default function SepetPage() {
     <div className="grid lg:grid-cols-3 gap-8">
      <CartItemsList
       cartItems={cartItems}
-      onUpdateQuantity={updateQuantity}
-      onRemove={removeFromCart}
-      onClearCart={clearCart}
+      onUpdateQuantity={handleUpdateQuantity}
+      onRemove={handleRemoveFromCart}
+      onClearCart={handleClearCart}
      />
 
      <CartOrderSummary

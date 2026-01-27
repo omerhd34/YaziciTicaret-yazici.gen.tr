@@ -84,7 +84,10 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }) {
          item.quantity + 1
         )
        }
-       className="p-2 hover:bg-gray-100 transition cursor-pointer"
+       className={`p-2 transition ${item.quantity >= Math.min(item.stock || 10, 10)
+        ? "text-gray-400 cursor-not-allowed opacity-60"
+        : "hover:bg-gray-100 cursor-pointer"
+        }`}
        disabled={item.quantity >= Math.min(item.stock || 10, 10)}
       >
        <HiPlus size={16} />

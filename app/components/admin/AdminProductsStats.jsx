@@ -1,18 +1,19 @@
 "use client";
-import { MdInventory2, MdTrendingUp, MdStar } from "react-icons/md";
+import { MdInventory2, MdTrendingUp, MdStar, MdLocalOffer } from "react-icons/md";
 import { HiSparkles } from "react-icons/hi";
 
-export default function AdminProductsStats({ totalProducts, outOfStockProducts, featuredProducts, newProducts }) {
+export default function AdminProductsStats({ totalProducts, outOfStockProducts, featuredProducts, newProducts, discountedProducts }) {
  const stats = [
   { icon: MdInventory2, label: "Toplam Ürün", value: totalProducts, color: "bg-blue-500" },
   { icon: MdTrendingUp, label: "Stokta Olmayan Ürünler", value: outOfStockProducts, color: "bg-red-500" },
   { icon: MdStar, label: "Öne Çıkan Ürünler", value: featuredProducts || 0, color: "bg-yellow-500" },
   { icon: HiSparkles, label: "Yeni Ürünler", value: newProducts || 0, color: "bg-green-500" },
+  { icon: MdLocalOffer, label: "İndirimli Ürünler", value: discountedProducts || 0, color: "bg-purple-500" },
  ];
 
  return (
   <div className="container mx-auto px-4 -mt-6">
-   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
     {stats.map((stat, idx) => (
      <div key={idx} className="bg-white rounded-xl shadow-md p-6 flex items-center gap-4">
       <div className={`${stat.color} p-4 rounded-lg text-white`}>
