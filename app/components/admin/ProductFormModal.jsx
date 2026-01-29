@@ -6,7 +6,7 @@ import { MENU_ITEMS } from "@/app/utils/menuItems";
 import axiosInstance from "@/lib/axios";
 
 const MAX_IMAGES = 15;
-const MAX_DESCRIPTION = 600;
+const MAX_DESCRIPTION = 1000;
 const MAX_NAME = 100;
 const MAX_BRAND = 50;
 

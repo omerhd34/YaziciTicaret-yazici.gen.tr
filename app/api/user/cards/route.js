@@ -163,7 +163,8 @@ export async function POST(request) {
    );
   }
 
-  // Amex: 15 hane, son 5 gösterilir (•••• •••••• 51251). Diğerleri: 16 hane, son 4 (•••• •••• •••• 1234)
+  // Amex: 15 hane, son 5 gösterilir (•••• •••••• 51251). 
+  // Diğerleri: 16 hane, son 4 (•••• •••• •••• 1234)
   const cardNumberLast = cardType === 'Amex' ? cleanedCardNumber.slice(-5) : cleanedCardNumber.slice(-4);
   const cardNumberMasked = cardType === 'Amex'
    ? `**** ****** *${cardNumberLast}`

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createIyzicoClient } from '@/lib/iyzico';
+import { getIyzicoUserMessage } from '@/lib/iyzicoErrorMessages';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Product from '@/models/Product';
@@ -246,10 +247,10 @@ export async function POST(request) {
    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ödeme Başarılı</title><script>window.location.href="${redirectUrl}";</script></head><body><p>Ödeme başarılı! Yönlendiriliyorsunuz...</p></body></html>`;
    return new NextResponse(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   } else {
-   // Ödeme başarısız
+   // Ödeme başarısız: İyzico'nun kısa errorMessage'ı yerine tam açıklamayı kullan
    const mdStatusText = mdStatus !== null ? ` (mdStatus: ${mdStatus})` : '';
    const fraudText = fraudStatus !== null ? ` (fraudStatus: ${fraudStatus})` : '';
-   const failMessage = result.errorMessage || `3D Secure doğrulaması başarısız${mdStatusText}${fraudText}`;
+   const failMessage = getIyzicoUserMessage(result) || `3D Secure doğrulaması başarısız${mdStatusText}${fraudText}`;
    const updateData = {
     $set: {
      'orders.$.status': 'Ödeme Başarısız',

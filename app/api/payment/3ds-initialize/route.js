@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createIyzicoClient } from '@/lib/iyzico';
+import { getIyzicoUserMessage } from '@/lib/iyzicoErrorMessages';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 
@@ -359,10 +360,11 @@ export async function POST(request) {
     paymentId: result.paymentId
    });
   } else {
+   const userMessage = getIyzicoUserMessage(result, cardNumber);
    return NextResponse.json(
     {
      success: false,
-     message: result.errorMessage || result.errorMessage || '3D Secure başlatılamadı',
+     message: userMessage,
      errorCode: result.errorCode,
      errorGroup: result.errorGroup
     },
