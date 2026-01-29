@@ -31,15 +31,15 @@ export default function ValuesGrid() {
 
  return (
   <section>
-   <div className="flex items-center gap-3 mb-6">
-    <HiStar className="text-indigo-600" size={28} />
-    <h2 className="text-2xl font-bold text-gray-900">Değerlerimiz</h2>
+   <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+    <HiStar className="text-indigo-600 w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Değerlerimiz</h2>
    </div>
-   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
     {values.map((value, idx) => (
-     <div key={idx} className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-      <h3 className="font-semibold text-gray-900 mb-2">{value.title}</h3>
-      <p className="text-sm text-gray-700">{value.description}</p>
+     <div key={idx} className="p-3 sm:p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+      <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1.5 sm:mb-2">{value.title}</h3>
+      <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">{value.description}</p>
      </div>
     ))}
    </div>

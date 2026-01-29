@@ -16,7 +16,7 @@ export default function ReturnExchangeHeader({ activeTab, onTabChange }) {
     <div className="bg-white rounded-xl shadow-md p-2 flex gap-2">
      <button
       onClick={() => onTabChange("iade")}
-      className={`px-8 py-3 rounded-lg font-semibold transition ${activeTab === "iade"
+      className={`px-8 py-3 rounded-lg font-semibold transition cursor-pointer ${activeTab === "iade"
        ? "bg-indigo-600 text-white"
        : "text-gray-600 hover:bg-gray-100"
        }`}
@@ -25,7 +25,7 @@ export default function ReturnExchangeHeader({ activeTab, onTabChange }) {
      </button>
      <button
       onClick={() => onTabChange("degisim")}
-      className={`px-8 py-3 rounded-lg font-semibold transition ${activeTab === "degisim"
+      className={`px-8 py-3 rounded-lg font-semibold transition cursor-pointer ${activeTab === "degisim"
        ? "bg-indigo-600 text-white"
        : "text-gray-600 hover:bg-gray-100"
        }`}

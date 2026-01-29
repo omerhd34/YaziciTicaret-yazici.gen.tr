@@ -114,11 +114,7 @@ export async function PATCH(request, { params }) {
      }
     }
    }
-  } catch (stockRestoreError) {
-   // Stock restore error - silently fail
-   // Hata olsa bile sipariş iptal edilmiş sayılır
-   console.error('Stok geri ekleme hatası:', stockRestoreError);
-  }
+  } catch (_) {}
 
   // Admin'e e-posta bildirimi (best-effort)
   try {

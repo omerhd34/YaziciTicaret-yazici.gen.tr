@@ -137,7 +137,7 @@ export async function PATCH(request, { params }) {
 
   // Sipariş iptal edildiğinde veya iade tamamlandığında stokları geri ekle
   const order = user.orders[idx];
-  const shouldRestoreStock = 
+  const shouldRestoreStock =
    (hasStatusUpdate && statusNorm.includes("iptal")) ||
    (hasReturnUpdate && normalizeText(String(returnRequestStatus).trim()) === normalizeText("Tamamlandı"));
 
@@ -147,7 +147,7 @@ export async function PATCH(request, { params }) {
     for (const item of items) {
      const productId = item.productId;
      const quantity = item.quantity || 1;
-     
+
      if (productId) {
       // Önce ürünü getir
       const product = await Product.findById(productId);
@@ -157,9 +157,9 @@ export async function PATCH(request, { params }) {
       await Product.findByIdAndUpdate(
        productId,
        {
-        $inc: { 
+        $inc: {
          stock: quantity,
-         soldCount: -quantity 
+         soldCount: -quantity
         }
        },
        { new: true }
@@ -169,22 +169,18 @@ export async function PATCH(request, { params }) {
       if (item.color && product.colors && Array.isArray(product.colors)) {
        const colorName = String(item.color).trim();
        await Product.updateOne(
-        { 
+        {
          _id: productId,
-         'colors.name': colorName 
+         'colors.name': colorName
         },
-        { 
+        {
          $inc: { 'colors.$.stock': quantity }
         }
        );
       }
      }
     }
-   } catch (stockRestoreError) {
-    // Stock restore error - silently fail
-    // Hata olsa bile sipariş güncellemesi yapılmış sayılır
-    console.error('Stok geri ekleme hatası:', stockRestoreError);
-   }
+   } catch (_) { }
   }
 
   // Müşteriye e-posta: iade onayı/reddi (best-effort)

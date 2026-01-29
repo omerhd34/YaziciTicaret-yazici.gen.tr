@@ -84,6 +84,12 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
    return;
   }
 
+  if (!form.phone || !form.phone.trim()) {
+   setError("Telefon numarası alanı zorunludur");
+   setLoading(false);
+   return;
+  }
+
   try {
    const res = await axiosInstance.post("/api/user/register", {
     firstName: form.firstName.trim(),
@@ -201,7 +207,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
 
    <div>
     <label className="block text-sm font-bold text-gray-700 mb-2">
-     Telefon
+     Telefon <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
     </label>
     <div className="relative">
      <HiPhone
@@ -214,6 +220,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       onChange={(e) => setForm({ ...form, phone: e.target.value })}
       className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
       placeholder="0XXXXXXXXXX"
+      required
      />
     </div>
    </div>

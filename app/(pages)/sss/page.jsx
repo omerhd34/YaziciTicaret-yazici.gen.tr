@@ -36,10 +36,6 @@ export default function SSSPage() {
    answer: "Yanlış ürün teslim edilmesi durumunda, lütfen ürünü kullanmadan müşteri hizmetlerimizle iletişime geçin. Yanlış gönderilen ürün için ücretsiz değişim işlemi gerçekleştirilecektir. Doğru ürün en kısa sürede adresinize gönderilecektir. Yanlış gönderilen ürünü iade etmeniz gerekmektedir ve iade kargo ücreti tarafımızca karşılanacaktır. Bu durumdan dolayı yaşadığınız mağduriyet için özür dileriz ve en hızlı şekilde çözüm sağlayacağız."
   },
   {
-   question: "Ürünleriniz hangi kargo firması tarafından teslim edilmektedir?",
-   answer: "Siparişleriniz bölgenize ve ürün özelliklerine göre farklı kargo firmaları aracılığıyla teslim edilmektedir. Genellikle Yurtiçi Kargo, Aras Kargo, MNG Kargo ve Sürat Kargo gibi güvenilir kargo firmaları ile çalışmaktayız. Kargo firması seçimi, teslimat adresinize ve ürününüzün özelliklerine göre otomatik olarak yapılmaktadır. Belirli bir kargo firması tercihiniz varsa, sipariş sırasında veya sipariş sonrası müşteri hizmetlerimizle iletişime geçerek talebinizi iletebilirsiniz."
-  },
-  {
    question: "Dünyanın her yerinden sipariş verebilir miyim?",
    answer: "Şu anda sadece Türkiye içi teslimat yapmaktayız. Yurt dışı teslimat hizmetimiz bulunmamaktadır. Türkiye'nin tüm şehirlerine ve ilçelerine kargo ile teslimat yapabilmekteyiz. Yurt dışı teslimat talepleriniz için lütfen müşteri hizmetlerimizle iletişime geçin. Gelecekte yurt dışı teslimat hizmeti eklemeyi planlamaktayız. Bu konudaki güncellemeleri web sitemizden takip edebilirsiniz."
   },
@@ -86,21 +82,21 @@ export default function SSSPage() {
  };
 
  return (
-  <div className="min-h-screen bg-gray-50 py-12">
+  <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12">
    <div className="container mx-auto px-4">
     {/* Header */}
-    <div className="text-center mb-12">
-     <h1 className="text-4xl font-black text-gray-900 mb-4">
+    <div className="text-center mb-8 md:mb-12">
+     <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3 md:mb-4">
       Sık Sorulan Sorular
      </h1>
-     <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+     <p className="text-gray-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
       Merak ettiğiniz soruların yanıtlarını burada bulabilirsiniz. Aradığınızı bulamazsanız, müşteri hizmetlerimizle iletişime geçebilirsiniz.
      </p>
     </div>
 
     {/* FAQ List */}
     <div className="max-w-5xl mx-auto">
-     <div className="space-y-4 ">
+     <div className="space-y-3 sm:space-y-4">
       {faqs.map((faq, index) => (
        <div
         key={index}
@@ -108,21 +104,21 @@ export default function SSSPage() {
        >
         <button
          onClick={() => toggleFAQ(index)}
-         className="w-full px-6 py-5 flex items-center justify-between text-left rounded-xl focus:bg-blue-200 hover:bg-blue-200 transition-colors duration-500 ease-in-out cursor-pointer"
+         className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between text-left rounded-xl focus:bg-blue-200 hover:bg-blue-200 transition-colors duration-500 ease-in-out cursor-pointer"
         >
-         <span className="font-semibold text-gray-800 text-lg pr-4 cursor-pointer">
+         <span className="font-semibold text-gray-800 text-sm sm:text-base md:text-lg pr-3 sm:pr-4 cursor-pointer">
           {faq.question}
          </span>
          {openIndex === index ? (
-          <HiChevronUp size={24} className="text-indigo-600 shrink-0 cursor-pointer" />
+          <HiChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 shrink-0 cursor-pointer" />
          ) : (
-          <HiChevronDown size={24} className="text-gray-400 shrink-0 cursor-pointer" />
+          <HiChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 shrink-0 cursor-pointer" />
          )}
         </button>
         {openIndex === index && (
-         <div className="px-6 pb-5 pt-0">
-          <div className="pt-4 border-t border-gray-100">
-           <p className="text-gray-600 leading-relaxed">
+         <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-0">
+          <div className="pt-3 sm:pt-4 border-t border-gray-100">
+           <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
             {faq.answer}
            </p>
           </div>
@@ -133,16 +129,16 @@ export default function SSSPage() {
      </div>
 
      {/* Contact Section */}
-     <div className="mt-12 bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white text-center">
-      <h2 className="text-2xl font-bold mb-3">
+     <div className="mt-8 md:mt-12 bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl p-5 sm:p-6 md:p-8 text-white text-center">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 md:mb-3">
        Sorunuz mu var?
       </h2>
-      <p className="text-indigo-100 mb-6">
+      <p className="text-indigo-100 text-sm sm:text-base mb-4 md:mb-6">
        Aradığınızı bulamadınız mı? Müşteri hizmetlerimizle iletişime geçin, size yardımcı olalım.
       </p>
       <Link
        href="/destek"
-       className="inline-block bg-white text-indigo-600 px-8 py-3 rounded-full font-semibold hover:bg-indigo-50 transition"
+       className="inline-block bg-white text-indigo-600 text-sm sm:text-base px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-indigo-50 transition"
       >
        Destek Sayfasına Git
       </Link>

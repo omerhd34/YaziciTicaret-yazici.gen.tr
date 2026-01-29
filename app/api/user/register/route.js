@@ -88,14 +88,19 @@ export async function POST(request) {
   }
 
   // Telefon numarası kontrolü
-  if (phone && phone.trim()) {
-   const existingUserByPhone = await User.findOne({ phone: phone.trim() });
-   if (existingUserByPhone) {
-    return NextResponse.json(
-     { success: false, message: 'Bu telefon numarası zaten kullanılmaktadır.' },
-     { status: 400 }
-    );
-   }
+  if (!phone || !phone.trim()) {
+   return NextResponse.json(
+    { success: false, message: 'Telefon numarası alanı zorunludur.' },
+    { status: 400 }
+   );
+  }
+
+  const existingUserByPhone = await User.findOne({ phone: phone.trim() });
+  if (existingUserByPhone) {
+   return NextResponse.json(
+    { success: false, message: 'Bu telefon numarası zaten kullanılmaktadır.' },
+    { status: 400 }
+   );
   }
 
   const hashedPassword = Buffer.from(password).toString('base64');

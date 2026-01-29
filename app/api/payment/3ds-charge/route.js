@@ -76,6 +76,14 @@ export async function POST(request) {
    );
   }
 
+  // Çift ödeme koruması: Sipariş zaten ödendi mi kontrol et
+  if (order.payment?.paidAt || order.status !== 'Ödeme Bekleniyor') {
+   return NextResponse.json(
+    { success: false, message: 'Bu sipariş için ödeme zaten yapılmış', orderStatus: order.status },
+    { status: 400 }
+   );
+  }
+
   // iyzico Auth 3DS request
   const iyzicoRequest = {
    locale: 'tr',
@@ -105,7 +113,19 @@ export async function POST(request) {
    );
   }
 
-  if (result.status === 'success') {
+  // Çift ödeme koruması: Sipariş zaten ödendi mi kontrol et (race condition koruması)
+  if (orderRefresh.payment?.paidAt || orderRefresh.status !== 'Ödeme Bekleniyor') {
+   return NextResponse.json(
+    { success: false, message: 'Bu sipariş için ödeme zaten yapılmış', orderStatus: orderRefresh.status },
+    { status: 400 }
+   );
+  }
+
+  const mdStatus = result?.mdStatus !== undefined ? Number(result.mdStatus) : null;
+  const fraudStatus = result?.fraudStatus !== undefined ? Number(result.fraudStatus) : null;
+  const is3dsOk = mdStatus === null ? (result.status === 'success') : (result.status === 'success' && mdStatus === 1);
+
+  if (is3dsOk) {
    // Ödeme başarılı - durumu güncelle
    const updateData = {
     $set: {
@@ -115,6 +135,8 @@ export async function POST(request) {
       transactionId: result.paymentId,
       paymentId: result.paymentId,
       conversationId: result.conversationId,
+      mdStatus: mdStatus,
+      fraudStatus: fraudStatus,
       cardType: result.cardType,
       cardAssociation: result.cardAssociation,
       cardFamily: result.cardFamily,
@@ -132,50 +154,82 @@ export async function POST(request) {
    );
 
    // Ödeme başarılı olduğuna göre stokları azalt
+   const stockUpdateErrors = [];
    try {
     for (const item of orderRefresh.items) {
      const productId = item.productId;
-     const quantity = item.quantity || 1;
+     const quantity = Number(item.quantity || 1);
 
      if (productId) {
-      // Önce ürünü getir
-      const product = await Product.findById(productId);
-      if (!product) continue;
-
-      // Ana ürünün stokunu azalt
-      const updateData = {
-       $inc: {
-        soldCount: quantity,
-        stock: -quantity
+      try {
+       // Önce ürünü getir ve stok kontrolü yap
+       const product = await Product.findById(productId);
+       if (!product) {
+        stockUpdateErrors.push(`Ürün bulunamadı: ${item.name || productId}`);
+        continue;
        }
-      };
 
-      // Ana ürün stokunu güncelle
-      await Product.findByIdAndUpdate(
-       productId,
-       updateData,
-       { new: true }
-      );
+       // Stok kontrolü (double-check)
+       if (product.stock < quantity) {
+        stockUpdateErrors.push(`Yetersiz stok: ${item.name || product.name}. Mevcut: ${product.stock}, İstenen: ${quantity}`);
+        continue;
+       }
 
-      // Eğer renk seçilmişse, o rengin stokunu da azalt
-      if (item.color && product.colors && Array.isArray(product.colors)) {
-       const colorName = String(item.color).trim();
-       // Renk bazlı stok güncellemesi - positional operator kullan
-       await Product.updateOne(
+       // Ana ürünün stokunu azalt
+       const updateResult = await Product.findByIdAndUpdate(
+        productId,
         {
-         _id: productId,
-         'colors.name': colorName
+         $inc: {
+          soldCount: quantity,
+          stock: -quantity
+         }
         },
-        {
-         $inc: { 'colors.$.stock': -quantity }
-        }
+        { new: true }
        );
+
+       if (!updateResult) {
+        stockUpdateErrors.push(`Stok güncellenemedi: ${item.name || product.name}`);
+        continue;
+       }
+
+       // Eğer renk seçilmişse, o rengin stokunu da azalt
+       if (item.color && product.colors && Array.isArray(product.colors)) {
+        const colorName = String(item.color).trim();
+        const colorOption = product.colors.find(c => String(c.name).trim() === colorName);
+        
+        if (colorOption && colorOption.stock < quantity) {
+         stockUpdateErrors.push(`Yetersiz renk stoku: ${item.name || product.name} - ${colorName}. Mevcut: ${colorOption.stock}, İstenen: ${quantity}`);
+         // Ana stoku geri al (rollback)
+         await Product.findByIdAndUpdate(productId, { $inc: { soldCount: -quantity, stock: quantity } });
+         continue;
+        }
+
+        // Renk bazlı stok güncellemesi
+        await Product.updateOne(
+         {
+          _id: productId,
+          'colors.name': colorName
+         },
+         {
+          $inc: { 'colors.$.stock': -quantity }
+         }
+        );
+       }
+      } catch (itemError) {
+       stockUpdateErrors.push(`Stok güncelleme hatası: ${item.name || productId} - ${itemError.message}`);
       }
      }
     }
-   } catch (stockUpdateError) {
-    console.error('Stok güncelleme hatası:', stockUpdateError);
-    // Stok güncelleme hatası - sessizce handle et
+
+    // Eğer stok güncelleme hataları varsa logla (ama ödeme başarılı olduğu için iptal etme)
+    if (stockUpdateErrors.length > 0) {
+     console.error('Stok güncelleme hataları:', stockUpdateErrors);
+     // Bu durumda admin'e bildirim gönderilmeli ama ödeme iptal edilmemeli
+     // Çünkü ödeme zaten iyzico'da başarılı oldu
+    }
+   } catch (stockError) {
+    console.error('Stok güncelleme genel hatası:', stockError);
+    // Ödeme başarılı olduğu için iptal etmiyoruz ama logluyoruz
    }
 
    // Admin'e e-posta gönder
@@ -197,9 +251,7 @@ export async function POST(request) {
       items: orderRefresh.items,
      });
     }
-   } catch (e) {
-    console.error('Admin e-posta gönderme hatası:', e);
-   }
+   } catch (_) {}
 
    // Müşteriye e-posta gönder
    try {
@@ -220,9 +272,7 @@ export async function POST(request) {
       items: orderRefresh.items,
      });
     }
-   } catch (e) {
-    console.error('Kullanıcı e-posta gönderme hatası:', e);
-   }
+   } catch (_) {}
 
    return NextResponse.json({
     success: true,
@@ -232,12 +282,17 @@ export async function POST(request) {
    });
   } else {
    // Ödeme başarısız
+   const mdStatusText = mdStatus !== null ? ` (mdStatus: ${mdStatus})` : '';
+   const fraudText = fraudStatus !== null ? ` (fraudStatus: ${fraudStatus})` : '';
+   const failMessage = result.errorMessage || `3D Secure doğrulaması başarısız${mdStatusText}${fraudText}`;
    const updateData = {
     $set: {
      'orders.$.status': 'Ödeme Başarısız',
      'orders.$.payment': {
       type: '3dsecure',
-      error: result.errorMessage || 'Ödeme işlemi başarısız',
+      error: failMessage,
+      mdStatus: mdStatus,
+      fraudStatus: fraudStatus,
       errorCode: result.errorCode,
       failedAt: new Date(),
      },
@@ -250,18 +305,16 @@ export async function POST(request) {
     updateData
    );
 
-   console.error('iyzico 3D Secure auth başarısız:', result);
    return NextResponse.json(
     {
      success: false,
-     message: result.errorMessage || 'Ödeme işlemi başarısız',
+     message: failMessage,
      errorCode: result.errorCode
     },
     { status: 400 }
    );
   }
  } catch (error) {
-  console.error('3D Secure charge hatası:', error);
   return NextResponse.json(
    {
     success: false,

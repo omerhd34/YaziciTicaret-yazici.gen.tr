@@ -53,9 +53,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
      });
      setProductsData(productsMap);
     }
-   } catch (error) {
-    console.error("Ürünler yüklenirken hata:", error);
-   }
+   } catch (_) { }
   };
 
   if (show && order) {
@@ -192,6 +190,12 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
   const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
   return diffMs <= twoDaysMs;
  }, [hasReturnRequest, order, currentTime]);
+
+ // Fatura: sadece Kargoya Verildi veya Teslim Edildi durumunda görünsün (Hazırlanıyor'da görünmez)
+ const canShowInvoice = useMemo(() => {
+  const s = normalizeText(order?.status || "");
+  return s.includes("kargo") || s.includes("teslim");
+ }, [order?.status]);
 
  if (!show || !order) return null;
 
@@ -331,6 +335,15 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
 
     {!isCancelled && (
      <div className="flex items-center justify-between gap-3 px-6 py-4 border-t">
+      {canShowInvoice && (
+       <button
+        type="button"
+        onClick={() => window.open(`${typeof window !== "undefined" ? window.location.origin : ""}/api/user/orders/${order.orderId}/invoice`, "_blank")}
+        className="px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition cursor-pointer"
+       >
+        Fatura
+       </button>
+      )}
       {canCancel ? (
        <button
         onClick={() => onCancel(order.orderId)}

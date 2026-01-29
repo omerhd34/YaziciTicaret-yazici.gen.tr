@@ -64,6 +64,7 @@ export default function AdminLoginForm({ onSuccess }) {
        className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
        placeholder="Hesap Adınızı Giriniz"
        required
+       suppressHydrationWarning
       />
      </div>
     </div>
@@ -85,6 +86,7 @@ export default function AdminLoginForm({ onSuccess }) {
        className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
        placeholder="••••••••••"
        required
+       suppressHydrationWarning
       />
       <button
        type="button"

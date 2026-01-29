@@ -43,6 +43,6 @@ export const MENU_ITEMS = [
  { name: "Klima", path: "/kategori/klima", isSpecial: false },
  { name: "Televizyon", path: "/kategori/televizyon", isSpecial: false },
  { name: "Süpürge", path: "/kategori/elektrikli-supurge", isSpecial: false },
- { name: "Kahve Makinesi", path: "/kategori/turk-kahve-makineleri", isSpecial: false },
+ { name: "Kahve Makinesi", path: "/kategori/kahve-makineleri", isSpecial: false },
  { name: "İndirimler", path: "/kategori/indirim", isSpecial: true },
 ];

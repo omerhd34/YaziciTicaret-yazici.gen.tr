@@ -7,11 +7,11 @@ import PolicySection from "@/app/components/policy/PolicySection";
 
 export default function KullanimKosullariPage() {
  return (
-  <div className="min-h-screen bg-gray-50 py-12">
+  <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12">
    <div className="container mx-auto px-4 max-w-5xl">
     <TermsHeader />
 
-    <div className="bg-white rounded-xl shadow-md p-8 md:p-12 space-y-8">
+    <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
      <TermsIntroduction />
 
      {/* İLETİŞİM BİLGİLERİ */}
@@ -23,7 +23,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         <strong>Satıcı / Hizmet Sağlayıcı:</strong>
        </p>
-       <div className="bg-gray-50 rounded-lg p-4 mt-4 space-y-2">
+       <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
         <p className="font-semibold text-gray-900">Yazıcı Ticaret</p>
         <p className="text-gray-700">
          <strong>Adres 1:</strong> Kemalpaşa mahallesi, Atatürk bulvarı, No:54/E, İnegöl/Bursa
@@ -52,7 +52,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Bu web sitesi <strong>Yazıcı Ticaret</strong> (Profilo markasının yetkili bayisi, 2 şube) tarafından işletilmektedir. Web sitemizi kullanarak:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>18 yaşında veya daha büyük olduğunuzu onaylarsınız.</li>
         <li>Verdiğiniz tüm bilgilerin doğru ve güncel olduğunu garanti edersiniz.</li>
         <li>Hesabınızın güvenliğinden sorumlu olduğunuzu kabul edersiniz.</li>
@@ -69,7 +69,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Hesabınızı oluştururken ve kullanırken:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Şifrenizi gizli tutmanız ve başkalarıyla paylaşmamanız gerekmektedir.</li>
         <li>Hesabınızdaki tüm aktivitelerden sorumlusunuz.</li>
         <li>Hesabınızın yetkisiz kullanımından şüphelenirseniz derhal bize bildirmelisiniz.</li>
@@ -84,7 +84,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Ürünlerimiz ve hizmetlerimizle ilgili:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Ürün fiyatları ve stok durumu değişiklik gösterebilir.</li>
         <li>Ürün görselleri temsilidir, gerçek ürünlerde küçük farklılıklar olabilir.</li>
         <li>Ürün açıklamalarını doğru tutmaya çalışırız ancak hatalar olabilir.</li>
@@ -112,7 +112,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Sipariş vermeden önce aşağıdaki bilgileri size sunuyoruz:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Satıcı bilgileri (yukarıda belirtilmiştir)</li>
         <li>Ürünün temel özellikleri, fiyatı ve vergiler dahil toplam tutarı</li>
         <li>Ödeme, teslimat ve ifa bilgileri</li>
@@ -128,7 +128,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Sipariş verme ve ödeme işlemleri:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Sipariş vermek, ürünü satın alma teklifi yapmak anlamına gelir.</li>
         <li>Siparişiniz onaylandığında sözleşme kurulmuş sayılır ve size e-posta ile bildirilir.</li>
         <li>Sipariş onayı e-posta ile gönderilir.</li>
@@ -145,7 +145,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Teslimat ile ilgili bilgiler:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Tüm Türkiye geneline nakliye ve montaj hizmeti sunulmaktadır.</li>
         <li>Bursa iline ücretsiz teslimat yapılmaktadır.</li>
         <li>Diğer illere teslimat ücreti kargo firması tarafından belirlenir.</li>
@@ -162,7 +162,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, mesafeli satışlarda cayma hakkınız bulunmaktadır:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Ürünleri teslim aldığınız tarihten itibaren <strong>14 gün içinde</strong> hiçbir gerekçe göstermeksizin cayma hakkınızı kullanabilirsiniz.</li>
         <li>Cayma bildirimi yazılı olarak (e-posta, mektup, faks) yapılmalıdır.</li>
         <li>Cayma hakkını kullandığınızda, ürünün orijinal ambalajında, etiketleriyle ve kullanılmamış olması gerekir.</li>
@@ -179,7 +179,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         İade ve değişim koşulları:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>İade talebinizi e-posta veya iletişim kanallarımız üzerinden iletebilirsiniz.</li>
         <li>Ürün orijinal ambalajında, etiketleriyle ve kullanılmamış olmalıdır.</li>
         <li>İade işlemleri ücretsizdir (cayma hakkı kapsamındaki iadeler hariç).</li>
@@ -195,7 +195,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Garanti ve servis koşulları:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Satılan tüm ürünler, üretici firma tarafından belirlenen garanti koşullarına tabidir.</li>
         <li>Garanti süresi ve koşulları, ürün kategorisine göre değişiklik gösterebilir.</li>
         <li>Garanti belgeleri, ürün teslimi sırasında size verilir.</li>
@@ -211,7 +211,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Web sitemizdeki içerikler:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Telif hakkı ve diğer fikri mülkiyet haklarıyla korunmaktadır.</li>
         <li>İçerikleri izinsiz kopyalamak, dağıtmak veya kullanmak yasaktır.</li>
         <li>Profilo markası, logo ve tasarımlar Profilo&apos;ya aittir.</li>
@@ -229,7 +229,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Web sitemizi kullanırken aşağıdakiler yasaktır:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Yasa dışı amaçlarla kullanmak</li>
         <li>Virüs, zararlı yazılım veya kötü amaçlı kod yüklemek</li>
         <li>Sistemi bozmaya veya erişimi engellemeye çalışmak</li>
@@ -246,7 +246,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Yazıcı Ticaret olarak:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Web sitesinin kesintisiz çalışmasını garanti edemeyiz.</li>
         <li>Hatalar veya eksiklikler için sorumluluk kabul etmeyiz.</li>
         <li>Üçüncü taraf bağlantılarının içeriğinden sorumlu değiliz.</li>
@@ -261,7 +261,7 @@ export default function KullanimKosullariPage() {
        <p className="leading-relaxed">
         Tüketici haklarınız ve şikayet süreçleri:
        </p>
-       <ul className="list-disc list-inside space-y-2 ml-4">
+       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Herhangi bir sorunuz, şikayetiniz veya talebiniz için bizimle iletişime geçebilirsiniz.</li>
         <li>Şikayetleriniz en geç 30 gün içinde yanıtlanır.</li>
         <li>Şikayetlerinizi e-posta, telefon veya mağazalarımıza başvurarak iletebilirsiniz.</li>
@@ -299,7 +299,7 @@ export default function KullanimKosullariPage() {
         Güncel koşulları bu sayfadan takip edebilirsiniz. Değişikliklerden sonra web sitemizi kullanmaya devam etmeniz,
         güncellenmiş koşulları kabul ettiğiniz anlamına gelir.
        </p>
-       <div className="bg-gray-50 rounded-lg p-4 mt-4">
+       <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
         <p className="text-sm text-gray-600">
          <strong>Son Güncelleme Tarihi:</strong> {new Date().toLocaleDateString('tr-TR', {
           year: 'numeric',

@@ -1,7 +1,6 @@
 "use client";
 import "./globals.css";
 import Link from "next/link";
-import { useEffect } from "react";
 import Header from "./components/ui/Header";
 import Footer from "./components/ui/Footer";
 import {
@@ -15,10 +14,6 @@ export default function Error({
  error,
  reset,
 }) {
- useEffect(() => {
-  console.error("Error:", error);
- }, [error]);
-
  return (
   <>
    <Header />

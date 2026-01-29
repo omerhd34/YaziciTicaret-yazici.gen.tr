@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 
@@ -24,10 +24,44 @@ export function CartProvider({ children }) {
 
   const init = async () => {
    try {
+    // Önce cache'i kontrol et
+    const cachedAuth = localStorage.getItem('auth_status');
+    const cachedAuthTime = localStorage.getItem('auth_status_time');
+    const cachedUserId = localStorage.getItem('auth_user_id');
+    const now = Date.now();
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
+
+    // Cache geçerliyse kullan
+    if (cachedAuth === 'true' && cachedUserId && cachedAuthTime && (now - parseInt(cachedAuthTime, 10)) < CACHE_DURATION) {
+     setUserId(cachedUserId);
+     const cKey = getCartKey(cachedUserId);
+     const fKey = getFavKey(cachedUserId);
+     try {
+      const savedCart = localStorage.getItem(cKey);
+      const savedFav = localStorage.getItem(fKey);
+      setCart(savedCart ? JSON.parse(savedCart) : []);
+      setFavorites(savedFav ? JSON.parse(savedFav) : []);
+     } catch (error_) {
+      setCart([]);
+      setFavorites([]);
+     } finally {
+      setHasLoaded(true);
+     }
+     return; // Cache'den yüklendi, API çağrısı yapma
+    }
+
+    // Cache yoksa veya eskiyse API'den çek
     const res = await axiosInstance.get("/api/user/check", { cache: "no-store" });
     const data = res.data;
     const uid = data?.authenticated && data?.user?.id ? data.user.id : null;
     setUserId(uid);
+    
+    // Cache'e kaydet
+    if (uid) {
+     localStorage.setItem('auth_user_id', uid);
+    } else {
+     localStorage.removeItem('auth_user_id');
+    }
 
     const cKey = getCartKey(uid);
     const fKey = getFavKey(uid);
@@ -35,7 +69,16 @@ export function CartProvider({ children }) {
      const savedCart = localStorage.getItem(cKey);
      const savedFav = localStorage.getItem(fKey);
      setCart(savedCart ? JSON.parse(savedCart) : []);
-     setFavorites(savedFav ? JSON.parse(savedFav) : []);
+     // Kullanıcı giriş yapmamışsa favorileri gösterme
+     if (uid) {
+      setFavorites(savedFav ? JSON.parse(savedFav) : []);
+     } else {
+      setFavorites([]);
+      // Giriş yapmamış kullanıcılar için localStorage'daki favorileri temizle
+      if (localStorage.getItem("favorites")) {
+       localStorage.removeItem("favorites");
+      }
+     }
     } catch (error_) {
      setCart([]);
      setFavorites([]);
@@ -44,9 +87,13 @@ export function CartProvider({ children }) {
     setUserId(null);
     try {
      const savedCart = localStorage.getItem("cart");
-     const savedFav = localStorage.getItem("favorites");
      setCart(savedCart ? JSON.parse(savedCart) : []);
-     setFavorites(savedFav ? JSON.parse(savedFav) : []);
+     // Kullanıcı giriş yapmamışsa favorileri gösterme
+     setFavorites([]);
+     // Giriş yapmamış kullanıcılar için localStorage'daki favorileri temizle
+     if (localStorage.getItem("favorites")) {
+      localStorage.removeItem("favorites");
+     }
     } catch (error_) {
      setCart([]);
      setFavorites([]);
@@ -62,6 +109,12 @@ export function CartProvider({ children }) {
    setUserId(null);
    setCart([]);
    setFavorites([]);
+   // Auth cache'lerini temizle
+   if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_status');
+    localStorage.removeItem('auth_status_time');
+    localStorage.removeItem('auth_user_id');
+   }
   };
 
   if (globalThis.window) {
@@ -181,10 +234,18 @@ export function CartProvider({ children }) {
     const allProducts = productsData.data || productsData.products || [];
 
     if (!productsData.success || allProducts.length === 0) {
-     const localFav = JSON.parse(localStorage.getItem(fKey) || "[]");
-     if (localFav.length > 0) {
+     // Kullanıcı giriş yapmamışsa favorileri gösterme
+     if (!userId) {
       setFavorites([]);
-      localStorage.removeItem(fKey);
+      if (localStorage.getItem("favorites")) {
+       localStorage.removeItem("favorites");
+      }
+     } else {
+      const localFav = JSON.parse(localStorage.getItem(fKey) || "[]");
+      if (localFav.length > 0) {
+       setFavorites([]);
+       localStorage.removeItem(fKey);
+      }
      }
      isFetching = false;
      return;
@@ -208,13 +269,25 @@ export function CartProvider({ children }) {
      }
     }
 
-    const localFav = JSON.parse(localStorage.getItem(fKey) || "[]");
-    const localIds = localFav
-     .map((fav) => {
-      const id = fav._id || fav.id;
-      return id ? String(id) : null;
-     })
-     .filter(Boolean);
+    // Kullanıcı giriş yapmamışsa localStorage'dan favorileri okuma
+    let localIds = [];
+    if (userId) {
+     const localFav = JSON.parse(localStorage.getItem(fKey) || "[]");
+     localIds = localFav
+      .map((fav) => {
+       const id = fav._id || fav.id;
+       return id ? String(id) : null;
+      })
+      .filter(Boolean);
+    } else {
+     // Giriş yapmamış kullanıcılar için favorileri temizle
+     setFavorites([]);
+     if (localStorage.getItem("favorites")) {
+      localStorage.removeItem("favorites");
+     }
+     isFetching = false;
+     return;
+    }
 
     const allFavoriteIds = [...new Set([...dbFavoriteIds, ...localIds])];
     const validFavoriteIds = new Set(allFavoriteIds.filter((id) => allProductIds.has(id)));
@@ -461,52 +534,33 @@ export function CartProvider({ children }) {
   );
  };
 
- const clearCart = async () => {
+ const clearCart = useCallback(async () => {
   setCart([]);
 
   if (typeof globalThis.window !== "undefined") {
-   // Tüm sepet anahtarlarını temizle
    const keysToRemove = ['cart'];
-
-   // Mevcut userId'li sepeti temizle
-   if (userId) {
-    keysToRemove.push(`cart_${userId}`);
-   }
-
-   // localStorage'daki tüm cart ile başlayan anahtarları bul ve temizle
+   if (userId) keysToRemove.push(`cart_${userId}`);
    try {
     for (let i = 0; i < localStorage.length; i++) {
      const key = localStorage.key(i);
-     if (key && key.startsWith('cart')) {
-      keysToRemove.push(key);
-     }
+     if (key && key.startsWith('cart')) keysToRemove.push(key);
     }
-   } catch (e) {
-    // localStorage erişim hatası
-   }
-
-   // Tüm sepet anahtarlarını temizle
+   } catch (e) { /* localStorage erişim hatası */ }
    keysToRemove.forEach(key => {
-    try {
-     localStorage.removeItem(key);
-    } catch (e) {
-     // Silme hatası - devam et
-    }
+    try { localStorage.removeItem(key); } catch (e) { /* silme hatası */ }
    });
   }
 
-  // API'den de sepeti temizle
   try {
    await axiosInstance.put("/api/user/cart", { productIds: [] });
   } catch (error_) {
-   // API hatası olsa bile localStorage temizlendi
+   /* API hatası olsa bile localStorage temizlendi */
   }
 
-  // Cart updated event'i tetikle
   if (typeof globalThis.window !== "undefined") {
    globalThis.window.dispatchEvent(new Event('cartUpdated'));
   }
- };
+ }, [userId]);
 
  const getCartTotal = () => {
   return cart.reduce((total, item) => {
@@ -525,6 +579,10 @@ export function CartProvider({ children }) {
 
  const addToFavorites = async (product) => {
   if (!product || !product._id) return;
+  // Kullanıcı giriş yapmamışsa favori eklenemez
+  if (!userId) {
+   return;
+  }
   const productIdStr = String(product._id);
   let previousFavorites = favorites;
   const fKey = getFavKey(userId);
@@ -555,9 +613,13 @@ export function CartProvider({ children }) {
     }
    }
   } catch (error_) {
-   // 401 hatası = kullanıcı authenticated değil, sadece localStorage'da tut
+   // 401 hatası = kullanıcı authenticated değil, favorileri geri al
    if (error_?.response?.status === 401) {
-    // Kullanıcı logout olmuş, favoriler sadece localStorage'da kalacak
+    setFavorites(previousFavorites);
+    if (typeof globalThis.window !== "undefined") {
+     localStorage.setItem(fKey, JSON.stringify(previousFavorites));
+     globalThis.dispatchEvent(new Event("favoritesUpdated"));
+    }
     return;
    }
    setFavorites(previousFavorites);
@@ -570,6 +632,10 @@ export function CartProvider({ children }) {
 
  const removeFromFavorites = async (productId) => {
   if (!productId) return;
+  // Kullanıcı giriş yapmamışsa favori silinemez
+  if (!userId) {
+   return;
+  }
   const productIdStr = String(productId);
   let previousFavorites = favorites;
   const fKey = getFavKey(userId);
@@ -599,9 +665,13 @@ export function CartProvider({ children }) {
     window.dispatchEvent(new Event("favoritesUpdated"));
    }
   } catch (error_) {
-   // 401 hatası = kullanıcı authenticated değil, sadece localStorage'da tut
+   // 401 hatası = kullanıcı authenticated değil, favorileri geri al
    if (error_?.response?.status === 401) {
-    // Kullanıcı logout olmuş, favoriler sadece localStorage'da kalacak
+    setFavorites(previousFavorites);
+    if (typeof window !== "undefined") {
+     localStorage.setItem(fKey, JSON.stringify(previousFavorites));
+     window.dispatchEvent(new Event("favoritesUpdated"));
+    }
     return;
    }
    setFavorites(previousFavorites);

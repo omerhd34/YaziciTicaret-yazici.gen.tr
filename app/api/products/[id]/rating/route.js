@@ -14,9 +14,9 @@ const normalizeText = (value) => {
   .replace(/[\u0300-\u036f]/g, '');
 };
 
+// Sadece sipariş teslim edildiğinde puan verilebilir
 const isDeliveredStatus = (status) => {
  const s = normalizeText(status);
- // "Teslim Edildi" kontrolü (esnek)
  return s.includes('teslim');
 };
 
@@ -229,18 +229,11 @@ export async function GET(request, { params }) {
    canUpdate: false,
    userRating: existingRating ? existingRating.rating : null,
    canUpdateUntil: null,
-   message: existingRating
-    ? 'Bu ürünü zaten puanladınız.'
-    : !hasDeliveredPurchase
-     ? 'Puan verebilmek için ürünü satın almış olmalı ve siparişiniz "Teslim Edildi" olmalıdır.'
-     : 'Bu ürüne puan verebilirsiniz.',
   });
  } catch (error) {
   return NextResponse.json({
    success: true,
    canRate: false,
-   message: 'Kontrol yapılamadı',
   });
  }
 }
-

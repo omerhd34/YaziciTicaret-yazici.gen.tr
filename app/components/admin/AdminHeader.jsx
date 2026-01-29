@@ -11,13 +11,34 @@ const AdminHeader = () => {
  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
  useEffect(() => {
+  // AdminLayout zaten check yapıyor, burada tekrar yapmaya gerek yok
+  // Sadece AdminLayout'tan gelen auth durumunu kullan
+  // AdminLayout'tan prop olarak geçirilebilir ama şimdilik localStorage'dan oku
+  const cachedAdminAuth = localStorage.getItem('admin_auth_status');
+  const cachedAdminAuthTime = localStorage.getItem('admin_auth_status_time');
+  const now = Date.now();
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
+
+  if (cachedAdminAuth && cachedAdminAuthTime && (now - parseInt(cachedAdminAuthTime, 10)) < CACHE_DURATION) {
+   setIsAuthenticated(cachedAdminAuth === 'true');
+   return;
+  }
+
+  // Cache yoksa veya eskiyse check yap (ama sadece bir kez)
   const checkAuth = async () => {
    try {
     const res = await axiosInstance.get("/api/auth/check");
     const data = res.data;
-    setIsAuthenticated(data.authenticated || false);
+    const authenticated = data.authenticated || false;
+    setIsAuthenticated(authenticated);
+    
+    // Cache'e kaydet
+    localStorage.setItem('admin_auth_status', authenticated.toString());
+    localStorage.setItem('admin_auth_status_time', now.toString());
    } catch (error) {
     setIsAuthenticated(false);
+    localStorage.setItem('admin_auth_status', 'false');
+    localStorage.setItem('admin_auth_status_time', now.toString());
    }
   };
 
@@ -27,10 +48,13 @@ const AdminHeader = () => {
  const handleLogout = async () => {
   try {
    await axiosInstance.post("/api/auth/logout");
+   // Admin auth cache'lerini temizle
+   if (typeof window !== 'undefined') {
+    localStorage.removeItem('admin_auth_status');
+    localStorage.removeItem('admin_auth_status_time');
+   }
    router.push("/admin-giris");
-  } catch (error) {
-   console.error("Çıkış yapılamadı:", error);
-  }
+  } catch (_) { }
  };
 
  return (

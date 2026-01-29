@@ -90,8 +90,7 @@ export default function SavedCardsSection({ onSelectCard, selectedCardId, title,
    } else {
     setCards([]);
    }
-  } catch (error) {
-   console.error("Kartlar yüklenirken hata:", error);
+  } catch (_) {
    setCards([]);
   } finally {
    setLoading(false);

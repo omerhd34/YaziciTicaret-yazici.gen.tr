@@ -29,7 +29,7 @@ import ProductLoading from "@/app/components/product/ProductLoading";
 import ProductNotFound from "@/app/components/product/ProductNotFound";
 import Toast from "@/app/components/ui/Toast";
 import { ProductSchema, BreadcrumbSchema } from "@/app/components/seo/StructuredData";
-import { getProductUrl } from "@/app/utils/productUrl";
+import { getProductUrl, categoryToSlug } from "@/app/utils/productUrl";
 
 export default function KategoriPage() {
  const params = useParams();
@@ -911,9 +911,10 @@ export default function KategoriPage() {
   ];
 
   if (product.subCategory) {
+   const subCategoryPath = categoryToSlug(product.subCategory);
    breadcrumbItems.push({
     name: product.subCategory,
-    url: slug.length >= 2 ? `/kategori/${slug[0]}/${slug[1]}` : `/kategori/${slug[0]}`,
+    url: subCategoryPath ? `/kategori/${slug[0]}/${subCategoryPath}` : `/kategori/${slug[0]}`,
    });
   }
 
@@ -959,13 +960,16 @@ export default function KategoriPage() {
         <p className="text-xs sm:text-sm text-gray-500 uppercase tracking-wide mb-2">
          {product.brand}
          {colorSerialNumber && (
-          <span className="ml-2 font-mono text-gray-900 font-semibold normal-case">- {colorSerialNumber}</span>
+          <>
+           <span className="mx-2">-</span>
+           <span className="font-mono text-gray-900 font-semibold normal-case inline-block px-2 py-1 rounded bg-blue-200 border border-gray-300">{colorSerialNumber}</span>
+          </>
          )}
         </p>
        )}
        {!product.brand && colorSerialNumber && (
         <p className="text-xs sm:text-sm text-gray-500 mb-2">
-         <span className="font-mono text-gray-600">Seri No: {colorSerialNumber}</span>
+         <span className="font-mono text-gray-600 inline-block px-2 py-1 rounded bg-gray-100 border border-gray-300">Seri No: {colorSerialNumber}</span>
         </p>
        )}
 

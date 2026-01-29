@@ -54,9 +54,9 @@ export default function ProductSimilarProducts({ product }) {
 
      setSimilarProducts(filtered.slice(0, 4));
     }
-   } catch (error) {
-    console.error("Benzer ürünler yüklenemedi:", error);
-   } finally {
+   } catch (_) {
+   }
+   finally {
     setLoading(false);
    }
   };

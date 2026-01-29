@@ -131,9 +131,7 @@ export default async function sitemap() {
 
    return pages;
   });
- } catch (error) {
-  console.error('Sitemap oluşturulurken hata:', error);
- }
+ } catch (_) {}
 
  return [...staticPages, ...categoryPages, ...productPages];
 }

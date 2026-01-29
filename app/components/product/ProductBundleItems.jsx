@@ -108,8 +108,7 @@ export default function ProductBundleItems({ product, selectedColor }) {
      }
      setBundleProducts(foundProducts);
     }
-   } catch (error) {
-    console.error("Bundle products fetch error:", error);
+   } catch (_) {
     setBundleProducts([]);
    } finally {
     setLoadingBundleProducts(false);

@@ -32,16 +32,13 @@ export default function Hesabim() {
 
  // URL'den tab parametresini okuyup ilgili sekmeyi aç
  useEffect(() => {
-  // tab parametresi sadece ilk açılışta uygulansın; yoksa kullanıcı sekme değiştiremiyor
-  if (didInitTabFromUrl.current) return;
-
   const tab = searchParams?.get("tab");
-  didInitTabFromUrl.current = true;
   if (!tab) return;
 
   const allowedTabs = new Set(["profil", "siparisler", "favoriler", "adresler", "kartlar", "urun-istekleri", "ayarlar"]);
   if (allowedTabs.has(tab) && tab !== activeTab) {
    setActiveTab(tab);
+   didInitTabFromUrl.current = true;
   }
  }, [searchParams, activeTab]);
 
@@ -126,6 +123,10 @@ export default function Hesabim() {
    if (typeof window !== 'undefined') {
     localStorage.setItem('just_logged_out', Date.now().toString());
     sessionStorage.clear();
+    // Auth cache'lerini temizle
+    localStorage.removeItem('auth_status');
+    localStorage.removeItem('auth_status_time');
+    localStorage.removeItem('auth_user_id');
     // Cookie'yi client-side'dan da silmeyi dene
     document.cookie = 'user-session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;';
     document.cookie = 'user-session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict;';
@@ -597,6 +598,12 @@ export default function Hesabim() {
 
   if (!cardForm.year || cardForm.year.length !== 2) {
    errors.year = "Yıl 2 haneli olmalıdır!";
+  } else {
+   const year = Number.parseInt(cardForm.year, 10);
+   const currentYear = new Date().getFullYear() % 100;
+   if (year < currentYear) {
+    errors.year = "Son kullanma yılı bu yıl veya sonrası olmalıdır.";
+   }
   }
 
   const isAmex = editingCard

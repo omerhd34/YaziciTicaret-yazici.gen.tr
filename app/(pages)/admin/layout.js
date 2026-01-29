@@ -12,15 +12,38 @@ export default function AdminLayout({ children }) {
 
  useEffect(() => {
   const checkAuth = async () => {
+   // Önce cache'i kontrol et
+   const cachedAdminAuth = localStorage.getItem('admin_auth_status');
+   const cachedAdminAuthTime = localStorage.getItem('admin_auth_status_time');
+   const now = Date.now();
+   const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
+
+   // Cache geçerliyse kullan
+   if (cachedAdminAuth === 'true' && cachedAdminAuthTime && (now - parseInt(cachedAdminAuthTime, 10)) < CACHE_DURATION) {
+    setIsAuthenticated(true);
+    setAuthLoading(false);
+    return;
+   }
+
+   // Cache yoksa veya eskiyse API'den çek
    try {
     const res = await axiosInstance.get("/api/auth/check");
     const data = res.data;
     if (data.authenticated) {
      setIsAuthenticated(true);
+     // Cache'e kaydet
+     localStorage.setItem('admin_auth_status', 'true');
+     localStorage.setItem('admin_auth_status_time', now.toString());
     } else {
+     setIsAuthenticated(false);
+     localStorage.setItem('admin_auth_status', 'false');
+     localStorage.setItem('admin_auth_status_time', now.toString());
      router.replace("/admin-giris");
     }
    } catch {
+    setIsAuthenticated(false);
+    localStorage.setItem('admin_auth_status', 'false');
+    localStorage.setItem('admin_auth_status_time', now.toString());
     router.replace("/admin-giris");
    } finally {
     setAuthLoading(false);

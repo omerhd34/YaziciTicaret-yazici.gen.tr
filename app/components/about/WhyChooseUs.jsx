@@ -44,21 +44,21 @@ export default function WhyChooseUs() {
 
  return (
   <section>
-   <div className="flex items-center gap-3 mb-6">
-    <HiStar className="text-indigo-600" size={28} />
-    <h2 className="text-2xl font-bold text-gray-900">Neden Yazıcı Ticaret ?</h2>
+   <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+    <HiStar className="text-indigo-600 w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Neden Yazıcı Ticaret ?</h2>
    </div>
-   <div className="space-y-4">
+   <div className="space-y-3 sm:space-y-4">
     {features.map((feature) => {
      const IconComponent = feature.icon;
      return (
-      <div key={feature.title} className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
-       <div className={`shrink-0 w-8 h-8 bg-linear-to-r ${feature.gradient} text-white rounded-full flex items-center justify-center`}>
-        <IconComponent size={18} />
+      <div key={feature.title} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200">
+       <div className={`shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-linear-to-r ${feature.gradient} text-white rounded-full flex items-center justify-center`}>
+        <IconComponent className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
        </div>
-       <div>
-        <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-        <p className="text-gray-700 text-sm">{feature.description}</p>
+       <div className="min-w-0">
+        <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">{feature.title}</h3>
+        <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
        </div>
       </div>
      );

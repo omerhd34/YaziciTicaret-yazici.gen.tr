@@ -8,11 +8,11 @@ import CookieManagementSection from "@/app/components/policy/CookieManagementSec
 
 export default function CerezPolitikasiPage() {
  return (
-  <div className="min-h-screen bg-gray-50 py-12">
+  <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12">
    <div className="container mx-auto px-4 max-w-5xl">
     <CookiePolicyHeader />
 
-    <div className="bg-white rounded-xl shadow-md p-8 md:p-12 space-y-8">
+    <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
 
      {/* GİRİŞ */}
      <PolicySection>
@@ -39,7 +39,7 @@ export default function CerezPolitikasiPage() {
        Çerezler aracılığıyla aşağıdaki bilgiler toplanabilir:
       </p>
 
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>Dil ve görüntüleme tercihleri</li>
        <li>Oturum ve giriş bilgileri</li>
        <li>Sepet ve sipariş işlemleri</li>
@@ -58,7 +58,7 @@ export default function CerezPolitikasiPage() {
        çerezleri kullanılabilir.
       </p>
 
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li><strong>Google Analytics:</strong> Ziyaretçi trafiği ve kullanım analizi</li>
        <li><strong>Ödeme Altyapıları:</strong> Güvenli ödeme işlemlerinin gerçekleştirilmesi</li>
        <li><strong>Sosyal Medya Platformları:</strong> Paylaşım ve sosyal medya entegrasyonları</li>
@@ -80,7 +80,7 @@ export default function CerezPolitikasiPage() {
        Web sitemizde kullanılan çerezler, saklanma sürelerine göre iki gruba ayrılmaktadır:
       </p>
 
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>
         <strong>Oturum Çerezleri:</strong> Tarayıcı kapatıldığında otomatik olarak silinir
        </li>
@@ -128,7 +128,7 @@ export default function CerezPolitikasiPage() {
       <p className="leading-relaxed">
        Çerez politikamız hakkında sorularınız veya görüşleriniz varsa, bizimle iletişime geçebilirsiniz:
       </p>
-      <div className="bg-gray-50 rounded-lg p-4 mt-4 space-y-2">
+      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
        <p className="font-semibold text-gray-900">Yazıcı Ticaret</p>
        <p className="text-gray-700">
         <strong>E-posta:</strong>{" "}
@@ -153,7 +153,7 @@ export default function CerezPolitikasiPage() {
        Bu sayfayı düzenli olarak kontrol etmenizi öneririz. Politikadaki değişiklikler,
        yayınlandığı tarihten itibaren geçerlidir.
       </p>
-      <div className="bg-gray-50 rounded-lg p-4 mt-4">
+      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
        <p className="text-sm text-gray-600">
         <strong>Son Güncelleme Tarihi:</strong> {new Date().toLocaleDateString('tr-TR', {
          year: 'numeric',

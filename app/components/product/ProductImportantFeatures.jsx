@@ -40,7 +40,6 @@ export default function ProductImportantFeatures({ product, selectedColor = null
  const isAirConditionerIndoorUnit = product.subCategory === "Klima İç Ünite";
  const isAirConditionerOutdoorUnit = product.subCategory === "Klima Dış Ünite";
  const isAirConditionerKit = product.subCategory === "Klima Takımı";
- const isAirConditioner = isAirConditionerIndoorUnit || isAirConditionerOutdoorUnit || isAirConditionerKit;
 
 
 
@@ -555,7 +554,11 @@ export default function ProductImportantFeatures({ product, selectedColor = null
   }
  }
 
- if (importantFeatures.length === 0) {
+ // Pişirme metodu özelliği gösterilmesin
+ const filteredFeatures = importantFeatures.filter(
+  (f) => !f.key || !f.key.toLowerCase().includes("pişirme metodu")
+ );
+ if (filteredFeatures.length === 0) {
   return null;
  }
 
@@ -572,7 +575,7 @@ export default function ProductImportantFeatures({ product, selectedColor = null
 
    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
     <div className={gridClass}>
-     {importantFeatures.map((feature, index) => {
+     {filteredFeatures.map((feature, index) => {
       // Her 4. öğede (klima iç ünite için) veya her 3. öğede (diğer ürünler için) border olmasın
       const columnsPerRow = isAirConditionerIndoorUnit ? 4 : (isAirConditionerOutdoorUnit || isAirConditionerKit ? 3 : 3);
       const isLastInRow = (index + 1) % columnsPerRow === 0;

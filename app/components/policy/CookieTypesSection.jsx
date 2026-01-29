@@ -60,11 +60,11 @@ export default function CookieTypesSection() {
 
  return (
   <section>
-   <div className="flex items-center gap-3 mb-4">
-    <HiCog className="text-indigo-600" size={24} />
-    <h2 className="text-2xl font-bold text-gray-900">Kullandığımız Çerez Türleri</h2>
+   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+    <HiCog className="text-indigo-600 w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Kullandığımız Çerez Türleri</h2>
    </div>
-   <div className="space-y-6">
+   <div className="space-y-4 sm:space-y-6">
     {cookieTypes.map((type, idx) => (
      <CookieTypeCard
       key={idx}

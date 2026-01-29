@@ -6,11 +6,11 @@ import PolicySection from "@/app/components/policy/PolicySection";
 
 export default function GizlilikPolitikasiPage() {
  return (
-  <div className="min-h-screen bg-gray-50 py-12">
+  <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12">
    <div className="container mx-auto px-4 max-w-5xl">
     <PrivacyPolicyHeader />
 
-    <div className="bg-white rounded-xl shadow-md p-8 md:p-12 space-y-8">
+    <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
 
      {/* GİRİŞ */}
      <PolicySection>
@@ -26,7 +26,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        Web sitemizi kullandığınızda aşağıdaki kişisel verileriniz toplanabilir:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li><strong>Kimlik Bilgileri:</strong> Ad, soyad</li>
        <li><strong>İletişim Bilgileri:</strong> E-posta adresi, telefon numarası, adres</li>
        <li><strong>Ödeme Bilgileri:</strong> Ödeme işlemlerine ilişkin bilgiler (kart bilgileri sistemlerimizde saklanmaz)</li>
@@ -41,7 +41,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        Toplanan kişisel verileriniz aşağıdaki amaçlarla işlenmektedir:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>Sipariş ve satış süreçlerinin yürütülmesi</li>
        <li>Müşteri hizmetleri ve destek sağlanması</li>
        <li>Ürün ve hizmetlerin geliştirilmesi</li>
@@ -56,7 +56,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        Kişisel verileriniz, aşağıdaki durumlar haricinde üçüncü kişilerle paylaşılmamaktadır:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li><strong>Hizmet Sağlayıcılar:</strong> Kargo, ödeme ve altyapı hizmetleri</li>
        <li><strong>Yasal Yükümlülükler:</strong> Yetkili kamu kurum ve kuruluşları</li>
        <li><strong>İzin Verilen Durumlar:</strong> Açık rızanızın bulunduğu haller</li>
@@ -68,7 +68,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu</strong> uyarınca veri sorumlusu:
       </p>
-      <div className="bg-gray-50 rounded-lg p-4 mt-4 space-y-2">
+      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
        <p className="font-semibold text-gray-900">Yazıcı Ticaret</p>
        <p className="text-gray-700">
         <strong>Adres 1:</strong> Kemalpaşa mahallesi, Atatürk bulvarı, No:54/E, İnegöl/Bursa
@@ -109,7 +109,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        Yazıcı Ticaret, kişisel verilerinizin güvenliğini sağlamak için gerekli teknik ve idari tedbirleri almaktadır:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>SSL (HTTPS) ile güvenli veri iletimi</li>
        <li>Şifrelenmiş veri saklama</li>
        <li>Erişim yetkilendirme kontrolleri</li>
@@ -122,7 +122,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        Kişisel verileriniz, işleme amacının gerektirdiği süre boyunca saklanmaktadır:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li><strong>Hesap Bilgileri:</strong> Hesabınızın aktif olduğu süre boyunca (hesap silinene kadar)</li>
        <li><strong>Sipariş Bilgileri:</strong> Yasal saklama süresi gereği en az 10 yıl</li>
        <li><strong>İletişim Kayıtları:</strong> İletişim talebinizin çözümlenmesinden itibaren 3 yıl</li>
@@ -141,7 +141,7 @@ export default function GizlilikPolitikasiPage() {
        Kişisel verilerinizin silinmesini veya yok edilmesini talep edebilirsiniz.
        Talebiniz değerlendirilerek:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>Yasal saklama süresi dolmuş veriler derhal silinir veya yok edilir</li>
        <li>Yasal saklama süresi devam eden veriler, süre dolduğunda silinir</li>
        <li>Silme işlemi geri alınamaz şekilde gerçekleştirilir</li>
@@ -158,7 +158,7 @@ export default function GizlilikPolitikasiPage() {
        Kişisel verilerinizin güvenliğini sağlamak için teknik ve idari önlemler alınmıştır.
        Ancak bir veri güvenliği ihlali tespit edildiğinde:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>İhlal, KVKK Kurulu&apos;na 72 saat içinde bildirilir</li>
        <li>İhlalin ilgili kişileri etkileme riski varsa, bu durum en kısa sürede ilgili kişilere bildirilir</li>
        <li>İhlalin önlenmesi için gerekli önlemler derhal alınır</li>
@@ -184,7 +184,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        6698 sayılı KVKK kapsamında kişisel verilerinize ilişkin aşağıdaki haklara sahipsiniz:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li><strong>Öğrenme Hakkı:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
        <li><strong>Bilgi Talep Etme:</strong> İşlenmişse buna ilişkin bilgi talep etme</li>
        <li><strong>Erişim Hakkı:</strong> Kişisel verilerinize erişim sağlama</li>
@@ -201,7 +201,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed">
        KVKK kapsamındaki haklarınızı kullanmak için:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>Kimliğinizi tespit edecek bilgilerle birlikte yazılı başvurunuzu{" "}
         <a href="mailto:info@yazici.gen.tr" className="text-indigo-600 hover:text-indigo-700 font-semibold">
          info@yazici.gen.tr
@@ -212,7 +212,7 @@ export default function GizlilikPolitikasiPage() {
        <li>Başvurunun kabul edilmesi halinde talebiniz yerine getirilir</li>
        <li>Başvurunuzun reddedilmesi, yanıtın verilmemesi veya verilen yanıtın yetersiz bulunması halinde, KVKK Kanunu&apos;nun 14. maddesi uyarınca KVKK Kurulu&apos;na şikayette bulunabilirsiniz</li>
       </ul>
-      <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+      <div className="bg-blue-50 border-l-4 border-blue-400 p-3 sm:p-4 mt-3 sm:mt-4">
        <p className="text-blue-700 text-sm">
         <strong>Not:</strong> Başvurularınızda kimliğinizi tespit edici belgeler (nüfus cüzdanı, ehliyet vb.)
         ve talep ettiğiniz haklara ilişkin detaylı bilgi bulunmalıdır.
@@ -226,7 +226,7 @@ export default function GizlilikPolitikasiPage() {
        Kişisel verileriniz, KVKK Kanunu ve ilgili mevzuat hükümlerine uygun olarak,
        gerekli güvenlik önlemleri alınarak yurtdışına aktarılabilir. Bu durumda:
       </p>
-      <ul className="list-disc list-inside space-y-2 ml-4">
+      <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>Veri transferi, yalnızca hizmet sağlayıcılarımız (bulut sunucular, ödeme altyapıları vb.) ile sınırlıdır</li>
        <li>Transfer edilen veriler, yeterli koruma sağlayan ülkelerde veya yeterli koruma sağlanan alıcılar tarafından işlenir</li>
        <li>Açık rızanızın bulunduğu durumlarda, yeterli koruma sağlayan ülkeler dışına da transfer yapılabilir</li>
@@ -244,7 +244,7 @@ export default function GizlilikPolitikasiPage() {
        Bu sayfayı düzenli olarak kontrol etmenizi öneririz. Politikadaki değişiklikler,
        yayınlandığı tarihten itibaren geçerlidir.
       </p>
-      <div className="bg-gray-50 rounded-lg p-4 mt-4">
+      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
        <p className="text-sm text-gray-600">
         <strong>Son Güncelleme Tarihi:</strong> {new Date().toLocaleDateString('tr-TR', {
          year: 'numeric',

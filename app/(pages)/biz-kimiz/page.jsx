@@ -6,17 +6,17 @@ import WhyChooseUs from "@/app/components/about/WhyChooseUs";
 
 export default function BizKimizPage() {
  return (
-  <div className="min-h-screen bg-gray-50 py-12">
+  <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12">
    <div className="container mx-auto px-4 max-w-5xl">
-    <div className="text-center mb-12">
-     <div className="inline-flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-full mb-6">
-      <HiUsers className="text-indigo-600" size={40} />
+    <div className="text-center mb-8 md:mb-12">
+     <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-indigo-100 rounded-full mb-4 sm:mb-6">
+      <HiUsers className="text-indigo-600 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10" />
      </div>
-     <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
+     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 mb-4 sm:mb-6">
       Biz Kimiz ?
      </h1>
     </div>
-    <div className="bg-white rounded-xl shadow-md p-8 md:p-12 space-y-8">
+    <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
      <AboutSection icon={HiLightBulb} title="Hikayemiz">
       <p>
        Yazıcı Ticaret, 1997 yılında Bursa&apos;nın İnegöl ilçesinde, müşterilerimize kaliteli beyaz eşya ve

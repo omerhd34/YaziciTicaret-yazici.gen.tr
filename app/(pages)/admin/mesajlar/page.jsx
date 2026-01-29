@@ -391,7 +391,7 @@ export default function AdminMesajlarPage() {
             <div className="flex flex-wrap gap-3">
              <button
               onClick={() => handleMarkAsRead(selectedContact._id, !selectedContact.read)}
-              className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 transform hover:scale-105 ${selectedContact.read
+              className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 transform hover:scale-105 cursor-pointer ${selectedContact.read
                ? "bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-md"
                : "bg-linear-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/30"
                }`}
@@ -410,7 +410,7 @@ export default function AdminMesajlarPage() {
              </button>
              <button
               onClick={() => handleDelete(selectedContact._id)}
-              className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 bg-red-100 text-red-700 hover:bg-red-200 shadow-md transform hover:scale-105"
+              className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 bg-red-100 text-red-700 hover:bg-red-200 shadow-md transform hover:scale-105 cursor-pointer"
              >
               <MdDelete size={18} />
               Sil
@@ -419,7 +419,7 @@ export default function AdminMesajlarPage() {
             <div className="flex items-center gap-2">
              <button
               onClick={() => window.open(`mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject}`, '_blank')}
-              className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 bg-linear-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 shadow-md transform hover:scale-105"
+              className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 bg-linear-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 shadow-md transform hover:scale-105 cursor-pointer"
              >
               <HiReply size={18} />
               Yanıtla
@@ -437,7 +437,7 @@ export default function AdminMesajlarPage() {
            Bir mesaj seçin
           </p>
           <p className="text-sm text-gray-500">
-           Detayları görmek için soldaki listeden bir mesaj seçin
+           Detayları görmek için soldaki listeden bir mesaj seçin.
           </p>
          </div>
         )}

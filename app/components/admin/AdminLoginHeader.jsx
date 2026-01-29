@@ -8,7 +8,7 @@ export default function AdminLoginHeader() {
     <HiLockClosed size={40} />
    </div>
    <h1 className="text-3xl font-black mb-2">Admin Girişi</h1>
-   <p className="text-indigo-100">Yazıcı-Ticaret Yönetim Paneli</p>
+   <p className="text-indigo-100">Yazıcı Ticaret Yönetim Paneli</p>
   </div>
  );
 }

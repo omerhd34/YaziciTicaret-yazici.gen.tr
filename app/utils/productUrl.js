@@ -1,6 +1,6 @@
 import { MENU_ITEMS } from "@/app/utils/menuItems";
 
-const categoryToSlug = (categoryName) => {
+export const categoryToSlug = (categoryName) => {
  if (!categoryName) return "";
  return categoryName
   .toLowerCase()
@@ -55,13 +55,9 @@ export const getProductUrl = (product, colorSerialNumber = null) => {
   }
  }
 
- // SerialNumber varsa tam ürün URL'i oluştur
- if (serialNumber) {
-  if (categoryPath && subCategoryPath) {
-   return `/kategori/${categoryPath}/${subCategoryPath}/${serialNumber}`;
-  } else if (categoryPath) {
-   return `/kategori/${categoryPath}/${serialNumber}`;
-  }
+ // SerialNumber varsa tam ürün URL'i oluştur (alt kategori segmenti kullanılmıyor - kısa URL)
+ if (serialNumber && categoryPath) {
+  return `/kategori/${categoryPath}/${serialNumber}`;
  }
 
  // SerialNumber yoksa ama kategori bilgileri varsa kategori sayfasına yönlendir

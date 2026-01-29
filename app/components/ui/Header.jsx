@@ -44,9 +44,20 @@ const Header = () => {
  }, []);
 
  useEffect(() => {
+  // localStorage'dan cache'lenmiş auth durumunu kontrol et
+  const cachedAuth = localStorage.getItem('auth_status');
+  const cachedAuthTime = localStorage.getItem('auth_status_time');
+  const now = Date.now();
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
+
+  // Cache geçerliyse kullan
+  if (cachedAuth && cachedAuthTime && (now - parseInt(cachedAuthTime, 10)) < CACHE_DURATION) {
+   setIsAuthenticated(cachedAuth === 'true');
+  }
+
   let isChecking = false;
   let lastCheckTime = 0;
-  const CHECK_COOLDOWN = 10000;
+  const CHECK_COOLDOWN = 60 * 1000; // 60 saniye (10 saniyeden çok daha uzun)
 
   const checkAuth = async () => {
    const now = Date.now();
@@ -62,26 +73,42 @@ const Header = () => {
      cache: 'no-store',
     });
     const data = res.data;
-    setIsAuthenticated(data.authenticated || false);
+    const authenticated = data.authenticated || false;
+    setIsAuthenticated(authenticated);
+    
+    // Cache'e kaydet
+    localStorage.setItem('auth_status', authenticated.toString());
+    localStorage.setItem('auth_status_time', now.toString());
    } catch (error) {
     setIsAuthenticated(false);
+    localStorage.setItem('auth_status', 'false');
+    localStorage.setItem('auth_status_time', now.toString());
    } finally {
     isChecking = false;
    }
   };
 
-  checkAuth();
+  // İlk yüklemede cache yoksa veya cache eskiyse check yap
+  if (!cachedAuth || !cachedAuthTime || (now - parseInt(cachedAuthTime, 10)) >= CACHE_DURATION) {
+   checkAuth();
+  }
 
   const handleStorageChange = (e) => {
    if (e.key === null || e.key === 'logout') {
     setIsAuthenticated(false);
-   } else {
-    checkAuth();
+    localStorage.removeItem('auth_status');
+    localStorage.removeItem('auth_status_time');
+   } else if (e.key === 'auth_status') {
+    // Auth durumu değiştiyse güncelle
+    const newAuth = localStorage.getItem('auth_status');
+    setIsAuthenticated(newAuth === 'true');
    }
   };
 
   const handleLogoutEvent = () => {
    setIsAuthenticated(false);
+   localStorage.removeItem('auth_status');
+   localStorage.removeItem('auth_status_time');
   };
 
   window.addEventListener('storage', handleStorageChange);

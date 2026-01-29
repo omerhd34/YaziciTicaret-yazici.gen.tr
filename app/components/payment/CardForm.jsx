@@ -140,8 +140,10 @@ export default function CardForm({ onCardDataChange, cardData, isSavedCard = fal
     newErrors.month = "Geçerli bir ay seçiniz";
    }
 
-   if (!cardData.year || !validateYear(cardData.year)) {
+   if (!cardData.year || cardData.year.length !== 2) {
     newErrors.year = "Yıl 2 haneli olmalıdır!";
+   } else if (!validateYear(cardData.year)) {
+    newErrors.year = "Bu yıldan sonra olmalıdır!";
    }
 
    if (!cardData.cvc || !validateCVC(cardData.cvc, cardData.cardNumber)) {
