@@ -23,7 +23,6 @@ const STATUS_CONFIG = {
   Icon: HiXCircle,
   badge: "bg-gray-500 text-white",
   card: "bg-white border border-gray-200/80 hover:border-gray-300 hover:shadow-lg",
-  // Mesaj, iptali kimin yaptığına göre ProductRequestCard içinde belirlenir (cancelledByUser vs admin).
  },
 };
 const DEFAULT_STATUS = { Icon: HiClock, badge: "bg-gray-500 text-white", card: "bg-white border border-gray-200/80 hover:border-gray-300 hover:shadow-lg" };
@@ -32,7 +31,6 @@ export default function ProductRequestCard({ request, onCancel, formatDate }) {
  const cfg = STATUS_CONFIG[request.status] || DEFAULT_STATUS;
  const StatusIcon = cfg.Icon;
  const canCancel = request.status === "Beklemede";
- // İptal Edildi: respondedAt yoksa müşteri iptal etti (alt kutu gösterme), varsa admin iptal etti (tedarik mesajı göster)
  const cancelledByUser = request.status === "İptal Edildi" && !request.respondedAt;
  const cancelMsg = request.status === "İptal Edildi"
   ? (cancelledByUser ? null : { title: "İsteğiniz iptal edildi.", text: "Ürün tedarik edilemediği için isteğiniz sonlandırılmıştır.", cls: "bg-gray-50 border border-gray-200 text-gray-700", iconCls: "text-gray-600" })
