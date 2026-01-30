@@ -23,7 +23,7 @@ const STATUS_CONFIG = {
   Icon: HiXCircle,
   badge: "bg-gray-500 text-white",
   card: "bg-white border border-gray-200/80 hover:border-gray-300 hover:shadow-lg",
-  msg: { title: "İsteğiniz iptal edildi.", text: "Ürün tedarik edilemediği için isteğiniz sonlandırılmıştır.", cls: "bg-gray-50 border border-gray-200 text-gray-700", iconCls: "text-gray-600" },
+  // Mesaj, iptali kimin yaptığına göre ProductRequestCard içinde belirlenir (cancelledByUser vs admin).
  },
 };
 const DEFAULT_STATUS = { Icon: HiClock, badge: "bg-gray-500 text-white", card: "bg-white border border-gray-200/80 hover:border-gray-300 hover:shadow-lg" };
@@ -32,6 +32,11 @@ export default function ProductRequestCard({ request, onCancel, formatDate }) {
  const cfg = STATUS_CONFIG[request.status] || DEFAULT_STATUS;
  const StatusIcon = cfg.Icon;
  const canCancel = request.status === "Beklemede";
+ // İptal Edildi: respondedAt yoksa müşteri iptal etti (alt kutu gösterme), varsa admin iptal etti (tedarik mesajı göster)
+ const cancelledByUser = request.status === "İptal Edildi" && !request.respondedAt;
+ const cancelMsg = request.status === "İptal Edildi"
+  ? (cancelledByUser ? null : { title: "İsteğiniz iptal edildi.", text: "Ürün tedarik edilemediği için isteğiniz sonlandırılmıştır.", cls: "bg-gray-50 border border-gray-200 text-gray-700", iconCls: "text-gray-600" })
+  : cfg.msg;
 
  return (
   <div className={`group relative rounded-2xl overflow-hidden transition-all duration-300 ease-out ${cfg.card}`}>
@@ -56,13 +61,13 @@ export default function ProductRequestCard({ request, onCancel, formatDate }) {
     )}
     {request.productDescription && <p className="text-sm text-gray-600 leading-snug line-clamp-2 mt-1">{request.productDescription}</p>}
 
-    {cfg.msg && (
-     <div className={`mt-3 p-3 rounded-lg ${cfg.msg.cls}`}>
+    {cancelMsg && (
+     <div className={`mt-3 p-3 rounded-lg ${cancelMsg.cls}`}>
       <div className="flex items-start gap-2">
-       <HiInformationCircle className={`${cfg.msg.iconCls} shrink-0 mt-0.5`} size={16} />
+       <HiInformationCircle className={`${cancelMsg.iconCls} shrink-0 mt-0.5`} size={16} />
        <div className="text-xs font-medium leading-relaxed">
-        <p className="font-semibold mb-0.5">{cfg.msg.title}</p>
-        <p>{cfg.msg.text}</p>
+        <p className="font-semibold mb-0.5">{cancelMsg.title}</p>
+        <p>{cancelMsg.text}</p>
        </div>
       </div>
      </div>
