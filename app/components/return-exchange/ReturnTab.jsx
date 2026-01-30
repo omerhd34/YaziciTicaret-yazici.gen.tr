@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { HiCheckCircle, HiClock, HiShoppingBag, HiRefresh, HiXCircle } from "react-icons/hi";
 import { MdInfo } from "react-icons/md";
 
@@ -14,9 +15,9 @@ export default function ReturnTab() {
      <div className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
       <HiCheckCircle className="text-green-600 shrink-0 mt-1" size={24} />
       <div>
-       <h3 className="font-semibold text-gray-900 mb-1">14 Gün İade Hakkı</h3>
+       <h3 className="font-semibold text-gray-900 mb-1">7 Gün İade Hakkı</h3>
        <p className="text-gray-700 text-sm">
-        Ürünü teslim aldığınız tarihten itibaren 14 gün içinde iade edebilirsiniz.
+        Ürünü teslim aldığınız tarihten itibaren 7 gün içinde iade talebi oluşturabilirsiniz.
        </p>
       </div>
      </div>
@@ -62,12 +63,6 @@ export default function ReturnTab() {
      <div className="flex items-start gap-4">
       <HiCheckCircle className="text-green-600 shrink-0 mt-1" size={20} />
       <p className="text-gray-700">
-       İç çamaşırı, mayo, çorap gibi kişisel ürünlerde sağlık nedeniyle iade kabul edilmez.
-      </p>
-     </div>
-     <div className="flex items-start gap-4">
-      <HiCheckCircle className="text-green-600 shrink-0 mt-1" size={20} />
-      <p className="text-gray-700">
        Fatura veya sipariş numaranızı iade paketine eklemelisiniz.
       </p>
      </div>
@@ -93,7 +88,7 @@ export default function ReturnTab() {
       <div className="flex-1">
        <h3 className="font-semibold text-gray-900 mb-2">İade Talebi Oluşturun</h3>
        <p className="text-gray-700 text-sm">
-        Müşteri hizmetlerimizle iletişime geçerek iade talebinizi oluşturun. Sipariş numaranızı ve iade etmek istediğiniz ürün bilgilerini belirtin.
+        <Link href="/hesabim?tab=siparisler" className="text-indigo-600 hover:underline font-medium">Hesabım</Link> sayfasından Siparişlerim bölümüne giderek teslim edilen siparişiniz için iade talebi oluşturabilirsiniz. İsterseniz müşteri hizmetlerimizle iletişime geçmeniz daha iyi olur.
        </p>
       </div>
      </div>

@@ -24,7 +24,7 @@ export default function KullanimKosullariPage() {
         <strong>Satıcı / Hizmet Sağlayıcı:</strong>
        </p>
        <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
-        <p className="font-semibold text-gray-900">Yazıcı Ticaret</p>
+        <p className="font-semibold text-gray-900"><strong>Yazıcı Ticaret</strong></p>
         <p className="text-gray-700">
          <strong>Adres 1:</strong> Kemalpaşa mahallesi, Atatürk bulvarı, No:54/E, İnegöl/Bursa
         </p>
@@ -50,7 +50,7 @@ export default function KullanimKosullariPage() {
      >
       <>
        <p className="leading-relaxed">
-        Bu web sitesi <strong>Yazıcı Ticaret</strong> (Profilo markasının yetkili bayisi, 2 şube) tarafından işletilmektedir. Web sitemizi kullanarak:
+        Bu web sitesi <strong>Yazıcı Ticaret</strong> (<strong>Profilo</strong> markasının yetkili bayisi, 2 şube) tarafından işletilmektedir. Web sitemizi kullanarak:
        </p>
        <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>18 yaşında veya daha büyük olduğunuzu onaylarsınız.</li>
@@ -98,7 +98,7 @@ export default function KullanimKosullariPage() {
       <>
        <p className="leading-relaxed">
         6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca düzenlenen bu sözleşme,
-        Yazıcı Ticaret ile tüketici arasında yapılan mesafeli satış sözleşmesidir.
+        <strong>Yazıcı Ticaret</strong> ile tüketici arasında yapılan mesafeli satış sözleşmesidir.
        </p>
        <p className="leading-relaxed mt-3">
         Bu sözleşme, web sitemiz üzerinden yapılan satış işlemlerinin tüm koşullarını kapsar.
@@ -146,8 +146,8 @@ export default function KullanimKosullariPage() {
         Teslimat ile ilgili bilgiler:
        </p>
        <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
-        <li>Tüm Türkiye geneline nakliye ve montaj hizmeti sunulmaktadır.</li>
-        <li>Bursa iline ücretsiz teslimat yapılmaktadır.</li>
+        <li>Tüm <strong>Türkiye</strong> geneline nakliye ve montaj hizmeti sunulmaktadır.</li>
+        <li><strong>Bursa</strong> iline ücretsiz teslimat yapılmaktadır.</li>
         <li>Diğer illere teslimat ücreti kargo firması tarafından belirlenir.</li>
         <li>Teslimat süresi stok durumuna göre değişiklik gösterebilir.</li>
         <li>Teslimat adresiniz sipariş sırasında belirttiğiniz adrestir.</li>
@@ -163,10 +163,10 @@ export default function KullanimKosullariPage() {
         6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, mesafeli satışlarda cayma hakkınız bulunmaktadır:
        </p>
        <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
-        <li>Ürünleri teslim aldığınız tarihten itibaren <strong>14 gün içinde</strong> hiçbir gerekçe göstermeksizin cayma hakkınızı kullanabilirsiniz.</li>
+        <li>Ürünleri teslim aldığınız tarihten itibaren <strong>7 gün içinde</strong> hiçbir gerekçe göstermeksizin cayma hakkınızı kullanabilirsiniz.</li>
         <li>Cayma bildirimi yazılı olarak (e-posta, mektup, faks) yapılmalıdır.</li>
         <li>Cayma hakkını kullandığınızda, ürünün orijinal ambalajında, etiketleriyle ve kullanılmamış olması gerekir.</li>
-        <li>Cayma hakkınızın kullanılması halinde, ödediğiniz tutar 14 gün içinde iade edilir.</li>
+        <li>Cayma hakkınızın kullanılması halinde, ödediğiniz tutar 7 gün içinde iade edilir.</li>
         <li>Cayma nedeniyle yapılan iade masrafları tarafınıza aittir, ancak ürünün bozuk veya hatalı teslim edilmesi durumunda iade masrafları bize aittir.</li>
         <li>Özel sipariş üzerine üretilen veya kişiselleştirilen ürünlerde cayma hakkı bulunmaz.</li>
         <li>Detaylı bilgi için <Link href="/iade-degisim" className="text-indigo-600 hover:underline">İade &amp; Değişim</Link> sayfasını ziyaret edin.</li>
@@ -214,8 +214,7 @@ export default function KullanimKosullariPage() {
        <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Telif hakkı ve diğer fikri mülkiyet haklarıyla korunmaktadır.</li>
         <li>İçerikleri izinsiz kopyalamak, dağıtmak veya kullanmak yasaktır.</li>
-        <li>Profilo markası, logo ve tasarımlar Profilo&apos;ya aittir.</li>
-        <li>Web sitesi içeriği ve tasarımı Yazıcı Ticaret&apos;e aittir.</li>
+        <li>Web sitesi içeriği ve tasarımı <strong>Yazıcı Ticaret</strong>&apos;e aittir.</li>
         <li>Ürün görselleri ve açıklamaları ticari amaçla kullanılamaz.</li>
        </ul>
       </>
@@ -244,7 +243,7 @@ export default function KullanimKosullariPage() {
      <PolicySection title="Sorumluluk Reddi">
       <>
        <p className="leading-relaxed">
-        Yazıcı Ticaret olarak:
+        <strong>Yazıcı Ticaret</strong> olarak:
        </p>
        <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>Web sitesinin kesintisiz çalışmasını garanti edemeyiz.</li>
@@ -266,15 +265,15 @@ export default function KullanimKosullariPage() {
         <li>Şikayetleriniz en geç 30 gün içinde yanıtlanır.</li>
         <li>Şikayetlerinizi e-posta, telefon veya mağazalarımıza başvurarak iletebilirsiniz.</li>
         <li>Anlaşmazlıklar öncelikle görüşmeler yoluyla çözülmeye çalışılır.</li>
-        <li>Çözülemeyen anlaşmazlıklar için Tüketici Hakem Heyetleri ve Tüketici Mahkemelerine başvurabilirsiniz.</li>
+        <li>Çözülemeyen anlaşmazlıklar için <strong>Tüketici Hakem Heyetleri</strong> ve <strong>Tüketici Mahkemeleri</strong>&apos;ne başvurabilirsiniz.</li>
         <li>Tüketici hakları konusunda detaylı bilgi için{" "}
          <a
-          href="https://www.tuketici.gov.tr"
+          href="https://tuketici.ticaret.gov.tr"
           target="_blank"
           rel="noopener noreferrer"
           className="text-indigo-600 hover:text-indigo-700"
          >
-          www.tuketici.gov.tr
+          tuketici.ticaret.gov.tr
          </a>{" "}
          adresini ziyaret edebilirsiniz.
         </li>
@@ -285,9 +284,9 @@ export default function KullanimKosullariPage() {
      <PolicySection title="Uygulanacak Hukuk ve Yetkili Mahkeme">
       <>
        <p className="leading-relaxed">
-        Bu sözleşme Türkiye Cumhuriyeti yasalarına tabidir. Bu sözleşmeden doğan uyuşmazlıkların çözümünde
-        öncelikle Tüketici Hakem Heyetleri&apos;ne başvurulur. Tüketici Hakem Heyetleri&apos;nin görevli
-        olmadığı veya yetkisinin aşıldığı durumlarda, Bursa mahkemeleri ve icra daireleri yetkilidir.
+        Bu sözleşme <strong>Türkiye Cumhuriyeti</strong> yasalarına tabidir. Bu sözleşmeden doğan uyuşmazlıkların çözümünde
+        öncelikle <strong>Tüketici Hakem Heyetleri</strong>&apos;ne başvurulur. <strong>Tüketici Hakem Heyetleri</strong>&apos;nin görevli
+        olmadığı veya yetkisinin aşıldığı durumlarda, <strong>Bursa</strong> mahkemeleri ve icra daireleri yetkilidir.
        </p>
       </>
      </PolicySection>

@@ -20,6 +20,23 @@ const isDeliveredStatus = (status) => {
  return s.includes('teslim');
 };
 
+// Sipariş üzerinden puan verilebilir mi? Teslim Edildi + (iade yok VEYA iade Reddedildi/İptal Edildi)
+const orderAllowsRating = (order, productId, productSlug) => {
+ if (!isDeliveredStatus(order?.status)) return false;
+ if (!order.items || !Array.isArray(order.items)) return false;
+ const hasProduct = order.items.some(item => {
+  const itemId = item._id?.toString() || item.productId?.toString() || item.id?.toString();
+  return (itemId === productId) || (item.slug === productSlug);
+ });
+ if (!hasProduct) return false;
+
+ const rrStatus = normalizeText(order?.returnRequest?.status || '');
+ if (!rrStatus) return true; // İade talebi yok → puan verebilir
+ if (rrStatus.includes('reddedildi')) return true; // İade reddedildi → puan verebilir
+ if (rrStatus.includes('iptal')) return true; // Müşteri iadeyi iptal etti → puan verebilir
+ return false; // Talep Edildi, Onaylandı, Tamamlandı → puan veremez
+};
+
 // POST - Ürün puanı ver
 export async function POST(request, { params }) {
  try {
@@ -82,20 +99,16 @@ export async function POST(request, { params }) {
    );
   }
 
-  // Kullanıcının bu ürünü satın alıp almadığını ve siparişin "Teslim Edildi" olup olmadığını kontrol et
-  const hasDeliveredPurchase = Array.isArray(user.orders) && user.orders.some(order => {
-   if (!isDeliveredStatus(order?.status)) return false;
-   if (!order.items || !Array.isArray(order.items)) return false;
-   return order.items.some(item => {
-    const itemId = item._id?.toString() || item.productId?.toString() || item.id?.toString();
-    const productId = product._id.toString();
-    return itemId === productId || item.slug === product.slug;
-   });
-  });
+  // Puan verebilme: Teslim Edildi + (iade yok VEYA iade Reddedildi/İptal)
+  const productIdStr = product._id.toString();
+  const productSlug = product.slug || '';
+  const hasEligiblePurchase = Array.isArray(user.orders) && user.orders.some(order =>
+   orderAllowsRating(order, productIdStr, productSlug)
+  );
 
-  if (!hasDeliveredPurchase) {
+  if (!hasEligiblePurchase) {
    return NextResponse.json(
-    { success: false, message: 'Puan verebilmek için ürünü satın almış olmalı ve siparişiniz "Teslim Edildi" olmalıdır.' },
+    { success: false, message: 'Puan verebilmek için ürünü teslim almış olmalı ve iade talebiniz onaylı olmamalıdır.' },
     { status: 403 }
    );
   }
@@ -208,27 +221,30 @@ export async function GET(request, { params }) {
    });
   }
 
-  // Kullanıcının bu ürünü satın alıp almadığını ve siparişin teslim edildiğini kontrol et
-  const hasDeliveredPurchase = Array.isArray(user.orders) && user.orders.some(order => {
-   if (!isDeliveredStatus(order?.status)) return false;
-   if (!order.items || !Array.isArray(order.items)) return false;
-   return order.items.some(item => {
-    const itemId = item._id?.toString() || item.productId?.toString() || item.id?.toString();
-    const productId = product._id.toString();
-    return itemId === productId || item.slug === product.slug;
-   });
-  });
+  // Puan verebilme: Teslim Edildi + (iade yok VEYA iade Reddedildi/İptal)
+  const productIdStr = product._id.toString();
+  const productSlug = product.slug || '';
+  const hasEligiblePurchase = Array.isArray(user.orders) && user.orders.some(order =>
+   orderAllowsRating(order, productIdStr, productSlug)
+  );
 
   const existingRating = Array.isArray(product.ratings)
    ? product.ratings.find(r => r.userId?.toString() === userId.toString())
    : null;
 
+  const canRate = hasEligiblePurchase && !existingRating;
+  let message = '';
+  if (!canRate && !existingRating && !hasEligiblePurchase) {
+   message = 'Puan verebilmek için ürünü teslim almış olmalı ve iade talebiniz onaylı olmamalıdır.';
+  }
+
   return NextResponse.json({
    success: true,
-   canRate: hasDeliveredPurchase && !existingRating,
+   canRate,
    canUpdate: false,
    userRating: existingRating ? existingRating.rating : null,
    canUpdateUntil: null,
+   ...(message && { message }),
   });
  } catch (error) {
   return NextResponse.json({

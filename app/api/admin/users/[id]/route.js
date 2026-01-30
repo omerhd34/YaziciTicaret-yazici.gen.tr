@@ -34,7 +34,6 @@ export async function GET(request, { params }) {
    name: user.name,
    email: user.email,
    phone: user.phone || "",
-   profileImage: user.profileImage || "",
    addresses: Array.isArray(user.addresses) ? user.addresses : [],
    orders: Array.isArray(user.orders)
     ? user.orders.map((o) => ({

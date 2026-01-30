@@ -20,7 +20,7 @@ export default function ProductFeatures() {
     </div>
     <div>
      <p className="font-semibold text-xs sm:text-sm">Kolay İade</p>
-     <p className="text-xs text-gray-500">14 gün içinde</p>
+     <p className="text-xs text-gray-500">7 gün içinde</p>
     </div>
    </div>
 

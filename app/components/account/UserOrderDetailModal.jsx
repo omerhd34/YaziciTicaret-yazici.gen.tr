@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { HiX } from "react-icons/hi";
 import normalizeText from "@/lib/normalizeText";
 import axiosInstance from "@/lib/axios";
@@ -16,13 +17,11 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
  }, []);
 
 
- // Ürünlerin orijinal fiyatlarını bulmak için ürünleri API'den çek
  useEffect(() => {
   const fetchProducts = async () => {
    const items = Array.isArray(order?.items) ? order.items : [];
    if (items.length === 0) return;
 
-   // Ürün ID'lerini topla
    const productIds = items
     .map(item => item.productId || item._id || item.id)
     .filter(Boolean)
@@ -60,6 +59,8 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
    fetchProducts();
   }
  }, [show, order]);
+
+ useEscapeKey(onClose, { enabled: show });
 
  const addrFromSaved = useMemo(() => {
   if (!order?.addressId) return null;
@@ -201,11 +202,11 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
 
  return (
   <div
-   className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+   className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
    onClick={onClose}
   >
    <div
-    className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+    className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto"
     onClick={(e) => e.stopPropagation()}
    >
     <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
@@ -215,115 +216,147 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
        <p className="text-sm text-gray-500">Sipariş No: {order.orderId}</p>
       )}
      </div>
-     <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition cursor-pointer">
-      <HiX size={24} />
-     </button>
+     <div className="flex items-center gap-3">
+      {canShowInvoice && order?.orderId && (
+       <button
+        type="button"
+        onClick={() => window.open(`${typeof window !== "undefined" ? window.location.origin : ""}/api/user/orders/${order.orderId}/invoice`, "_blank")}
+        className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition cursor-pointer"
+       >
+        Fatura
+       </button>
+      )}
+      <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition cursor-pointer">
+       <HiX size={24} />
+      </button>
+     </div>
     </div>
 
-    <div className="p-6 space-y-5">
-     <div className="grid md:grid-cols-3 gap-4">
-      <div className={`bg-gray-50 rounded-lg p-4 ${billingIsSame ? "md:col-span-2" : ""}`}>
-       <p className="text-xs text-gray-500 mb-1">
-        {billingIsSame ? "Teslimat Adresi, Fatura Adresi ve İletişim Bilgileri" : "Teslimat Adresi ve İletişim Bilgileri"}
-       </p>
+    <div className="p-6 space-y-6 bg-gray-50">
+     {/* Sipariş özeti - Admin ile aynı 4 sütun düzeni */}
+     <div className="grid md:grid-cols-4 gap-4">
+      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+       <div className="text-xs text-gray-500 mb-1">Durum:</div>
+       <div className="font-bold text-gray-900">{formatOrderStatus(order.status)}</div>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+       <div className="text-xs text-gray-500 mb-1">Tarih ve Saat:</div>
+       <div className="font-bold text-gray-900">
+        {order.date ? new Date(order.date).toLocaleString("tr-TR") : "-"}
+       </div>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+       <div className="text-xs text-gray-500 mb-1">Ödeme:</div>
+       <div className="font-bold text-gray-900">{paymentText}</div>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+       <div className="text-xs text-gray-500 mb-1">Toplam:</div>
+       <div className="font-black text-indigo-600">{Number(order.total || 0).toFixed(2)} ₺</div>
+      </div>
+     </div>
+
+     {/* Adres - Admin ile aynı 2 sütun düzeni */}
+     <div className="grid md:grid-cols-2 gap-4">
+      <div className={`bg-white border border-gray-200 rounded-xl p-4 shadow-sm ${billingIsSame ? "md:col-span-2" : ""}`}>
+       <div className="text-xs text-gray-500 mb-1">
+        {billingIsSame ? "Teslimat Adresi, Fatura Adresi ve İletişim Bilgileri:" : "Teslimat Adresi ve İletişim Bilgileri:"}
+       </div>
        {shipping ? (
         <div className="text-sm text-gray-800">
-         <p className="font-semibold">{shipping.title || "Adres"}</p>
-         <p>{shipping.firstName && shipping.lastName ? `${shipping.firstName} ${shipping.lastName}` : shipping.fullName || ''}</p>
-         <p className="text-gray-600">{shipping.address}</p>
-         <p className="text-gray-600">{shipping.district} / {shipping.city}</p>
-         <p className="text-gray-600">{shipping.phone}</p>
+         <div className="font-semibold">{shipping.title || "Adres"}</div>
+         <div>{shipping.firstName && shipping.lastName ? `${shipping.firstName} ${shipping.lastName}` : shipping.fullName || ''}</div>
+         <div className="text-gray-600">{shipping.address}</div>
+         <div className="text-gray-600">{shipping.district} / {shipping.city}</div>
+         <div className="text-gray-600">{shipping.phone}</div>
          {billingIsSame ? (
-          <p className="text-xs text-gray-400 mt-2">Fatura adresi teslimat adresi ile aynıdır.</p>
+          <div className="text-xs text-gray-400 mt-2">Fatura adresi teslimat adresi ile aynıdır.</div>
          ) : null}
         </div>
        ) : (
         <div className="text-sm text-gray-600">
-         <p className="text-gray-500">Adres bilgisi bulunamadı.</p>
+         <div>Adres bilgisi bulunamadı.</div>
          {order.addressSummary && (
-          <p className="text-xs text-gray-500 mt-2">{order.addressSummary}</p>
+          <div className="text-xs text-gray-500 mt-2">{order.addressSummary}</div>
          )}
         </div>
        )}
       </div>
 
       {!billingIsSame && (
-       <div className="bg-gray-50 rounded-lg p-4">
-        <p className="text-xs text-gray-500 mb-1">Fatura Adresi</p>
+       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+        <div className="text-xs text-gray-500 mb-1">Fatura Adresi:</div>
         {billing ? (
          <div className="text-sm text-gray-800">
-          <p className="font-semibold">{billing.title || "Adres"}</p>
-          <p>{billing.firstName && billing.lastName ? `${billing.firstName} ${billing.lastName}` : billing.fullName || ''}</p>
-          <p className="text-gray-600">{billing.address}</p>
-          <p className="text-gray-600">{billing.district} / {billing.city}</p>
-          <p className="text-gray-600">{billing.phone}</p>
+          <div className="font-semibold">{billing.title || "Adres"}</div>
+          <div>{billing.firstName && billing.lastName ? `${billing.firstName} ${billing.lastName}` : billing.fullName || ''}</div>
+          <div className="text-gray-600">{billing.address}</div>
+          <div className="text-gray-600">{billing.district} / {billing.city}</div>
+          <div className="text-gray-600">{billing.phone}</div>
          </div>
         ) : (
          <div className="text-sm text-gray-600">
-          <p className="text-gray-500">Adres bilgisi bulunamadı.</p>
+          <div>Adres bilgisi bulunamadı.</div>
           {order.addressSummary && (
-           <p className="text-xs text-gray-500 mt-2">{order.addressSummary}</p>
+           <div className="text-xs text-gray-500 mt-2">{order.addressSummary}</div>
           )}
          </div>
         )}
        </div>
       )}
-
-      <div className="bg-gray-50 rounded-lg p-4">
-       <p className="text-xs text-gray-500 mb-1">Ödeme</p>
-       <p className="font-semibold text-gray-900">{paymentText}</p>
-      </div>
      </div>
 
-     <div className="grid md:grid-cols-3 gap-4">
-      <div className="bg-gray-50 rounded-lg p-4">
-       <p className="text-xs text-gray-500 mb-1">Durum</p>
-       <p className="font-semibold text-gray-900">{formatOrderStatus(order.status)}</p>
+     {hasReturnRequest ? (
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+       <span className="text-xs text-gray-600">
+        İade talebi: <span className="text-sm font-semibold text-indigo-600">{order.returnRequest.status}</span>
+        {normalizeText(order?.returnRequest?.status) === normalizeText("Talep Edildi") ? (
+         <span className="text-gray-500"> — Geri dönüşümüzü bekleyin.</span>
+        ) : null}
+       </span>
+       {canCancelReturnRequest && onCancelReturn ? (
+        <button
+         onClick={() => onCancelReturn(order.orderId)}
+         className="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition cursor-pointer whitespace-nowrap text-sm"
+        >
+         İade Talebini İptal Et
+        </button>
+       ) : null}
       </div>
-      <div className="bg-gray-50 rounded-lg p-4">
-       <p className="text-xs text-gray-500 mb-1">Tarih ve Saat</p>
-       <p className="font-semibold text-gray-900">
-        {order.date ? new Date(order.date).toLocaleString("tr-TR") : "-"}
-       </p>
-      </div>
-      <div className="bg-gray-50 rounded-lg p-4">
-       <p className="text-xs text-gray-500 mb-1">Toplam</p>
-       <p className="font-semibold text-indigo-600">
-        {Number(order.total || 0).toFixed(2)} ₺
-       </p>
-      </div>
-     </div>
+     ) : null}
 
+     {hasReturnRequest && order?.returnRequest?.adminExplanation ? (
+      <div className="text-sm text-gray-700 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
+       <span className="text-xs text-gray-500">Mağaza iade açıklaması: </span>
+       <span className="font-semibold text-gray-900">{order.returnRequest.adminExplanation}</span>
+      </div>
+     ) : null}
+
+     {/* Ürünler - Admin ile aynı stil */}
      <div>
-      <h4 className="font-bold mb-3">Ürünler</h4>
+      <div className="text-sm font-bold text-gray-900 mb-3">Sipariş Ürünleri:</div>
       <div className="space-y-3">
        {grouped.map((g, idx) => {
-        const colorsText = g.colorCounts.size
-         ? Array.from(g.colorCounts.entries())
-          .map(([c, q]) => (q > 1 ? `${c} (${q})` : c))
-          .join(", ")
-         : "";
         return (
-         <div key={`${g.name}-${idx}`} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-4">
-          <div className="flex-1">
-           <p className="font-semibold text-gray-900">{g.name}</p>
-           <p className="text-sm text-gray-600">
+         <div key={`${g.name}-${idx}`} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center justify-between gap-4">
+          <div>
+           <div className="font-semibold text-gray-900">{g.name}</div>
+           <div className="text-sm text-gray-600">
             {g.serialNumber && (
              <span>
               <span className="font-bold">Seri No:</span> <span className="font-mono">{g.serialNumber}</span>
              </span>
             )}
-           </p>
+           </div>
           </div>
           <div className="text-right">
-           <p className="text-sm text-gray-600">Adet: {g.totalQty}</p>
+           <div className="text-sm text-gray-600">Adet: {g.totalQty}</div>
            {g.originalAmount > g.totalAmount ? (
             <div className="flex flex-col items-end gap-1">
-             <p className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</p>
-             <p className="text-sm text-gray-400 line-through">{g.originalAmount.toFixed(2)} ₺</p>
+             <div className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</div>
+             <div className="text-sm text-gray-400 line-through">{g.originalAmount.toFixed(2)} ₺</div>
             </div>
            ) : (
-            <p className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</p>
+            <div className="font-bold text-gray-900">{g.totalAmount.toFixed(2)} ₺</div>
            )}
           </div>
          </div>
@@ -335,15 +368,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
 
     {!isCancelled && (
      <div className="flex items-center justify-between gap-3 px-6 py-4 border-t">
-      {canShowInvoice && (
-       <button
-        type="button"
-        onClick={() => window.open(`${typeof window !== "undefined" ? window.location.origin : ""}/api/user/orders/${order.orderId}/invoice`, "_blank")}
-        className="px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition cursor-pointer"
-       >
-        Fatura
-       </button>
-      )}
       {canCancel ? (
        <button
         onClick={() => onCancel(order.orderId)}
@@ -352,24 +376,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
         Siparişi İptal Et
        </button>
       ) : isDelivered ? (
-       hasReturnRequest ? (
-        <div className="flex items-center justify-between gap-3 w-full">
-         <span className="text-sm text-gray-600">
-          İade Talebi: <span className="font-semibold">{order.returnRequest.status}</span>
-          {normalizeText(order?.returnRequest?.status) === normalizeText("Talep Edildi.") ? (
-           <span className="text-gray-500"> — Geri dönüşümüzü bekleyin.</span>
-          ) : null}
-         </span>
-         {canCancelReturnRequest && onCancelReturn ? (
-          <button
-           onClick={() => onCancelReturn(order.orderId)}
-           className="px-5 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition cursor-pointer whitespace-nowrap"
-          >
-           İade Talebini İptal Et
-          </button>
-         ) : null}
-        </div>
-       ) : hasReturnRequestCancelled ? (
+       hasReturnRequest ? null : hasReturnRequestCancelled ? (
         <span className="text-sm text-gray-500">Bu sipariş için iade talebi daha önce iptal edilmiş. Tekrar iade talebi oluşturulamaz.</span>
        ) : withinReturnWindow ? (
         <>

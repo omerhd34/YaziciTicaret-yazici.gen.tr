@@ -42,8 +42,37 @@ export default function SifreSifirlaPage() {
    return;
   }
 
-  if (formData.password.length < 6) {
-   setError("Şifre en az 6 karakter olmalıdır");
+  if (formData.password.length < 10) {
+   setError("Şifre en az 10 karakter olmalıdır.");
+   return;
+  }
+  if (!/[A-Z]/.test(formData.password)) {
+   setError("Şifre en az 1 büyük harf içermelidir.");
+   return;
+  }
+  if (!/[^a-zA-Z0-9]/.test(formData.password)) {
+   setError("Şifre en az 1 özel karakter içermelidir (örn: !, @, #).");
+   return;
+  }
+  const hasSequential = (str) => {
+   const s = String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+   if (s.length < 3) return false;
+   for (let i = 0; i <= s.length - 3; i++) {
+    let inc = true;
+    for (let j = 0; j < 2; j++) {
+     const a = s.charCodeAt(i + j);
+     const b = s.charCodeAt(i + j + 1);
+     if (b !== a + 1) {
+      inc = false;
+      break;
+     }
+    }
+    if (inc) return true;
+   }
+   return false;
+  };
+  if (hasSequential(formData.password)) {
+   setError("Şifre sıralı harf/rakam içeremez (örn: abc, 123).");
    return;
   }
 
@@ -129,7 +158,6 @@ export default function SifreSifirlaPage() {
           className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
           placeholder="••••••••••"
           required
-          minLength={6}
           disabled={!token}
          />
          <button
@@ -140,6 +168,9 @@ export default function SifreSifirlaPage() {
           {showPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
          </button>
         </div>
+        <p className="text-xs text-gray-500 mt-1.5">
+         En az 10 karakter, 1 büyük harf, 1 özel karakter (!, @, # vb.). Sıralı harf/rakam (abc, 123) içeremez.
+        </p>
        </div>
 
        <div>
@@ -160,7 +191,6 @@ export default function SifreSifirlaPage() {
           className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
           placeholder="••••••••••"
           required
-          minLength={6}
           disabled={!token}
          />
          <button

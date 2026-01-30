@@ -60,8 +60,6 @@ export default function AddressesTab({ addresses, onAddNew, onEdit, onDelete, sh
          showToast("Bir hata oluştu!", "error");
         }
        }}
-       showToast={showToast}
-       fetchAddresses={fetchAddresses}
       />
      ))}
     </div>

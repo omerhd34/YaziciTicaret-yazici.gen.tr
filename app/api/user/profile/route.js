@@ -82,7 +82,7 @@ export async function GET() {
     name: name,
     email: user.email,
     phone: user.phone || '',
-    profileImage: user.profileImage || '',
+    identityNumber: user.identityNumber || '',
     notificationPreferences: {
      emailNotifications: user.notificationPreferences?.emailNotifications !== undefined ? user.notificationPreferences.emailNotifications : true,
     },
@@ -150,9 +150,45 @@ export async function PUT(request) {
    }
 
    // Yeni şifre validasyonu
-   if (body.newPassword.length < 6) {
+   const pw = String(body.newPassword || "");
+   if (pw.length < 10) {
     return NextResponse.json(
-     { success: false, message: 'Yeni şifre en az 6 karakter olmalıdır' },
+     { success: false, message: 'Şifre en az 10 karakter olmalıdır.' },
+     { status: 400 }
+    );
+   }
+   if (!/[A-Z]/.test(pw)) {
+    return NextResponse.json(
+     { success: false, message: 'Şifre en az 1 büyük harf içermelidir.' },
+     { status: 400 }
+    );
+   }
+   if (!/[^a-zA-Z0-9]/.test(pw)) {
+    return NextResponse.json(
+     { success: false, message: 'Şifre en az 1 özel karakter içermelidir (örn: !, @, #).' },
+     { status: 400 }
+    );
+   }
+   const hasSequentialRun = (value, runLen = 3) => {
+    const s = String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (s.length < runLen) return false;
+    for (let i = 0; i <= s.length - runLen; i++) {
+     let inc = true;
+     for (let j = 0; j < runLen - 1; j++) {
+      const a = s.charCodeAt(i + j);
+      const b = s.charCodeAt(i + j + 1);
+      if (b !== a + 1) {
+       inc = false;
+       break;
+      }
+     }
+     if (inc) return true;
+    }
+    return false;
+   };
+   if (hasSequentialRun(pw, 3)) {
+    return NextResponse.json(
+     { success: false, message: 'Şifre sıralı harf/rakam içeremez (örn: abc, 123).' },
      { status: 400 }
     );
    }
@@ -192,7 +228,17 @@ export async function PUT(request) {
   }
   if (body.email) user.email = body.email.toLowerCase();
   if (body.phone !== undefined) user.phone = body.phone || '';
-  if (body.profileImage !== undefined) user.profileImage = body.profileImage || '';
+
+  if (body.identityNumber !== undefined) {
+   const tc = String(body.identityNumber || '').replace(/\D/g, '').trim();
+   if (tc && tc.length !== 11) {
+    return NextResponse.json(
+     { success: false, message: 'TC Kimlik No 11 haneli olmalıdır.' },
+     { status: 400 }
+    );
+   }
+   user.identityNumber = tc || '';
+  }
 
   // Bildirim tercihlerini güncelle
   if (body.notificationPreferences) {
@@ -233,7 +279,7 @@ export async function PUT(request) {
     name: responseName,
     email: user.email,
     phone: user.phone || '',
-    profileImage: user.profileImage || '',
+    identityNumber: user.identityNumber || '',
     notificationPreferences: {
      emailNotifications: user.notificationPreferences?.emailNotifications !== undefined ? user.notificationPreferences.emailNotifications : true,
     },
@@ -285,6 +331,20 @@ export async function DELETE() {
    return NextResponse.json(
     { success: false, message: 'Kullanıcı bulunamadı' },
     { status: 404 }
+   );
+  }
+
+  // Devam eden sipariş kontrolü: Beklemede, Hazırlanıyor, Kargoya Verildi
+  const activeStatuses = ['Beklemede', 'Hazırlanıyor', 'Kargoya Verildi'];
+  const orders = user.orders || [];
+  const hasActiveOrder = orders.some((o) => {
+   const s = String(o?.status || '').trim();
+   return activeStatuses.some((active) => s === active || s.includes(active));
+  });
+  if (hasActiveOrder) {
+   return NextResponse.json(
+    { success: false, message: 'Devam eden siparişleriniz varken hesap silinemez. Siparişleriniz tamamlandıktan veya iptal edildikten sonra tekrar deneyin.' },
+    { status: 400 }
    );
   }
 

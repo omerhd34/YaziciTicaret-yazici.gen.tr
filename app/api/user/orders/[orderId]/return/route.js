@@ -34,6 +34,8 @@ export async function POST(request, { params }) {
 
   const body = await request.json().catch(() => ({}));
   const note = body?.note ? String(body.note).trim().slice(0, 500) : "";
+  const rawUrls = Array.isArray(body?.imageUrls) ? body.imageUrls : (body?.imageUrl ? [body.imageUrl] : []);
+  const imageUrls = rawUrls.slice(0, 5).map((u) => String(u).trim().slice(0, 2000)).filter(Boolean);
 
   if (!note || !note.trim()) {
    return NextResponse.json(
@@ -98,17 +100,19 @@ export async function POST(request, { params }) {
   }
 
   const now = new Date();
+  const returnReq = {
+   status: "Talep Edildi",
+   requestedAt: now,
+   note,
+  };
+  if (imageUrls.length > 0) returnReq.imageUrls = imageUrls;
 
   // Kaydetmeyi garantiye almak için positional update kullan
   const upd = await User.updateOne(
    { _id: user._id, "orders.orderId": String(orderId) },
    {
     $set: {
-     "orders.$.returnRequest": {
-      status: "Talep Edildi",
-      requestedAt: now,
-      note,
-     },
+     "orders.$.returnRequest": returnReq,
      "orders.$.updatedAt": now,
     },
    }
@@ -138,6 +142,7 @@ export async function POST(request, { params }) {
     total: order?.total,
     deliveredAt,
     note,
+    imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
    });
   } catch {
   }

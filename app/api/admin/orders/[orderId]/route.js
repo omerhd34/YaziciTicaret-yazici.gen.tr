@@ -103,6 +103,9 @@ export async function PATCH(request, { params }) {
     );
    }
    update["orders.$.returnRequest.status"] = nextReturn;
+   if (adminMessage && String(adminMessage).trim()) {
+    update["orders.$.returnRequest.adminExplanation"] = String(adminMessage).trim().slice(0, 2000);
+   }
    // İade onaylandıysa 5 gün sayacı için zaman damgası
    if (norm === normalizeText("Onaylandı")) {
     update["orders.$.returnRequest.approvedAt"] = now;

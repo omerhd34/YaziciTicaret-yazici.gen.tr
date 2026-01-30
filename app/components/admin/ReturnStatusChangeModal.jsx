@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { HiX } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function ReturnStatusChangeModal({
  show,
@@ -13,6 +14,13 @@ export default function ReturnStatusChangeModal({
 }) {
  const [message, setMessage] = useState("");
  const [loading, setLoading] = useState(false);
+
+ const handleCancel = () => {
+  setMessage("");
+  onCancel();
+ };
+
+ useEscapeKey(handleCancel, { enabled: show, skipWhen: loading });
 
  if (!show) return null;
 
@@ -30,11 +38,6 @@ export default function ReturnStatusChangeModal({
   } finally {
    setLoading(false);
   }
- };
-
- const handleCancel = () => {
-  setMessage("");
-  onCancel();
  };
 
  return (
@@ -57,7 +60,7 @@ export default function ReturnStatusChangeModal({
      </div>
      <button
       onClick={handleCancel}
-      className="text-gray-500 hover:text-gray-800 transition"
+      className="text-gray-500 hover:text-gray-800 transition cursor-pointer"
       disabled={loading}
      >
       <HiX size={22} />
@@ -100,14 +103,14 @@ export default function ReturnStatusChangeModal({
       <button
        onClick={handleCancel}
        disabled={loading}
-       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
        İptal
       </button>
       <button
        onClick={handleConfirm}
        disabled={loading || (isApproved && !message.trim()) || (isRejected && !message.trim())}
-       className={`flex-1 px-4 py-2 rounded-lg text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed ${isApproved
+       className={`flex-1 px-4 py-2 rounded-lg text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${isApproved
         ? "bg-green-600 hover:bg-green-700"
         : isRejected
          ? "bg-red-600 hover:bg-red-700"

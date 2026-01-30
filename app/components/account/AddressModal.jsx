@@ -1,7 +1,10 @@
 "use client";
 import { HiX } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function AddressModal({ show, editingAddress, addressForm, setAddressForm, addressErrors, setAddressErrors, onSubmit, onClose }) {
+ useEscapeKey(onClose, { enabled: show });
+
  if (!show) return null;
 
  return (

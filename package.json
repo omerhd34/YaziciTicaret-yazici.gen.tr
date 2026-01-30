@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "reset-orders": "node scripts/reset-orders.js"
+    "reset-orders": "node scripts/reset-orders.js",
+    "reset-ratings": "node scripts/reset-ratings.mjs",
+    "reset-user": "node scripts/reset-user.js"
   },
   "dependencies": {
     "axios": "^1.13.2",

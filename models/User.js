@@ -114,9 +114,10 @@ const UserSchema = new mongoose.Schema({
   type: String,
   default: '',
  },
- profileImage: {
+ identityNumber: {   // TC
   type: String,
   default: '',
+  trim: true,
  },
  addresses: [AddressSchema],
  cards: [CardSchema],
@@ -140,6 +141,9 @@ const UserSchema = new mongoose.Schema({
    cancelledAt: Date,
    cancelReason: { type: String, default: "" },
    note: { type: String, default: "" },
+   imageUrl: { type: String, default: "" },
+   imageUrls: { type: [String], default: [] },
+   adminExplanation: { type: String, default: "" },
   },
   createdAt: {
    type: Date,

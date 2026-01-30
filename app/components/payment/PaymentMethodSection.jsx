@@ -4,6 +4,14 @@ import { MdPayment } from "react-icons/md";
 import { HiCheckCircle } from "react-icons/hi";
 import Image from "next/image";
 
+const PAYMENT_LOGOS = [
+ { src: "/visa.png", alt: "Visa", width: 60, height: 30 },
+ { src: "/mastercard.webp", alt: "Mastercard", width: 50, height: 30 },
+ { src: "/troy.png", alt: "Troy", width: 55, height: 30 },
+ { src: "/amex.png", alt: "American Express", width: 45, height: 30 },
+ { src: "/iyzico.png", alt: "iyzico", width: 70, height: 45 },
+];
+
 export default function PaymentMethodSection({ children }) {
  return (
   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -52,46 +60,24 @@ export default function PaymentMethodSection({ children }) {
 
       {/* Payment Logos */}
       <div className="mt-6 pt-5 border-t border-gray-200">
-       <p className="text-xs text-gray-500 font-semibold mb-4 text-center uppercase tracking-wide">
+       <p className="text-xs text-gray-500 font-semibold mb-3 text-center uppercase tracking-wide">
         Güvenli Ödeme Yöntemleri
        </p>
-       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center justify-items-center">
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow w-full flex items-center justify-center h-16">
-         <Image
-          src="/visa.png"
-          alt="Visa"
-          width={60}
-          height={40}
-          className="object-contain w-full h-full"
-         />
-        </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow w-full flex items-center justify-center h-16">
-         <Image
-          src="/mastercard.webp"
-          alt="Mastercard"
-          width={60}
-          height={40}
-          className="object-contain w-full h-full"
-         />
-        </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow w-full flex items-center justify-center h-16">
-         <Image
-          src="/troy.png"
-          alt="Troy"
-          width={60}
-          height={40}
-          className="object-contain w-full h-full"
-         />
-        </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow w-full flex items-center justify-center sm:col-span-1 col-span-2 h-16">
-         <Image
-          src="/iyzico.png"
-          alt="iyzico ile Öde"
-          width={60}
-          height={40}
-          className="object-contain w-full h-full"
-         />
-        </div>
+       <div className="flex flex-wrap items-center justify-center gap-2">
+        {PAYMENT_LOGOS.map((logo) => (
+         <div
+          key={logo.src}
+          className="bg-white rounded-lg p-2 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center justify-center h-12 w-22"
+         >
+          <Image
+           src={logo.src}
+           alt={logo.alt}
+           width={logo.width}
+           height={logo.height}
+           className="object-contain"
+          />
+         </div>
+        ))}
        </div>
       </div>
      </div>

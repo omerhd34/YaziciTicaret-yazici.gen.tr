@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { HiSearch, HiUser, HiHeart, HiMenu, HiX, HiPhone, HiChevronDown, HiArrowRight, HiClipboardList, HiTruck, HiTag, HiGift } from "react-icons/hi";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import axiosInstance from "@/lib/axios";
 import { getProductUrl } from "@/app/utils/productUrl";
 import ProductRequestModal from "@/app/components/product/ProductRequestModal";
@@ -75,7 +76,7 @@ const Header = () => {
     const data = res.data;
     const authenticated = data.authenticated || false;
     setIsAuthenticated(authenticated);
-    
+
     // Cache'e kaydet
     localStorage.setItem('auth_status', authenticated.toString());
     localStorage.setItem('auth_status_time', now.toString());
@@ -220,17 +221,7 @@ const Header = () => {
   return () => document.removeEventListener('click', handleClickOutside);
  }, []);
 
- useEffect(() => {
-  if (isMobileMenuOpen) {
-   document.body.style.overflow = 'hidden';
-  } else {
-   document.body.style.overflow = '';
-  }
-
-  return () => {
-   document.body.style.overflow = '';
-  };
- }, [isMobileMenuOpen]);
+ useBodyScrollLock(isMobileMenuOpen);
 
  return (
   <header className="w-full bg-white shadow-sm sticky top-0 z-50 font-sans">
@@ -294,7 +285,7 @@ const Header = () => {
        <div className="relative">
         <FaShoppingCart size={22} className="group-hover:text-indigo-600 transition" />
         {isClient && getCartItemCount() > 0 && (
-         <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm leading-none ${getCartItemCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
+         <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm leading-none tabular-nums ${getCartItemCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
           {getCartItemCount() >= 9 ? "9+" : getCartItemCount()}
          </span>
         )}
@@ -305,7 +296,7 @@ const Header = () => {
        <div className="relative">
         <HiHeart size={22} className="group-hover:text-indigo-600 transition" />
         {isClient && getFavoriteCount() > 0 && (
-         <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm leading-none ${getFavoriteCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
+         <span className={`absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white shadow-sm leading-none tabular-nums ${getFavoriteCount() >= 9 ? "px-1.5 min-w-[20px] h-5" : "w-4 h-4"}`}>
           {getFavoriteCount() >= 9 ? "9+" : getFavoriteCount()}
          </span>
         )}

@@ -10,10 +10,7 @@ import {
  HiArrowLeft
 } from "react-icons/hi";
 
-export default function Error({
- error,
- reset,
-}) {
+export default function Error({ reset }) {
  return (
   <>
    <Header />
@@ -46,21 +43,21 @@ export default function Error({
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
        <button
         onClick={reset}
-        className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+        className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
        >
         <HiRefresh className="h-5 w-5" />
         Tekrar Dene
        </button>
        <button
         onClick={() => window.history.back()}
-        className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 shadow-md hover:shadow-lg"
+        className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer"
        >
         <HiArrowLeft className="h-5 w-5" />
         Geri Dön
        </button>
        <Link
         href="/"
-        className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+        className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
        >
         <HiHome className="h-5 w-5" />
         Ana Sayfa

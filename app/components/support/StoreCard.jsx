@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MdPhone, MdEmail, MdLocationOn, MdAccessTime } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiExternalLink, HiX, HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function StoreCard({ title, adres, telefon, whatsappLink, email, mapUrl, images }) {
  const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -14,23 +15,12 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
  const mapDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${addressForMaps}`;
  const mapViewUrl = `https://www.google.com/maps/search/?api=1&query=${addressForMaps}`;
 
- useEffect(() => {
-  const handleEscape = (e) => {
-   if (e.key === 'Escape' && lightboxOpen) {
-    setLightboxOpen(false);
-   }
-  };
-  window.addEventListener('keydown', handleEscape);
-  return () => window.removeEventListener('keydown', handleEscape);
- }, [lightboxOpen]);
+ const closeLightbox = () => setLightboxOpen(false);
+ useEscapeKey(closeLightbox, { enabled: lightboxOpen });
 
  const openLightbox = (index) => {
   setLightboxIndex(index);
   setLightboxOpen(true);
- };
-
- const closeLightbox = () => {
-  setLightboxOpen(false);
  };
 
  const nextImage = () => {
@@ -92,7 +82,7 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
       className="text-indigo-600 hover:text-indigo-700 transition"
       aria-label="E-posta gönder"
      >
-      <HiExternalLink size={20} />
+      <MdEmail size={21} />
      </a>
     </div>
 

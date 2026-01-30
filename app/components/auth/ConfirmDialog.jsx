@@ -1,5 +1,6 @@
 "use client";
 import { HiX } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function ConfirmDialog({
  show,
@@ -10,6 +11,8 @@ export default function ConfirmDialog({
  cancelText = "İptal",
  confirmColor = "red",
 }) {
+ useEscapeKey(onCancel, { enabled: show });
+
  if (!show) return null;
 
  const confirmBgColor = confirmColor === "red" ? "bg-red-600 hover:bg-red-700" : "bg-indigo-600 hover:bg-indigo-700";

@@ -19,7 +19,7 @@ export default function CerezPolitikasiPage() {
       <p className="text-gray-700 leading-relaxed">
        <strong>Yazıcı Ticaret</strong> olarak, web sitemizin güvenli, verimli ve kullanıcı dostu bir şekilde
        çalışmasını sağlamak amacıyla çerezler kullanmaktayız.
-       Bu Çerez Politikası; hangi çerezlerin kullanıldığını, hangi amaçlarla işlendiğini
+       Bu <strong>Çerez Politikası</strong>; hangi çerezlerin kullanıldığını, hangi amaçlarla işlendiğini
        ve çerez tercihlerinizi nasıl yönetebileceğinizi açıklamaktadır.
       </p>
      </PolicySection>
@@ -66,7 +66,7 @@ export default function CerezPolitikasiPage() {
       </ul>
 
       <p className="leading-relaxed mt-4">
-       Üçüncü taraf çerezler üzerinde Yazıcı Ticaret’in doğrudan kontrolü bulunmamakta olup,
+       Üçüncü taraf çerezler üzerinde <strong>Yazıcı Ticaret</strong>&apos;in doğrudan kontrolü bulunmamakta olup,
        bu çerezlerin kullanımı ilgili üçüncü tarafların kendi gizlilik ve çerez politikalarına tabidir.
       </p>
      </PolicySection>
@@ -98,8 +98,8 @@ export default function CerezPolitikasiPage() {
      {/* YASAL DAYANAK */}
      <PolicySection icon={<HiLockClosed className="text-indigo-600" size={24} />} title="Yasal Dayanak">
       <p className="leading-relaxed">
-       Çerez kullanımımız, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve
-       6502 sayılı Tüketicinin Korunması Hakkında Kanun hükümlerine uygun olarak gerçekleştirilmektedir.
+       Çerez kullanımımız, <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK)</strong> ve{" "}
+       <strong>6502 sayılı Tüketicinin Korunması Hakkında Kanun</strong> hükümlerine uygun olarak gerçekleştirilmektedir.
       </p>
       <p className="leading-relaxed mt-3">
        Zorunlu çerezler, web sitemizin çalışması için gereklidir ve bu çerezler için açık rıza alınmaz.
@@ -113,7 +113,7 @@ export default function CerezPolitikasiPage() {
        Çerezler aracılığıyla toplanan kişisel verilerin işlenmesi, saklanması ve korunması hakkında
        detaylı bilgi için{" "}
        <Link href="/gizlilik-politikasi" className="text-indigo-600 hover:text-indigo-700 font-semibold">
-        Gizlilik Politikası
+        <strong>Gizlilik Politikası</strong>
        </Link>{" "}
        sayfamızı inceleyebilirsiniz.
       </p>
@@ -129,7 +129,7 @@ export default function CerezPolitikasiPage() {
        Çerez politikamız hakkında sorularınız veya görüşleriniz varsa, bizimle iletişime geçebilirsiniz:
       </p>
       <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
-       <p className="font-semibold text-gray-900">Yazıcı Ticaret</p>
+       <p className="font-semibold text-gray-900"><strong>Yazıcı Ticaret</strong></p>
        <p className="text-gray-700">
         <strong>E-posta:</strong>{" "}
         <a href="mailto:info@yazici.gen.tr" className="text-indigo-600 hover:text-indigo-700">
@@ -137,7 +137,10 @@ export default function CerezPolitikasiPage() {
         </a>
        </p>
        <p className="text-gray-700">
-        <strong>Telefon:</strong> 0544 796 77 70
+        <strong>Telefon:</strong>{" "}
+        <a href="tel:+905447967770" className="text-indigo-600 hover:text-indigo-700">0544 796 77 70</a>
+        {" "}ve{" "}
+        <a href="tel:+905013496991" className="text-indigo-600 hover:text-indigo-700">0501 349 69 91</a>
        </p>
       </div>
      </PolicySection>
@@ -145,7 +148,7 @@ export default function CerezPolitikasiPage() {
      {/* GÜNCELLEMELER */}
      <PolicySection title="Çerez Politikası Güncellemeleri">
       <p className="leading-relaxed">
-       Bu Çerez Politikası, yasal düzenlemelerdeki değişiklikler veya işletme politikalarımızdaki
+       Bu <strong>Çerez Politikası</strong>, yasal düzenlemelerdeki değişiklikler veya işletme politikalarımızdaki
        güncellemeler nedeniyle zaman zaman güncellenebilir. Önemli değişiklikler yapıldığında,
        sitemiz üzerinden veya e-posta yoluyla sizleri bilgilendiririz.
       </p>

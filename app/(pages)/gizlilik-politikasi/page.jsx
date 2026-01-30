@@ -27,7 +27,7 @@ export default function GizlilikPolitikasiPage() {
        Web sitemizi kullandığınızda aşağıdaki kişisel verileriniz toplanabilir:
       </p>
       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
-       <li><strong>Kimlik Bilgileri:</strong> Ad, soyad</li>
+       <li><strong>Kimlik Bilgileri:</strong> Ad, soyad, TC kimlik no</li>
        <li><strong>İletişim Bilgileri:</strong> E-posta adresi, telefon numarası, adres</li>
        <li><strong>Ödeme Bilgileri:</strong> Ödeme işlemlerine ilişkin bilgiler (kart bilgileri sistemlerimizde saklanmaz)</li>
        <li><strong>Hesap Bilgileri:</strong> Kullanıcı adı ve şifre (şifrelenmiş olarak)</li>
@@ -69,7 +69,7 @@ export default function GizlilikPolitikasiPage() {
        <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu</strong> uyarınca veri sorumlusu:
       </p>
       <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
-       <p className="font-semibold text-gray-900">Yazıcı Ticaret</p>
+       <p className="font-semibold text-gray-900"><strong>Yazıcı Ticaret</strong></p>
        <p className="text-gray-700">
         <strong>Adres 1:</strong> Kemalpaşa mahallesi, Atatürk bulvarı, No:54/E, İnegöl/Bursa
        </p>
@@ -83,7 +83,10 @@ export default function GizlilikPolitikasiPage() {
         </a>
        </p>
        <p className="text-gray-700">
-        <strong>Telefon:</strong> 0544 796 77 70
+        <strong>Telefon:</strong>{" "}
+        <a href="tel:+905447967770" className="text-indigo-600 hover:text-indigo-700">0544 796 77 70</a>
+        {" "}ve{" "}
+        <a href="tel:+905013496991" className="text-indigo-600 hover:text-indigo-700">0501 349 69 91</a>
        </p>
       </div>
      </PolicySection>
@@ -98,7 +101,7 @@ export default function GizlilikPolitikasiPage() {
       <p className="leading-relaxed mt-3">
        Çerezler hakkında detaylı bilgi için{" "}
        <Link href="/cerez-politikasi" className="text-indigo-600 hover:text-indigo-700 font-semibold">
-        Çerez Politikası
+        <strong>Çerez Politikası</strong>
        </Link>{" "}
        sayfamızı inceleyebilirsiniz.
       </p>
@@ -142,9 +145,9 @@ export default function GizlilikPolitikasiPage() {
        Talebiniz değerlendirilerek:
       </p>
       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
-       <li>Yasal saklama süresi dolmuş veriler derhal silinir veya yok edilir</li>
-       <li>Yasal saklama süresi devam eden veriler, süre dolduğunda silinir</li>
-       <li>Silme işlemi geri alınamaz şekilde gerçekleştirilir</li>
+       <li>Yasal saklama süresi dolmuş veriler derhal silinir veya yok edilir.</li>
+       <li>Yasal saklama süresi devam eden veriler, süre dolduğunda silinir.</li>
+       <li>Silme işlemi geri alınamaz şekilde gerçekleştirilir.</li>
       </ul>
       <p className="leading-relaxed mt-4">
        Hesabınızı silmek için hesap ayarlarınızdan &quot;Hesabımı Sil&quot; seçeneğini kullanabilirsiniz.
@@ -159,9 +162,9 @@ export default function GizlilikPolitikasiPage() {
        Ancak bir veri güvenliği ihlali tespit edildiğinde:
       </p>
       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
-       <li>İhlal, KVKK Kurulu&apos;na 72 saat içinde bildirilir</li>
-       <li>İhlalin ilgili kişileri etkileme riski varsa, bu durum en kısa sürede ilgili kişilere bildirilir</li>
-       <li>İhlalin önlenmesi için gerekli önlemler derhal alınır</li>
+       <li>İhlal, <strong>KVKK Kurulu</strong>&apos;na 72 saat içinde bildirilir.</li>
+       <li>İhlalin ilgili kişileri etkileme riski varsa, bu durum en kısa sürede ilgili kişilere bildirilir.</li>
+       <li>İhlalin önlenmesi için gerekli önlemler derhal alınır.</li>
       </ul>
      </PolicySection>
 
@@ -182,7 +185,7 @@ export default function GizlilikPolitikasiPage() {
      {/* KVKK HAKLARI */}
      <PolicySection icon={<HiScale className="text-indigo-600" size={24} />} title="KVKK Kapsamındaki Haklarınız">
       <p className="leading-relaxed">
-       6698 sayılı KVKK kapsamında kişisel verilerinize ilişkin aşağıdaki haklara sahipsiniz:
+       <strong>6698 sayılı KVKK</strong> kapsamında kişisel verilerinize ilişkin aşağıdaki haklara sahipsiniz:
       </p>
       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li><strong>Öğrenme Hakkı:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
@@ -199,18 +202,18 @@ export default function GizlilikPolitikasiPage() {
      {/* HAKLARIN KULLANIMI */}
      <PolicySection icon={<HiMail className="text-indigo-600" size={24} />} title="Haklarınızı Nasıl Kullanabilirsiniz?">
       <p className="leading-relaxed">
-       KVKK kapsamındaki haklarınızı kullanmak için:
+       <strong>KVKK</strong> kapsamındaki haklarınızı kullanmak için:
       </p>
       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
        <li>Kimliğinizi tespit edecek bilgilerle birlikte yazılı başvurunuzu{" "}
         <a href="mailto:info@yazici.gen.tr" className="text-indigo-600 hover:text-indigo-700 font-semibold">
          info@yazici.gen.tr
         </a>{" "}
-        adresine gönderebilirsiniz
+        adresine gönderebilirsiniz.
        </li>
-       <li>Başvurunuz en geç 30 gün içinde ücretsiz olarak sonuçlandırılır</li>
-       <li>Başvurunun kabul edilmesi halinde talebiniz yerine getirilir</li>
-       <li>Başvurunuzun reddedilmesi, yanıtın verilmemesi veya verilen yanıtın yetersiz bulunması halinde, KVKK Kanunu&apos;nun 14. maddesi uyarınca KVKK Kurulu&apos;na şikayette bulunabilirsiniz</li>
+       <li>Başvurunuz en geç 30 gün içinde ücretsiz olarak sonuçlandırılır.</li>
+       <li>Başvurunun kabul edilmesi halinde talebiniz yerine getirilir.</li>
+       <li>Başvurunuzun reddedilmesi, yanıtın verilmemesi veya verilen yanıtın yetersiz bulunması halinde, <strong>KVKK Kanunu</strong>&apos;nun 14. maddesi uyarınca <strong>KVKK Kurulu</strong>&apos;na şikayette bulunabilirsiniz.</li>
       </ul>
       <div className="bg-blue-50 border-l-4 border-blue-400 p-3 sm:p-4 mt-3 sm:mt-4">
        <p className="text-blue-700 text-sm">
@@ -223,13 +226,13 @@ export default function GizlilikPolitikasiPage() {
      {/* YURTDIŞINA VERİ TRANSFERİ */}
      <PolicySection icon={<HiLockClosed className="text-indigo-600" size={24} />} title="Yurtdışına Veri Transferi">
       <p className="leading-relaxed">
-       Kişisel verileriniz, KVKK Kanunu ve ilgili mevzuat hükümlerine uygun olarak,
+       Kişisel verileriniz, <strong>KVKK Kanunu</strong> ve ilgili mevzuat hükümlerine uygun olarak,
        gerekli güvenlik önlemleri alınarak yurtdışına aktarılabilir. Bu durumda:
       </p>
       <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
-       <li>Veri transferi, yalnızca hizmet sağlayıcılarımız (bulut sunucular, ödeme altyapıları vb.) ile sınırlıdır</li>
-       <li>Transfer edilen veriler, yeterli koruma sağlayan ülkelerde veya yeterli koruma sağlanan alıcılar tarafından işlenir</li>
-       <li>Açık rızanızın bulunduğu durumlarda, yeterli koruma sağlayan ülkeler dışına da transfer yapılabilir</li>
+       <li>Veri transferi, yalnızca hizmet sağlayıcılarımız (bulut sunucular, ödeme altyapıları vb.) ile sınırlıdır.</li>
+       <li>Transfer edilen veriler, yeterli koruma sağlayan ülkelerde veya yeterli koruma sağlanan alıcılar tarafından işlenir.</li>
+       <li>Açık rızanızın bulunduğu durumlarda, yeterli koruma sağlayan ülkeler dışına da transfer yapılabilir.</li>
       </ul>
      </PolicySection>
 

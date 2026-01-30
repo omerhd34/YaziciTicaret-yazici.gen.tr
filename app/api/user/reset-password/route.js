@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import crypto from 'crypto';
@@ -16,9 +16,45 @@ export async function POST(request) {
    );
   }
 
-  if (password.length < 6) {
+  const pw = String(password || "");
+  if (pw.length < 10) {
    return NextResponse.json(
-    { success: false, message: 'Şifre en az 6 karakter olmalıdır' },
+    { success: false, message: 'Şifre en az 10 karakter olmalıdır.' },
+    { status: 400 }
+   );
+  }
+  if (!/[A-Z]/.test(pw)) {
+   return NextResponse.json(
+    { success: false, message: 'Şifre en az 1 büyük harf içermelidir.' },
+    { status: 400 }
+   );
+  }
+  if (!/[^a-zA-Z0-9]/.test(pw)) {
+   return NextResponse.json(
+    { success: false, message: 'Şifre en az 1 özel karakter içermelidir (örn: !, @, #).' },
+    { status: 400 }
+   );
+  }
+  const hasSequentialRun = (value, runLen = 3) => {
+   const s = String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+   if (s.length < runLen) return false;
+   for (let i = 0; i <= s.length - runLen; i++) {
+    let inc = true;
+    for (let j = 0; j < runLen - 1; j++) {
+     const a = s.charCodeAt(i + j);
+     const b = s.charCodeAt(i + j + 1);
+     if (b !== a + 1) {
+      inc = false;
+      break;
+     }
+    }
+    if (inc) return true;
+   }
+   return false;
+  };
+  if (hasSequentialRun(pw, 3)) {
+   return NextResponse.json(
+    { success: false, message: 'Şifre sıralı harf/rakam içeremez (örn: abc, 123).' },
     { status: 400 }
    );
   }
@@ -43,7 +79,7 @@ export async function POST(request) {
   }
 
   // Şifreyi güncelle
-  const hashedPassword = Buffer.from(password).toString('base64');
+  const hashedPassword = Buffer.from(pw).toString('base64');
   user.password = hashedPassword;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;

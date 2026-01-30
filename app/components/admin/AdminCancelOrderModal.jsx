@@ -3,6 +3,7 @@ import { useState } from "react";
 import { HiX, HiLockClosed, HiEye, HiEyeOff } from "react-icons/hi";
 import { FaSpinner } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCancel }) {
  const [loading, setLoading] = useState(false);
@@ -10,7 +11,13 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
  const [showPassword, setShowPassword] = useState(false);
  const [verificationError, setVerificationError] = useState("");
 
- if (!show) return null;
+ const handleCancel = () => {
+  setPassword("");
+  setVerificationError("");
+  onCancel();
+ };
+
+ useEscapeKey(handleCancel, { enabled: show, skipWhen: loading });
 
  const handleConfirm = async () => {
   if (loading) return;
@@ -44,11 +51,7 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
   }
  };
 
- const handleCancel = () => {
-  setPassword("");
-  setVerificationError("");
-  onCancel();
- };
+ if (!show) return null;
 
  return (
   <div

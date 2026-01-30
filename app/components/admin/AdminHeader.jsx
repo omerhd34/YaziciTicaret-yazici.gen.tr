@@ -5,33 +5,40 @@ import { useState, useEffect } from "react";
 import { HiLogout } from "react-icons/hi";
 import axiosInstance from "@/lib/axios";
 
+const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
+
+const getInitialAuthFromCache = () => {
+ if (typeof window === 'undefined') return false;
+ const cachedAdminAuth = localStorage.getItem('admin_auth_status');
+ const cachedAdminAuthTime = localStorage.getItem('admin_auth_status_time');
+ const now = Date.now();
+ if (cachedAdminAuth && cachedAdminAuthTime && (now - parseInt(cachedAdminAuthTime, 10)) < CACHE_DURATION) {
+  return cachedAdminAuth === 'true';
+ }
+ return false;
+};
+
 const AdminHeader = () => {
  const router = useRouter();
  const pathname = usePathname();
- const [isAuthenticated, setIsAuthenticated] = useState(false);
+ const [isAuthenticated, setIsAuthenticated] = useState(getInitialAuthFromCache);
 
  useEffect(() => {
-  // AdminLayout zaten check yapıyor, burada tekrar yapmaya gerek yok
-  // Sadece AdminLayout'tan gelen auth durumunu kullan
-  // AdminLayout'tan prop olarak geçirilebilir ama şimdilik localStorage'dan oku
   const cachedAdminAuth = localStorage.getItem('admin_auth_status');
   const cachedAdminAuthTime = localStorage.getItem('admin_auth_status_time');
   const now = Date.now();
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
 
   if (cachedAdminAuth && cachedAdminAuthTime && (now - parseInt(cachedAdminAuthTime, 10)) < CACHE_DURATION) {
-   setIsAuthenticated(cachedAdminAuth === 'true');
    return;
   }
 
-  // Cache yoksa veya eskiyse check yap (ama sadece bir kez)
   const checkAuth = async () => {
    try {
     const res = await axiosInstance.get("/api/auth/check");
     const data = res.data;
     const authenticated = data.authenticated || false;
     setIsAuthenticated(authenticated);
-    
+
     // Cache'e kaydet
     localStorage.setItem('admin_auth_status', authenticated.toString());
     localStorage.setItem('admin_auth_status_time', now.toString());

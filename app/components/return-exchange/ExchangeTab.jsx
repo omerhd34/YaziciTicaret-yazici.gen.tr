@@ -14,9 +14,9 @@ export default function ExchangeTab() {
      <div className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200">
       <HiCheckCircle className="text-green-600 shrink-0 mt-1" size={24} />
       <div>
-       <h3 className="font-semibold text-gray-900 mb-1">14 Gün Değişim Hakkı</h3>
+       <h3 className="font-semibold text-gray-900 mb-1">7 Gün Değişim Hakkı</h3>
        <p className="text-gray-700 text-sm">
-        Ürünü teslim aldığınız tarihten itibaren 14 gün içinde renk değişimi yapabilirsiniz.
+        Ürünü teslim aldığınız tarihten itibaren 7 gün içinde renk değişimi yapabilirsiniz.
        </p>
       </div>
      </div>

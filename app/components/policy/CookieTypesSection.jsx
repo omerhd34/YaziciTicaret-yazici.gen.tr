@@ -8,10 +8,10 @@ export default function CookieTypesSection() {
    title: "Zorunlu Çerezler",
    description: "Bu çerezler web sitemizin çalışması için gereklidir ve devre dışı bırakılamaz.",
    items: [
-    <><strong>Oturum Çerezleri:</strong> Giriş yaptığınızda oturumunuzu korur</>,
-    <><strong>Güvenlik Çerezleri:</strong> Güvenli bağlantı sağlar</>,
-    <><strong>Sepet Çerezleri:</strong> Sepetinizdeki ürünleri hatırlar</>,
-    <><strong>Tercih Çerezleri:</strong> Dil ve bölge tercihlerinizi saklar</>
+    <><strong>Oturum Çerezleri:</strong> Giriş yaptığınızda oturumunuzu korur.</>,
+    <><strong>Güvenlik Çerezleri:</strong> Güvenli bağlantı sağlar.</>,
+    <><strong>Sepet Çerezleri:</strong> Sepetinizdeki ürünleri hatırlar.</>,
+    <><strong>Tercih Çerezleri:</strong> Dil ve bölge tercihlerinizi saklar.</>
    ],
    bgColor: "bg-green-50",
    borderColor: "border-green-200",

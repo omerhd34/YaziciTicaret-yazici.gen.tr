@@ -1,6 +1,7 @@
 "use client";
-import { useEffect } from "react";
 import { HiX } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import SubCategoryFilter from "./SubCategoryFilter";
 import PriceFilter from "./PriceFilter";
 import BrandFilter from "./BrandFilter";
@@ -29,19 +30,8 @@ export default function CategoryFiltersModal({
  onCoolingCapacityToggle,
  onSpecialFilterToggle,
 }) {
- useEffect(() => {
-  if (show) {
-   document.body.classList.add("filters-modal-open");
-   document.body.style.overflow = "hidden";
-  } else {
-   document.body.classList.remove("filters-modal-open");
-   document.body.style.overflow = "";
-  }
-  return () => {
-   document.body.classList.remove("filters-modal-open");
-   document.body.style.overflow = "";
-  };
- }, [show]);
+ useBodyScrollLock(show, { className: "filters-modal-open" });
+ useEscapeKey(onClose, { enabled: show });
 
  if (!show) return null;
 

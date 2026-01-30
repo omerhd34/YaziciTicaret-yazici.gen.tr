@@ -196,7 +196,7 @@ export async function POST(request) {
        if (item.color && product.colors && Array.isArray(product.colors)) {
         const colorName = String(item.color).trim();
         const colorOption = product.colors.find(c => String(c.name).trim() === colorName);
-        
+
         if (colorOption && colorOption.stock < quantity) {
          stockUpdateErrors.push(`Yetersiz renk stoku: ${item.name || product.name} - ${colorName}. Mevcut: ${colorOption.stock}, İstenen: ${quantity}`);
          // Ana stoku geri al (rollback)
@@ -251,7 +251,7 @@ export async function POST(request) {
       items: orderRefresh.items,
      });
     }
-   } catch (_) {}
+   } catch (_) { }
 
    // Müşteriye e-posta gönder
    try {
@@ -272,7 +272,7 @@ export async function POST(request) {
       items: orderRefresh.items,
      });
     }
-   } catch (_) {}
+   } catch (_) { }
 
    return NextResponse.json({
     success: true,

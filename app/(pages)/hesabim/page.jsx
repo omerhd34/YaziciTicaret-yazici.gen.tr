@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import Toast from "@/app/components/ui/Toast";
@@ -168,12 +168,10 @@ export default function Hesabim() {
   name: "",
   email: "",
   phone: "",
+  identityNumber: "",
   address: "",
   city: "",
-  profileImage: "",
  });
- const [uploadingImage, setUploadingImage] = useState(false);
-
  const [notificationPreferences, setNotificationPreferences] = useState({
   emailNotifications: true,
  });
@@ -240,9 +238,9 @@ export default function Hesabim() {
        name: currentUser.name || "",
        email: currentUser.email || "",
        phone: currentUser.phone || "",
+       identityNumber: currentUser.identityNumber || "",
        address: "",
        city: "",
-       profileImage: currentUser.profileImage || "",
       });
       return;
      }
@@ -265,9 +263,9 @@ export default function Hesabim() {
        name: data.user.name || "",
        email: data.user.email || "",
        phone: data.user.phone || "",
+       identityNumber: data.user.identityNumber || "",
        address: "",
        city: "",
-       profileImage: data.user.profileImage || "",
       });
       if (data.user.notificationPreferences) {
        setNotificationPreferences({
@@ -289,9 +287,9 @@ export default function Hesabim() {
        name: currentUser.name || "",
        email: currentUser.email || "",
        phone: currentUser.phone || "",
+       identityNumber: currentUser.identityNumber || "",
        address: "",
        city: "",
-       profileImage: currentUser.profileImage || "",
       });
      }
     } catch (error) {
@@ -299,9 +297,9 @@ export default function Hesabim() {
       name: currentUser.name || "",
       email: currentUser.email || "",
       phone: currentUser.phone || "",
+      identityNumber: currentUser.identityNumber || "",
       address: "",
       city: "",
-      profileImage: currentUser.profileImage || "",
      });
     }
    }
@@ -775,6 +773,14 @@ export default function Hesabim() {
   return formatOrderStatus(order?.status);
  };
 
+ const hasActiveOrders = useMemo(() => {
+  const activeStatuses = ["Beklemede", "Hazırlanıyor", "Kargoya Verildi"];
+  return (orders || []).some((o) => {
+   const s = String(o?.status || "").trim();
+   return activeStatuses.some((active) => s === active || s.includes(active));
+  });
+ }, [orders]);
+
  // Siparişleri çek
  const fetchOrders = useCallback(async () => {
   try {
@@ -811,9 +817,9 @@ export default function Hesabim() {
   }
  }, [showToast]);
 
- // Kullanıcı yüklendiğinde siparişleri çek
+ // Kullanıcı yüklendiğinde siparişleri çek (siparişler veya ayarlar sekmesinde - ayarlarda devam eden sipariş kontrolü için)
  useEffect(() => {
-  if (currentUser && activeTab === "siparisler") {
+  if (currentUser && (activeTab === "siparisler" || activeTab === "ayarlar")) {
    fetchOrders();
   } else if (!currentUser) {
    setOrders([]);
@@ -869,7 +875,11 @@ export default function Hesabim() {
    errors.phone = "Telefon numarası 11 haneli olmalıdır! (Örn: 0XXXXXXXXXX)";
   }
 
-  // Şehir ve Adres artık zorunlu değil 
+  const tcDigits = (userInfo.identityNumber || '').replace(/\D/g, '');
+  if (tcDigits && tcDigits.length !== 11) {
+   errors.identityNumber = "TC Kimlik No 11 haneli olmalıdır.";
+  }
+
   // Hata varsa göster ve dur
   if (Object.keys(errors).length > 0) {
    setProfileErrors(errors);
@@ -882,10 +892,10 @@ export default function Hesabim() {
    const res = await axiosInstance.put("/api/user/profile", {
     firstName: userInfo.firstName.trim(),
     lastName: userInfo.lastName.trim(),
-    name: `${userInfo.firstName.trim()} ${userInfo.lastName.trim()}`.trim(), // Geriye dönük uyumluluk için
+    name: `${userInfo.firstName.trim()} ${userInfo.lastName.trim()}`.trim(),
     email: userInfo.email.trim(),
     phone: phoneDigits, // Sadece rakamları gönder
-    // city ve address artık gönderilmiyor - Adreslerim kısmından gelecek
+    identityNumber: tcDigits || '', // TC Kimlik No - iyzico ödeme için
    });
 
    const data = res.data;
@@ -923,9 +933,9 @@ export default function Hesabim() {
     name: name,
     email: data.user.email,
     phone: data.user.phone || "",
+    identityNumber: data.user.identityNumber || "",
     city: data.user.city || "",
     address: data.user.address || "",
-    profileImage: data.user.profileImage || "",
    });
   } catch (error) {
    showToast("Bir hata oluştu! Lütfen tekrar deneyin.", "error");
@@ -954,8 +964,43 @@ export default function Hesabim() {
    return;
   }
 
-  if (passwordForm.newPassword.length < 6) {
-   setPasswordError("Yeni şifre en az 6 karakter olmalıdır!");
+  if (passwordForm.newPassword.length < 10) {
+   setPasswordError("Şifre en az 10 karakter olmalıdır.");
+   setPasswordLoading(false);
+   return;
+  }
+
+  if (!/[A-Z]/.test(passwordForm.newPassword)) {
+   setPasswordError("Şifre en az 1 büyük harf içermelidir.");
+   setPasswordLoading(false);
+   return;
+  }
+
+  if (!/[^a-zA-Z0-9]/.test(passwordForm.newPassword)) {
+   setPasswordError("Şifre en az 1 özel karakter içermelidir (örn: !, @, #).");
+   setPasswordLoading(false);
+   return;
+  }
+
+  const hasSequential = (str) => {
+   const s = String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+   if (s.length < 3) return false;
+   for (let i = 0; i <= s.length - 3; i++) {
+    let inc = true;
+    for (let j = 0; j < 2; j++) {
+     const a = s.codePointAt(i + j);
+     const b = s.codePointAt(i + j + 1);
+     if (b !== a + 1) {
+      inc = false;
+      break;
+     }
+    }
+    if (inc) return true;
+   }
+   return false;
+  };
+  if (hasSequential(passwordForm.newPassword)) {
+   setPasswordError("Şifre sıralı harf/rakam içeremez (örn: abc, 123).");
    setPasswordLoading(false);
    return;
   }
@@ -998,69 +1043,6 @@ export default function Hesabim() {
   }
  };
 
- const handleImageUpload = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  // Dosya tipi kontrolü
-  if (!file.type.startsWith('image/')) {
-   showToast("Lütfen geçerli bir resim dosyası seçin!", "error");
-   return;
-  }
-
-  // Dosya boyutu kontrolü (5MB)
-  if (file.size > 5 * 1024 * 1024) {
-   showToast("Resim boyutu 5MB'dan küçük olmalıdır!", "error");
-   return;
-  }
-
-  setUploadingImage(true);
-
-  try {
-   const formData = new FormData();
-   formData.append('file', file);
-
-   const res = await axiosInstance.post("/api/upload", formData);
-
-   const data = res.data;
-
-   if (!data.success) {
-    showToast(data.message || "Resim yüklenemedi!", "error");
-    return;
-   }
-
-   // Profil resmini güncelle
-   const updateRes = await axiosInstance.put("/api/user/profile", {
-    profileImage: data.url,
-   });
-
-   const updateData = updateRes.data;
-
-   if (!updateData.success) {
-    showToast("Profil resmi güncellenemedi!", "error");
-    return;
-   }
-
-   showToast("Profil resmi başarıyla güncellendi!", "success");
-   setUserInfo({
-    ...userInfo,
-    profileImage: data.url,
-   });
-   setCurrentUser({
-    ...currentUser,
-    profileImage: data.url,
-   });
-  } catch (error) {
-   showToast("Bir hata oluştu! Lütfen tekrar deneyin.", "error");
-  } finally {
-   setUploadingImage(false);
-   // Input'u temizle
-   if (e.target) {
-    e.target.value = '';
-   }
-  }
- };
-
  const handleOrderClick = (order) => {
   setSelectedOrder(order);
   setShowOrderModal(true);
@@ -1092,7 +1074,7 @@ export default function Hesabim() {
   }
  };
 
- const handleReturnOrder = async (orderId, reason) => {
+ const handleReturnOrder = async (orderId, reason, imageUrls) => {
   const targetOrderId = orderId || returnOrderConfirm.orderId;
   if (!targetOrderId) return;
 
@@ -1104,6 +1086,7 @@ export default function Hesabim() {
   try {
    const res = await axiosInstance.post(`/api/user/orders/${targetOrderId}/return`, {
     note: reason.trim(),
+    ...(Array.isArray(imageUrls) && imageUrls.length > 0 && { imageUrls }),
    });
 
    const data = res.data;
@@ -1263,8 +1246,6 @@ export default function Hesabim() {
       userInfo={userInfo}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      onImageUpload={handleImageUpload}
-      uploadingImage={uploadingImage}
      />
 
      <main className="lg:col-span-3">
@@ -1371,6 +1352,7 @@ export default function Hesabim() {
         setNotificationPreferences={setNotificationPreferences}
         onNotificationChange={handleNotificationChange}
         onDeleteAccount={() => setDeleteAccountConfirm(true)}
+        hasActiveOrders={hasActiveOrders}
        />
       )}
      </main>

@@ -45,8 +45,13 @@ export default function OrderSummary({
      className="mt-1 cursor-pointer"
     />
     <span>
-     <span className="font-semibold">Ön Bilgilendirme Koşulları</span> ve{" "}
-     <span className="font-semibold">Mesafeli Satış Sözleşmesi</span>
+     <Link href="/kullanim-kosullari" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
+      Ön Bilgilendirme Koşulları
+     </Link>
+     {" "}ve{" "}
+     <Link href="/kullanim-kosullari" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
+      Mesafeli Satış Sözleşmesi
+     </Link>
      {"'"}ni okudum, onaylıyorum.
     </span>
    </label>

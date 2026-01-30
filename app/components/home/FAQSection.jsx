@@ -8,24 +8,24 @@ export default function FAQSection() {
 
  const importantFAQs = [
   {
-   question: "Kargo ve Teslimat",
-   answer: "Tüm Türkiye geneline nakliye ve montaj hizmeti sunuyoruz. Siparişleriniz güvenilir nakliye firmaları aracılığıyla adresinize teslim edilmekte ve montaj hizmeti sağlanmaktadır. Bursa iline kargo ücretsizdir. Teslimat süresi genellikle 1-5 iş günü arasında değişmektedir."
+   question: "Kargo ve Montaj",
+   answer: "Tüm Türkiye geneline kargo ve montaj hizmeti sunuyoruz. Siparişleriniz güvenilir kargo firmaları aracılığıyla adresinize teslim edilmekte ve montaj hizmeti sağlanmaktadır. Bursa iline kargo ücretsizdir. Teslimat süresi genellikle 1-5 iş günü arasında değişmektedir. Teslimat sırasında ürünü kontrol etmenizi öneriyoruz."
   },
   {
    question: "Ödeme ve Fatura İşlemleri",
-   answer: "Siparişlerinizde Kart ile Ödeme (3D Secure) seçeneğini kullanabilirsiniz. Banka veya kredi kartınızla 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır. E-fatura ve kağıt fatura seçenekleri mevcuttur."
+   answer: "Siparişlerinizde iyzico aracılığıyla Kart ile Ödeme (3D Secure) seçeneğini kullanabilirsiniz. Banka veya kredi kartınızla iyzico üzerinden 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır. iyzico güvenli ödeme altyapısı sayesinde tüm ödeme işlemleriniz güvenli bir şekilde gerçekleştirilmektedir. Faturalarınız siparişinizle birlikte gönderilmektedir; sipariş kargoya verildikten sonra Sipariş Detayları sayfasından da görüntüleyebilirsiniz."
   },
   {
    question: "Garanti",
-   answer: "Tüm ürünlerimiz üretici garantisi kapsamındadır. Garanti süreleri ürün kategorisine göre değişiklik göstermektedir. Beyaz eşya ürünlerinde genellikle 2 yıl, küçük ev aletlerinde 1-2 yıl garanti süresi bulunmaktadır. Garanti kapsamındaki arızalar için ücretsiz servis hizmeti sağlanmaktadır."
+   answer: "Tüm ürünlerimiz üretici garantisi kapsamındadır. Garanti süreleri ürün kategorisine göre değişiklik göstermektedir. Beyaz eşya ürünlerinde genellikle 2 yıl, küçük ev aletlerinde 1-2 yıl garanti süresi bulunmaktadır. Garanti kapsamındaki arızalar için ücretsiz servis hizmeti sağlanmaktadır. Garanti belgelerinizi mutlaka saklamanızı öneriyoruz. Garanti kapsamı dışındaki durumlar için ücretli servis hizmeti sunulmaktadır. Detaylı bilgi için müşteri hizmetlerimizle iletişime geçebilirsiniz."
   },
   {
-   question: "Nakliye ve montaj hizmeti nasıl çalışır?",
-   answer: "Tüm Türkiye geneline nakliye ve montaj hizmeti sunuyoruz. Siparişleriniz güvenilir nakliye firmaları aracılığıyla adresinize teslim edilmekte ve montaj hizmeti sağlanmaktadır. Teslimat süresi genellikle 2-5 iş günü arasındadır. Detaylı bilgi için müşteri hizmetlerimizle iletişime geçebilirsiniz."
+   question: "İade işlemi nasıl yapılır?",
+   answer: "Ürünü aldıktan sonra 7 gün içinde iade edebilirsiniz. İade işlemi için öncelikle müşteri hizmetlerimizle iletişime geçmeniz gerekmektedir. İade talebiniz onaylandıktan sonra, ürünü orijinal ambalajında, kullanılmamış ve hasarsız şekilde göndermeniz gerekmektedir. İade kargo ücreti müşteriye aittir. Ürün kontrol edildikten sonra, ödeme yaptığınız yönteme göre iade işleminiz gerçekleştirilecektir. İade süreci genellikle 3-5 iş günü içinde tamamlanmaktadır."
   },
   {
-   question: "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
-   answer: "Kart ile Ödeme (3D Secure) seçeneğini kabul ediyoruz. Banka veya kredi kartınızla 3D Secure ile ödeme yaparak kartınızın güvenliğini sağlayın. Ödeme işlemi bankanız tarafından doğrulanacak ve SMS kodu ile onaylanacaktır."
+   question: "Müşteri hizmetlerine nasıl ulaşabilirim?",
+   answer: "Müşteri hizmetlerimize 'Destek' sayfasından, e-posta veya telefon ile ulaşabilirsiniz. Çalışma saatlerimiz hafta içi 09:00 - 19:00 arasındadır. Size en kısa sürede dönüş yapacağız."
   }
  ];
 

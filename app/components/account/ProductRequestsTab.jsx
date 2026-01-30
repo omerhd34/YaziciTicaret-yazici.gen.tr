@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "@/lib/axios";
-import { HiShoppingBag, HiClock, HiCheckCircle, HiXCircle, HiInformationCircle, HiPlus, HiTrash, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { HiShoppingBag, HiPlus, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import ProductRequestModal from "@/app/components/product/ProductRequestModal";
+import ProductRequestCard from "./ProductRequestCard";
 import Toast from "@/app/components/ui/Toast";
 
 export default function ProductRequestsTab() {
@@ -81,31 +82,6 @@ export default function ProductRequestsTab() {
   });
  };
 
- const getStatusIcon = (status) => {
-  switch (status) {
-   case 'Beklemede':
-    return <HiClock className="text-amber-500" size={20} />;
-   case 'Onaylandı':
-    return <HiCheckCircle className="text-green-500" size={20} />;
-   case 'Reddedildi':
-    return <HiXCircle className="text-red-500" size={20} />;
-   case 'İptal Edildi':
-    return <HiXCircle className="text-gray-500" size={20} />;
-   default:
-    return <HiClock className="text-gray-500" size={20} />;
-  }
- };
-
- const getStatusColor = (status) => {
-  const colors = {
-   'Beklemede': 'bg-amber-100 text-amber-700 border-amber-300',
-   'Onaylandı': 'bg-green-100 text-green-700 border-green-300',
-   'Reddedildi': 'bg-red-100 text-red-700 border-red-300',
-   'İptal Edildi': 'bg-gray-100 text-gray-700 border-gray-300',
-  };
-  return colors[status] || 'bg-gray-100 text-gray-700 border-gray-300';
- };
-
  if (loading) {
   return (
    <div className="bg-white rounded-xl shadow-sm p-6">
@@ -130,10 +106,10 @@ export default function ProductRequestsTab() {
     </div>
     <button
      onClick={() => setShowRequestModal(true)}
-     className="px-6 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition shadow-lg inline-flex items-center justify-center gap-2 cursor-pointer"
+     className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition cursor-pointer"
     >
-     <HiPlus size={20} className="shrink-0" />
-     <span className="leading-none">Yeni İstek</span>
+     <HiPlus size={20} />
+     Yeni İstek
     </button>
    </div>
 
@@ -146,126 +122,24 @@ export default function ProductRequestsTab() {
      <p className="text-sm text-gray-500 mb-4">Ürün isteğinde bulunmak için aşağıdaki butona tıklayın.</p>
      <button
       onClick={() => setShowRequestModal(true)}
-      className="px-6 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition shadow-lg inline-flex items-center justify-center gap-2 mx-auto cursor-pointer"
+      className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition cursor-pointer mx-auto"
      >
-      <HiPlus size={20} className="shrink-0" />
-      <span className="leading-none">Yeni Ürün İsteği</span>
+      <HiPlus size={20} />
+      Yeni Ürün İsteği
      </button>
     </div>
    ) : (
-    <div className="space-y-4">
+    <div className="grid md:grid-cols-2 gap-4">
      {(showAllRequests ? requests : requests.slice(0, 5)).map((request) => (
-      <div
+      <ProductRequestCard
        key={request._id}
-       className="border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-300 hover:shadow-md transition-all overflow-hidden"
-      >
-       <div className="flex items-start justify-between gap-4 mb-4">
-        <div className="flex-1 min-w-0">
-         <div className="flex items-center gap-3 mb-2 flex-wrap">
-          <h3 className="text-lg font-bold text-gray-900 wrap-break-word">{request.productName}</h3>
-          <div className="flex items-center gap-2">
-           {getStatusIcon(request.status)}
-           <span className={`text-xs px-3 py-1 rounded-full font-semibold border ${getStatusColor(request.status)}`}>
-            {request.status}
-           </span>
-          </div>
-         </div>
-         {request.brand && (
-          <p className="text-sm text-gray-600 mb-1 wrap-break-word">
-           <span className="font-semibold">Marka:</span> {request.brand}
-           {request.model && ` - Model: ${request.model}`}
-          </p>
-         )}
-         {request.productDescription && (
-          <p className="text-sm text-gray-600 mt-2 line-clamp-3 wrap-break-word overflow-hidden">{request.productDescription}</p>
-         )}
-        </div>
-        <div className="text-right shrink-0">
-         <p className="text-xs text-gray-500 flex items-center gap-1">
-          <HiClock size={14} />
-          {formatDate(request.createdAt)}
-         </p>
-        </div>
-       </div>
-
-       {/* Durum Bilgilendirme Mesajı */}
-       {request.status === 'Onaylandı' && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-         <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-           <HiInformationCircle className="text-green-600 shrink-0 mt-0.5" size={18} />
-           <div className="text-sm text-green-800 font-medium leading-relaxed">
-            <p className="font-semibold mb-1">İsteğiniz onaylandı!</p>
-            <p>Ürün en kısa sürede şubelerimize ulaşacak ve sitemizde yayınlanacaktır.</p>
-           </div>
-          </div>
-         </div>
-        </div>
-       )}
-
-       {request.status === 'İptal Edildi' && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-         <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-           <HiInformationCircle className="text-gray-600 shrink-0 mt-0.5" size={18} />
-           <div className="text-sm text-gray-700 font-medium leading-relaxed">
-            <p className="font-semibold mb-1">İsteğiniz iptal edildi.</p>
-            <p>Ürün tedarik edilemediği için isteğiniz sonlandırılmıştır.</p>
-           </div>
-          </div>
-         </div>
-        </div>
-       )}
-
-       {request.status === 'Reddedildi' && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-         <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-           <HiInformationCircle className="text-red-600 shrink-0 mt-0.5" size={18} />
-           <div className="text-sm text-red-800 font-medium leading-relaxed">
-            <p className="font-semibold mb-1">İsteğiniz reddedildi.</p>
-            <p>Bu ürün şu anda temin edilememektedir.</p>
-           </div>
-          </div>
-         </div>
-        </div>
-       )}
-
-       {request.adminResponse && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-          <div className="flex items-start gap-2 mb-2">
-           <HiInformationCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
-           <h4 className="font-semibold text-blue-900">Admin Cevabı</h4>
-          </div>
-          <p className="text-sm text-blue-800 whitespace-pre-wrap wrap-break-word overflow-hidden">{request.adminResponse}</p>
-          {request.respondedAt && (
-           <p className="text-xs text-blue-600 mt-2">
-            Cevap Tarihi: {formatDate(request.respondedAt)}
-           </p>
-          )}
-         </div>
-        </div>
-       )}
-
-       {request.status === 'Beklemede' && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-         <button
-          onClick={() => {
-           const requestId = request._id?.toString ? request._id.toString() : request._id;
-           setCancelConfirm({ show: true, requestId });
-          }}
-          className="px-4 py-2 bg-red-50 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-100 transition font-semibold flex items-center gap-2 cursor-pointer"
-         >
-          <HiTrash size={18} />
-          İsteği İptal Et
-         </button>
-        </div>
-       )}
-      </div>
+       request={request}
+       formatDate={formatDate}
+       onCancel={(requestId) => setCancelConfirm({ show: true, requestId })}
+      />
      ))}
      {requests.length > 5 ? (
-      <div className="pt-2 flex justify-center">
+      <div className="md:col-span-2 pt-2 flex justify-center">
        {!showAllRequests ? (
         <button
          type="button"

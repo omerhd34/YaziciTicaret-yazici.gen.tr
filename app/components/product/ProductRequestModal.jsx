@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { HiX, HiShoppingBag, HiInformationCircle, HiMail, HiPhone } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function ProductRequestModal({ show, onClose, onSuccess }) {
  const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -18,22 +19,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
  const [loading, setLoading] = useState(false);
  const [success, setSuccess] = useState(false);
 
- // ESC tuşu ile modal'ı kapat
- useEffect(() => {
-  const handleEscape = (e) => {
-   if (e.key === "Escape" && show) {
-    onClose();
-   }
-  };
-
-  if (show) {
-   document.addEventListener("keydown", handleEscape);
-  }
-
-  return () => {
-   document.removeEventListener("keydown", handleEscape);
-  };
- }, [show, onClose]);
+ useEscapeKey(onClose, { enabled: show });
 
  // Kullanıcı giriş durumunu kontrol et
  useEffect(() => {

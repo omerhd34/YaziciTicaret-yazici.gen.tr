@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { HiX, HiUpload, HiChevronDown, HiChevronUp, HiPlus } from "react-icons/hi";
 import Image from "next/image";
 import { MENU_ITEMS } from "@/app/utils/menuItems";
@@ -182,6 +183,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
   }
  }, [editingProduct, show]);
 
+ useEscapeKey(onClose, { enabled: show, skipWhen: loading });
 
  const handleImageUpload = async (e) => {
   const file = e.target.files?.[0];

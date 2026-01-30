@@ -71,7 +71,15 @@ export default function ActiveOrdersTable({
        const canCancel = !isCancelled && !isDelivered;
        const rrStatus = String(o?.returnRequest?.status || "").trim();
        const hasReturnRequest = Boolean(rrStatus);
-       const isReturnRequested = normalizeText(rrStatus) === normalizeText("Talep Edildi");
+       const rrNorm = normalizeText(rrStatus).replace(/\s+/g, "");
+       const isReturnRequested = rrNorm === "talepedildi";
+       const rrBadgeClass = {
+        talepedildi: "bg-amber-100 text-amber-800 border-amber-200",
+        onaylandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
+        reddedildi: "bg-red-100 text-red-800 border-red-200",
+        iptaledildi: "bg-gray-100 text-gray-700 border-gray-200",
+        tamamlandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
+       }[rrNorm] || "bg-gray-100 text-gray-800 border-gray-200";
        return (
         <tr key={idx} className={getRowBgClass(o)}>
          <td className="px-4 py-3 font-semibold">{o.orderId || "-"}</td>
@@ -82,17 +90,19 @@ export default function ActiveOrdersTable({
          <td className="px-4 py-3">{dateText}</td>
          <td className="px-4 py-3">
           {hasReturnRequest ? (
-           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">
-             İade: {rrStatus}
-            </span>
-            {isReturnRequested ? (
-             <ReturnStatusDropdown
-              value={rrStatus}
-              onChange={(e) => onReturnStatusChange(o.orderId, e.target.value)}
-              disabled={!o.orderId || updatingReturnOrderId === o.orderId}
-             />
-            ) : null}
+           <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+             <span className={`inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold border ${rrBadgeClass}`}>
+              İade: {rrStatus}
+             </span>
+             {isReturnRequested ? (
+              <ReturnStatusDropdown
+               value={rrStatus}
+               onChange={(e) => onReturnStatusChange(o.orderId, e.target.value)}
+               disabled={!o.orderId || updatingReturnOrderId === o.orderId}
+              />
+             ) : null}
+            </div>
            </div>
           ) : isCancelled ? (
            <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">

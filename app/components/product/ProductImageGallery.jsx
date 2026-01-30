@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { HiX, HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function ProductImageGallery({
  images,
@@ -18,24 +19,12 @@ export default function ProductImageGallery({
   setLightboxIndex(selectedImage);
  }, [selectedImage]);
 
- // ESC tuşu ile lightbox'ı kapat
- useEffect(() => {
-  const handleEscape = (e) => {
-   if (e.key === 'Escape' && lightboxOpen) {
-    setLightboxOpen(false);
-   }
-  };
-  window.addEventListener('keydown', handleEscape);
-  return () => window.removeEventListener('keydown', handleEscape);
- }, [lightboxOpen]);
+ const closeLightbox = () => setLightboxOpen(false);
+ useEscapeKey(closeLightbox, { enabled: lightboxOpen });
 
  const openLightbox = (index) => {
   setLightboxIndex(index);
   setLightboxOpen(true);
- };
-
- const closeLightbox = () => {
-  setLightboxOpen(false);
  };
 
  const nextImage = () => {

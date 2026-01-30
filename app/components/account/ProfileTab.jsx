@@ -120,6 +120,31 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
        <p className="text-xs text-red-500 mt-1">{profileErrors.phone}</p>
       )}
      </div>
+
+     <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+       TC Kimlik No
+      </label>
+      <input
+       type="text"
+       inputMode="numeric"
+       value={userInfo.identityNumber || ''}
+       onChange={(e) => {
+        const value = e.target.value.replace(/[^\d]/g, '').slice(0, 11);
+        setUserInfo({ ...userInfo, identityNumber: value });
+        if (profileErrors.identityNumber) {
+         setProfileErrors({ ...profileErrors, identityNumber: '' });
+        }
+       }}
+       maxLength={11}
+       placeholder="11 haneli TC Kimlik No"
+       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.identityNumber ? 'border-red-500' : 'border-gray-300'
+        }`}
+      />
+      {profileErrors.identityNumber && (
+       <p className="text-xs text-red-500 mt-1">{profileErrors.identityNumber}</p>
+      )}
+     </div>
     </div>
 
     <button

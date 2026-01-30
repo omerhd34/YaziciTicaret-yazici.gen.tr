@@ -8,7 +8,7 @@ export default function ReturnExchangeHeader({ activeTab, onTabChange }) {
      İade & Değişim
     </h1>
     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-     Ürünlerinizi 14 gün içinde iade edebilir veya değiştirebilirsiniz.
+     Ürünlerinizi 7 gün içinde iade edebilir veya değiştirebilirsiniz.
     </p>
    </div>
 

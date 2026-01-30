@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
 
 export async function POST(request) {
@@ -20,9 +20,11 @@ export async function POST(request) {
   // Base64'e çevir
   const base64File = `data:${file.type};base64,${buffer.toString('base64')}`;
 
+  const folder = formData.get('folder') === 'returns' ? 'e-ticaret/returns' : 'e-ticaret/products';
+
   // Cloudinary'ye yükle
   const result = await cloudinary.uploader.upload(base64File, {
-   folder: 'e-ticaret/products',
+   folder,
    resource_type: 'auto',
   });
 

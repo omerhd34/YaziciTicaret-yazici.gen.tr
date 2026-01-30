@@ -2,9 +2,12 @@
 import { useState } from "react";
 import { HiX } from "react-icons/hi";
 import { FaSpinner } from "react-icons/fa";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function CancelOrderModal({ show, orderId, onConfirm, onCancel }) {
  const [loading, setLoading] = useState(false);
+
+ useEscapeKey(onCancel, { enabled: show, skipWhen: loading });
 
  if (!show) return null;
 

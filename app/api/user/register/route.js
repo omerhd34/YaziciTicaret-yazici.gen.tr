@@ -110,7 +110,6 @@ export async function POST(request) {
 
   const codeString = String(verificationCode).trim();
 
-  // firstName ve lastName'den name oluştur (geriye dönük uyumluluk için)
   const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
   const user = await User.create({

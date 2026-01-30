@@ -158,6 +158,7 @@ export default function AdminSonSiparislerPage() {
     return;
    }
    setToast({ show: true, message: res.data?.message || "İade durumu güncellendi.", type: "success" });
+   const explanation = adminMessage && String(adminMessage).trim() ? String(adminMessage).trim() : undefined;
    setRecentOrders((prev) =>
     (prev || []).map((r) => {
      if (r?.order?.orderId !== orderId) return r;
@@ -166,6 +167,7 @@ export default function AdminSonSiparislerPage() {
       returnRequest: {
        ...(r.order?.returnRequest || {}),
        status: newStatus,
+       ...(explanation && { adminExplanation: explanation }),
       },
      };
      return { ...r, order: nextOrder };
@@ -182,6 +184,7 @@ export default function AdminSonSiparislerPage() {
        returnRequest: {
         ...(prev.row?.order?.returnRequest || {}),
         status: newStatus,
+        ...(explanation && { adminExplanation: explanation }),
        },
       },
      },
@@ -194,8 +197,19 @@ export default function AdminSonSiparislerPage() {
   }
  };
 
- const openOrderDetail = (row) => {
+ const openOrderDetail = async (row) => {
   setDetailModal({ show: true, row });
+  try {
+   const res = await axiosInstance.get("/api/admin/orders");
+   if (res.data?.success && Array.isArray(res.data.orders)) {
+    setRecentOrders(res.data.orders);
+    const orderId = row?.order?.orderId;
+    const freshRow = res.data.orders.find((r) => r?.order?.orderId === orderId);
+    if (freshRow) setDetailModal((prev) => ({ ...prev, row: freshRow }));
+   }
+  } catch {
+   // Modal zaten mevcut veriyle açıldı
+  }
  };
 
  const closeOrderDetail = () => {

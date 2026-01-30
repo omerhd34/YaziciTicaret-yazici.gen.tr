@@ -3,12 +3,22 @@ import { useState } from "react";
 import axiosInstance from "@/lib/axios";
 import { HiMail, HiX } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function ForgotPasswordModal({ show, onClose }) {
  const [email, setEmail] = useState("");
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState("");
  const [success, setSuccess] = useState("");
+
+ const handleClose = () => {
+  onClose?.();
+  setEmail("");
+  setError("");
+  setSuccess("");
+ };
+
+ useEscapeKey(handleClose, { enabled: show, skipWhen: loading });
 
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -52,12 +62,7 @@ export default function ForgotPasswordModal({ show, onClose }) {
     <div className="flex justify-between items-center mb-6">
      <h2 className="text-2xl font-bold text-gray-900">Şifremi Unuttum</h2>
      <button
-      onClick={() => {
-       onClose();
-       setEmail("");
-       setError("");
-       setSuccess("");
-      }}
+      onClick={handleClose}
       className="text-gray-400 hover:text-gray-600 cursor-pointer"
      >
       <HiX size={24} />

@@ -4,32 +4,22 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import { buildInvoiceHtml, canShowInvoice } from '@/lib/invoice';
 
+async function requireAdmin() {
+ const cookieStore = await cookies();
+ const session = cookieStore.get('admin-session');
+ return session && session.value === 'authenticated';
+}
+
 export async function GET(request, { params }) {
  try {
+  if (!(await requireAdmin())) {
+   return new NextResponse('<html><body><p>Yetkisiz. Lütfen admin olarak giriş yapın.</p></body></html>', {
+    status: 401,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+   });
+  }
+
   await dbConnect();
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('user-session');
-  if (!sessionCookie?.value) {
-   return new NextResponse('<html><body><p>Oturum bulunamadı. Lütfen giriş yapın.</p></body></html>', {
-    status: 401,
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
-   });
-  }
-  let session;
-  try {
-   session = JSON.parse(sessionCookie.value);
-  } catch {
-   return new NextResponse('<html><body><p>Oturum hatası.</p></body></html>', {
-    status: 401,
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
-   });
-  }
-  if (!session?.id) {
-   return new NextResponse('<html><body><p>Yetkisiz.</p></body></html>', {
-    status: 401,
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
-   });
-  }
 
   const resolvedParams = await params;
   const orderId = resolvedParams.orderId;
@@ -40,9 +30,9 @@ export async function GET(request, { params }) {
    });
   }
 
-  const user = await User.findById(session.id);
+  const user = await User.findOne({ 'orders.orderId': String(orderId) }).select('name orders').lean();
   if (!user) {
-   return new NextResponse('<html><body><p>Kullanıcı bulunamadı.</p></body></html>', {
+   return new NextResponse('<html><body><p>Sipariş bulunamadı.</p></body></html>', {
     status: 404,
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
    });

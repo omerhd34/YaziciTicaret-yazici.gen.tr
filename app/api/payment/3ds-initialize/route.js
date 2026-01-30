@@ -205,7 +205,7 @@ export async function POST(request) {
    if (tokens.length === 1) return { name: tokens[0], surname: "" };
    return {
     name: tokens.slice(0, -1).join(" "),
-    surname: tokens[tokens.length - 1],
+    surname: tokens.at(-1),
    };
   };
 
@@ -236,11 +236,21 @@ export async function POST(request) {
 
   const clientIp = getClientIp();
 
-  // Identity Number (TC Kimlik) - iyzico sandbox için sabit test değeri kullan
-  // Not: Üretimde TC Kimlik toplamamak daha doğru; iyzico genelde format kontrolü yapar.
+  // Identity Number (TC Kimlik) - Profilden al, sandbox'ta yoksa test değeri kullan
   const iyzicoUri = String(process.env.IYZICO_URI || '');
   const isSandbox = iyzicoUri.includes('sandbox');
-  const identityNumber = isSandbox ? '74300864791' : '74300864791';
+  const userTc = String(user.identityNumber || '').replace(/\D/g, '').trim();
+  let identityNumber;
+  if (userTc.length === 11) {
+   identityNumber = userTc;
+  } else if (isSandbox) {
+   identityNumber = '74300864791';
+  } else {
+   return NextResponse.json(
+    { success: false, message: 'Ödeme için Profil Bilgileri\'nden TC Kimlik No girmeniz gerekmektedir.' },
+    { status: 400 }
+   );
+  }
 
   const formatIyzicoDate = (date) => {
    const d = new Date(date);

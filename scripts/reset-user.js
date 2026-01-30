@@ -15,13 +15,10 @@ if (fs.existsSync(envPath)) {
  });
 }
 
-const UserSchema = new mongoose.Schema(
- { orders: Array, tempOrders: Array },
- { strict: false }
-);
+const UserSchema = new mongoose.Schema({}, { strict: false });
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
-async function resetOrders() {
+async function resetUsers() {
  try {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
@@ -31,13 +28,10 @@ async function resetOrders() {
 
   await mongoose.connect(mongoUri);
 
-  const result = await User.updateMany(
-   {},
-   { $set: { orders: [], tempOrders: [] } }
-  );
+  const result = await User.deleteMany({});
 
-  console.log('Siparişler sıfırlandı.');
-  console.log('Güncellenen kullanıcı sayısı:', result.modifiedCount);
+  console.log('Tüm kullanıcılar silindi.');
+  console.log('Silinen kullanıcı sayısı:', result.deletedCount);
 
   await mongoose.disconnect();
  } catch (error) {
@@ -47,4 +41,4 @@ async function resetOrders() {
  }
 }
 
-await resetOrders();
+await resetUsers();

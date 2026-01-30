@@ -109,9 +109,16 @@ export default function CompletedOrdersTable({
        const dateText = d ? d.toLocaleString("tr-TR") : "-";
        const rrStatus = String(o?.returnRequest?.status || "").trim();
        const hasReturnRequest = Boolean(rrStatus);
-       const rrNorm = normalizeText(rrStatus);
-       const isReturnRequested = rrNorm === normalizeText("Talep Edildi");
-       const isReturnApproved = rrNorm === normalizeText("Onaylandı");
+       const rrNorm = normalizeText(rrStatus).replace(/\s+/g, "");
+       const isReturnRequested = rrNorm === "talepedildi";
+       const isReturnApproved = rrNorm === "onaylandi";
+       const rrBadgeClass = {
+        talepedildi: "bg-amber-100 text-amber-800 border-amber-200",
+        onaylandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
+        reddedildi: "bg-red-100 text-red-800 border-red-200",
+        iptaledildi: "bg-gray-100 text-gray-700 border-gray-200",
+        tamamlandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
+       }[rrNorm] || "bg-gray-100 text-gray-800 border-gray-200";
        const statusNorm = normalizeText(o?.status || "");
        const isCancelled = statusNorm.includes("iptal");
        return (
@@ -124,26 +131,28 @@ export default function CompletedOrdersTable({
          <td className="px-4 py-3">{dateText}</td>
          <td className="px-4 py-3">
           {hasReturnRequest ? (
-           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">
-             İade: {rrStatus}
-            </span>
-            {isReturnRequested ? (
-             <ReturnStatusDropdown
-              value={rrStatus}
-              onChange={(e) => onReturnStatusChange(o.orderId, e.target.value)}
-              disabled={!o.orderId || updatingReturnOrderId === o.orderId}
-             />
-            ) : isReturnApproved ? (
-             <button
-              type="button"
-              onClick={() => onReturnStatusChange(o.orderId, "Tamamlandı")}
-              disabled={!o.orderId || updatingReturnOrderId === o.orderId}
-              className="px-3 py-2 rounded-lg bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold transition disabled:opacity-70 disabled:cursor-not-allowed"
-             >
-              İade tamamlandı
-             </button>
-            ) : null}
+           <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+             <span className={`inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold border ${rrBadgeClass}`}>
+              İade: {rrStatus}
+             </span>
+             {isReturnRequested ? (
+              <ReturnStatusDropdown
+               value={rrStatus}
+               onChange={(e) => onReturnStatusChange(o.orderId, e.target.value)}
+               disabled={!o.orderId || updatingReturnOrderId === o.orderId}
+              />
+             ) : isReturnApproved ? (
+              <button
+               type="button"
+               onClick={() => onReturnStatusChange(o.orderId, "Tamamlandı")}
+               disabled={!o.orderId || updatingReturnOrderId === o.orderId}
+               className="px-3 py-2 rounded-lg bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold transition disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+               İade tamamlandı
+              </button>
+             ) : null}
+            </div>
            </div>
           ) : (
            isCancelled ? (

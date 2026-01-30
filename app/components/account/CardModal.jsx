@@ -1,7 +1,10 @@
 "use client";
 import { HiX } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function CardModal({ show, editingCard, cardForm, setCardForm, cardErrors, setCardErrors, onSubmit, onClose }) {
+ useEscapeKey(onClose, { enabled: show });
+
  if (!show) return null;
 
  const getCardType = (cardNumber) => {

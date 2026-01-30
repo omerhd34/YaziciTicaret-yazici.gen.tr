@@ -1,12 +1,92 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FaSpinner } from "react-icons/fa";
+import { HiPhotograph, HiX } from "react-icons/hi";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
+
+async function uploadReturnImage(file) {
+ const formData = new FormData();
+ formData.append("file", file);
+ formData.append("folder", "returns");
+ const res = await fetch("/api/upload", {
+  method: "POST",
+  body: formData,
+  credentials: "include",
+ });
+ const data = await res.json();
+ if (!data.success) throw new Error(data.message || "Yükleme başarısız");
+ return data.url;
+}
+
+const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_SIZE_MB = 5;
+const MAX_IMAGES = 5;
 
 export default function ReturnOrderModal({ show, orderId, onConfirm, onCancel }) {
  const [loading, setLoading] = useState(false);
  const [reason, setReason] = useState("");
+ const [imageFiles, setImageFiles] = useState([]);
+ const [imagePreviews, setImagePreviews] = useState([]);
+ const [uploadError, setUploadError] = useState("");
+ const fileInputRef = useRef(null);
+
+ useEscapeKey(onCancel, { enabled: show, skipWhen: loading });
 
  if (!show) return null;
+
+ const handleFileChange = (e) => {
+  const files = Array.from(e.target.files || []);
+  setUploadError("");
+  if (!files.length) return;
+
+  const newFiles = [];
+  for (const file of files) {
+   if (imageFiles.length + newFiles.length >= MAX_IMAGES) break;
+   if (!ACCEPTED_TYPES.includes(file.type)) {
+    setUploadError("Sadece JPG, PNG veya WebP formatları kabul edilir.");
+    continue;
+   }
+   if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    setUploadError(`Dosya boyutu en fazla ${MAX_SIZE_MB} MB olabilir.`);
+    continue;
+   }
+   newFiles.push(file);
+  }
+  if (newFiles.length === 0) {
+   if (fileInputRef.current) fileInputRef.current.value = "";
+   return;
+  }
+
+  let loaded = 0;
+  const newPreviews = new Array(newFiles.length).fill(null);
+  newFiles.forEach((file, i) => {
+   const reader = new FileReader();
+   reader.onloadend = () => {
+    newPreviews[i] = reader.result;
+    loaded += 1;
+    if (loaded === newFiles.length) {
+     setImageFiles((prev) => [...prev, ...newFiles].slice(0, MAX_IMAGES));
+     setImagePreviews((prev) => [...prev, ...newPreviews].slice(0, MAX_IMAGES));
+    }
+   };
+   reader.readAsDataURL(file);
+  });
+  if (fileInputRef.current) fileInputRef.current.value = "";
+ };
+
+ const removeImage = (index) => {
+  setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  setUploadError("");
+ };
+
+ const clearAllImages = () => {
+  setImageFiles([]);
+  setImagePreviews([]);
+  setUploadError("");
+  if (fileInputRef.current) fileInputRef.current.value = "";
+ };
 
  const handleConfirm = async () => {
   if (loading) return;
@@ -15,9 +95,24 @@ export default function ReturnOrderModal({ show, orderId, onConfirm, onCancel })
    return;
   }
   setLoading(true);
+  setUploadError("");
   try {
-   await onConfirm(orderId, reason.trim());
+   const imageUrls = [];
+   for (const file of imageFiles) {
+    try {
+     const url = await uploadReturnImage(file);
+     imageUrls.push(url);
+    } catch (err) {
+     setUploadError(err?.message || "Resim yüklenemedi.");
+     setLoading(false);
+     return;
+    }
+   }
+   await onConfirm(orderId, reason.trim(), imageUrls.length > 0 ? imageUrls : null);
    setReason("");
+   clearAllImages();
+  } catch (err) {
+   setUploadError(err?.response?.data?.message || "Resim yüklenirken hata oluştu.");
   } finally {
    setLoading(false);
   }
@@ -25,8 +120,12 @@ export default function ReturnOrderModal({ show, orderId, onConfirm, onCancel })
 
  const handleCancel = () => {
   setReason("");
+  clearAllImages();
+  setUploadError("");
   onCancel();
  };
+
+ const canAddMore = imageFiles.length < MAX_IMAGES;
 
  return (
   <div
@@ -34,7 +133,7 @@ export default function ReturnOrderModal({ show, orderId, onConfirm, onCancel })
    onClick={handleCancel}
   >
    <div
-    className="bg-white rounded-xl shadow-2xl max-w-md w-full"
+    className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
     onClick={(e) => e.stopPropagation()}
    >
     <div className="p-6">
@@ -60,6 +159,56 @@ export default function ReturnOrderModal({ show, orderId, onConfirm, onCancel })
       <p className="text-xs text-gray-500 mt-1">
        {reason.length}/500 karakter
       </p>
+     </div>
+
+     <div className="mb-4">
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+       Resim ekle (opsiyonel)
+      </label>
+      <p className="text-xs text-gray-500 mb-2">
+       En fazla {MAX_IMAGES} resim. JPG, PNG veya WebP, her biri maksimum {MAX_SIZE_MB} MB.
+      </p>
+      <div className="flex flex-wrap gap-3">
+       {imagePreviews.map((preview, index) => (
+        <div key={index} className="relative">
+         <img
+          src={preview}
+          alt={`Önizleme ${index + 1}`}
+          className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+         />
+         <button
+          type="button"
+          onClick={() => removeImage(index)}
+          disabled={loading}
+          className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 disabled:opacity-50 cursor-pointer"
+         >
+          <HiX size={12} />
+         </button>
+        </div>
+       ))}
+       {canAddMore && (
+        <label
+         htmlFor="return-image-upload"
+         className={`flex flex-col items-center justify-center w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 transition cursor-pointer ${loading ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+        >
+         <HiPhotograph size={24} />
+         <span className="text-xs mt-1">+ Ekle</span>
+         <input
+          ref={fileInputRef}
+          id="return-image-upload"
+          type="file"
+          accept={ACCEPTED_TYPES.join(",")}
+          multiple
+          onChange={handleFileChange}
+          className="sr-only"
+         />
+        </label>
+       )}
+      </div>
+      <p className="text-xs text-gray-500 mt-1">{imageFiles.length}/{MAX_IMAGES} resim</p>
+      {uploadError && (
+       <p className="text-xs text-red-600 mt-1">{uploadError}</p>
+      )}
      </div>
 
      <div className="flex justify-end gap-3">

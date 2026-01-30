@@ -3,6 +3,7 @@ import { useState } from "react";
 import axiosInstance from "@/lib/axios";
 import { HiMail, HiX } from "react-icons/hi";
 import AlertMessage from "./AlertMessage";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function EmailVerificationModal({ show, onClose, userId, userEmail, onSuccess }) {
  const [verificationCode, setVerificationCode] = useState("");
@@ -10,6 +11,8 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
  const [resendLoading, setResendLoading] = useState(false);
  const [error, setError] = useState("");
  const [success, setSuccess] = useState("");
+
+ useEscapeKey(onClose, { enabled: show, skipWhen: verificationLoading });
 
  const handleVerifyEmail = async (e) => {
   e.preventDefault();
