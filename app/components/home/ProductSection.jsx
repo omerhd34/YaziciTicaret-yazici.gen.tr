@@ -4,7 +4,7 @@ import { HiArrowRight, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import ProductCard from "@/app/components/ui/ProductCard";
 import { useState, useRef, useEffect } from "react";
 
-export default function ProductSection({ title, description, products, loading, viewAllLink }) {
+export default function ProductSection({ title, description, products, loading, viewAllLink, viewAllLabel }) {
  const [showLeftArrow, setShowLeftArrow] = useState(false);
  const [showRightArrow, setShowRightArrow] = useState(true);
  const scrollContainerRef = useRef(null);
@@ -91,9 +91,10 @@ export default function ProductSection({ title, description, products, loading, 
      <Link
       href={viewAllLink}
       className="text-indigo-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all text-sm sm:text-base"
+      aria-label={viewAllLabel || `${title} - tümünü gör`}
      >
-      Tümünü Gör
-      <HiArrowRight size={18} className="sm:w-5 sm:h-5" />
+      {viewAllLabel || "Tümünü Gör"}
+      <HiArrowRight size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
      </Link>
     )}
    </div>

@@ -127,9 +127,10 @@ export default function ProductSimilarProducts({ product }) {
     <Link
      href={categoryUrl}
      className="text-indigo-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all text-sm sm:text-base"
+     aria-label="Benzer ürünleri tümünü gör"
     >
      Tümünü Gör
-     <HiArrowRight size={18} className="sm:w-5 sm:h-5" />
+     <HiArrowRight size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
     </Link>
    </div>
 

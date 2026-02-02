@@ -31,7 +31,8 @@ export default function FeaturesSection() {
  ];
 
  return (
-  <section className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
+  <section className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12" aria-labelledby="ozellikler-baslik">
+   <h2 id="ozellikler-baslik" className="sr-only">Özelliklerimiz</h2>
    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
     {features.map((feature) => {
      const Icon = feature.icon;

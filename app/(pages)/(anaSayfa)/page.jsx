@@ -4,7 +4,6 @@ import axiosInstance from "@/lib/axios";
 import HeroSection from "@/app/components/home/HeroSection";
 import FeaturesSection from "@/app/components/home/FeaturesSection";
 import ProductSection from "@/app/components/home/ProductSection";
-import BrandLogosSection from "@/app/components/home/BrandLogosSection";
 import FAQSection from "@/app/components/home/FAQSection";
 
 export default function AnaSayfa() {
@@ -44,6 +43,7 @@ export default function AnaSayfa() {
     products={featuredProducts}
     loading={loading}
     viewAllLink="/one-cikan-urunler"
+    viewAllLabel="Öne çıkan ürünleri tümünü gör"
    />
    <ProductSection
     title="Yeni Ürünler"
@@ -51,6 +51,7 @@ export default function AnaSayfa() {
     products={newProducts}
     loading={loading}
     viewAllLink="/kategori/yeniler"
+    viewAllLabel="Yeni ürünleri tümünü gör"
    />
    <ProductSection
     title="İndirimli Ürünler"
@@ -58,8 +59,8 @@ export default function AnaSayfa() {
     products={discountedProducts}
     loading={loading}
     viewAllLink="/kategori/indirim"
+    viewAllLabel="İndirimli ürünleri tümünü gör"
    />
-   <BrandLogosSection />
    <FAQSection />
   </div>
  );

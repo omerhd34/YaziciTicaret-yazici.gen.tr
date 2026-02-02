@@ -68,7 +68,7 @@ const Footer = () => {
      </div>
 
      <div>
-      <h4 className="text-white font-bold mb-4">Kurumsal</h4>
+      <h2 className="text-white font-bold mb-4 text-base">Kurumsal</h2>
       <ul className="space-y-2">
        {POLICY_LINKS.map((link) => (
         <li key={link.href}>
@@ -81,7 +81,7 @@ const Footer = () => {
      </div>
 
      <div>
-      <h4 className="text-white font-bold mb-4">Hesabım ve Destek</h4>
+      <h2 className="text-white font-bold mb-4 text-base">Hesabım ve Destek</h2>
       <ul className="space-y-2">
        {CUSTOMER_SERVICE_LINKS.map((link) => (
         <li key={link.name}>
@@ -94,7 +94,7 @@ const Footer = () => {
      </div>
 
      <div>
-      <h4 className="text-white font-bold mb-4">İletişim</h4>
+      <h2 className="text-white font-bold mb-4 text-base">İletişim</h2>
       <ul className="space-y-3">
        <li className="flex items-center gap-3">
         <HiMail size={18} className="text-indigo-400 shrink-0" />
