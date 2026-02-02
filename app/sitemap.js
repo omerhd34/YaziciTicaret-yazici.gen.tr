@@ -3,135 +3,91 @@ import Product from '@/models/Product';
 import { MENU_ITEMS } from '@/app/utils/menuItems';
 import { getProductUrl } from '@/app/utils/productUrl';
 
-export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
 export default async function sitemap() {
- const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr';
+ const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr').replace(/\/$/, '');
 
- // Statik sayfalar
- const staticPages = [
-  {
-   url: baseUrl,
-   lastModified: new Date(),
-   changeFrequency: 'daily',
-   priority: 1,
-  },
-  {
-   url: `${baseUrl}/biz-kimiz`,
-   lastModified: new Date(),
-   changeFrequency: 'monthly',
-   priority: 0.8,
-  },
-  {
-   url: `${baseUrl}/destek`,
-   lastModified: new Date(),
-   changeFrequency: 'monthly',
-   priority: 0.8,
-  },
-  {
-   url: `${baseUrl}/sss`,
-   lastModified: new Date(),
-   changeFrequency: 'monthly',
-   priority: 0.7,
-  },
-  {
-   url: `${baseUrl}/iade-degisim`,
-   lastModified: new Date(),
-   changeFrequency: 'monthly',
-   priority: 0.6,
-  },
-  {
-   url: `${baseUrl}/gizlilik-politikasi`,
-   lastModified: new Date(),
-   changeFrequency: 'yearly',
-   priority: 0.3,
-  },
-  {
-   url: `${baseUrl}/kullanim-kosullari`,
-   lastModified: new Date(),
-   changeFrequency: 'yearly',
-   priority: 0.3,
-  },
-  {
-   url: `${baseUrl}/cerez-politikasi`,
-   lastModified: new Date(),
-   changeFrequency: 'yearly',
-   priority: 0.3,
-  },
-  {
-   url: `${baseUrl}/one-cikan-urunler`,
-   lastModified: new Date(),
-   changeFrequency: 'weekly',
-   priority: 0.9,
-  },
- ];
+ const now = new Date();
 
- // Kategori sayfaları
- const categoryPages = MENU_ITEMS.flatMap((item) => {
-  const pages = [
-   {
-    url: `${baseUrl}${item.path}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: item.isSpecial ? 0.9 : 0.8,
-   },
-  ];
-
-  // Alt kategoriler
-  if (item.subCategories) {
-   item.subCategories.forEach((subCat) => {
-    pages.push({
-     url: `${baseUrl}${subCat.path}`,
-     lastModified: new Date(),
-     changeFrequency: 'daily',
-     priority: 0.8,
-    });
-   });
-  }
-
-  return pages;
+ const toEntry = (path, options = {}) => ({
+  url: path.startsWith('http') ? path : `${baseUrl}${path}`,
+  lastModified: options.lastModified || now,
+  changeFrequency: options.changeFrequency || 'weekly',
+  priority: options.priority ?? 0.7,
  });
 
- // Ürün sayfaları
+ const staticPages = [
+  toEntry('/', { changeFrequency: 'daily', priority: 1 }),
+  toEntry('/biz-kimiz', { changeFrequency: 'monthly', priority: 0.8 }),
+  toEntry('/destek', { changeFrequency: 'monthly', priority: 0.8 }),
+  toEntry('/sss', { changeFrequency: 'monthly', priority: 0.7 }),
+  toEntry('/iade-degisim', { changeFrequency: 'monthly', priority: 0.6 }),
+  toEntry('/gizlilik-politikasi', { changeFrequency: 'yearly', priority: 0.3 }),
+  toEntry('/kullanim-kosullari', { changeFrequency: 'yearly', priority: 0.3 }),
+  toEntry('/cerez-politikasi', { changeFrequency: 'yearly', priority: 0.3 }),
+  toEntry('/one-cikan-urunler', { changeFrequency: 'weekly', priority: 0.9 }),
+ ];
+
+ const categoryPages = MENU_ITEMS.flatMap((item) => {
+  const list = [
+   toEntry(item.path, {
+    changeFrequency: 'daily',
+    priority: item.isSpecial ? 0.9 : 0.8,
+   }),
+  ];
+  if (item.subCategories) {
+   item.subCategories.forEach((sub) => {
+    list.push(toEntry(sub.path, { changeFrequency: 'daily', priority: 0.8 }));
+   });
+  }
+  return list;
+ });
+
  let productPages = [];
  try {
   await dbConnect();
-  const products = await Product.find({}).select('_id category subCategory colors serialNumber updatedAt').lean();
+  const products = await Product.find({})
+   .select('_id category subCategory colors serialNumber updatedAt')
+   .lean();
+
+  const seenUrls = new Set([...staticPages, ...categoryPages].map((e) => e.url));
 
   productPages = products.flatMap((product) => {
-   const pages = [];
+   const entries = [];
+   const lastMod = product.updatedAt ? new Date(product.updatedAt) : now;
 
-   // Ürünün renklerine göre URL oluştur
-   if (product.colors && product.colors.length > 0) {
+   if (product.colors?.length) {
     product.colors.forEach((color) => {
-     if (color && typeof color === 'object' && color.serialNumber) {
-      const productUrl = getProductUrl(
+     if (color?.serialNumber) {
+      const path = getProductUrl(
        { ...product, serialNumber: color.serialNumber },
        color.serialNumber
       );
-      pages.push({
-       url: `${baseUrl}${productUrl}`,
-       lastModified: product.updatedAt || new Date(),
-       changeFrequency: 'weekly',
-       priority: 0.7,
-      });
+      if (path && path !== '/') {
+       const url = `${baseUrl}${path}`;
+       if (!seenUrls.has(url)) {
+        seenUrls.add(url);
+        entries.push(toEntry(path, { lastModified: lastMod, changeFrequency: 'weekly', priority: 0.7 }));
+       }
+      }
      }
     });
    } else if (product.serialNumber) {
-    // Renk yoksa ana ürün serialNumber'ını kullan
-    const productUrl = getProductUrl(product);
-    pages.push({
-     url: `${baseUrl}${productUrl}`,
-     lastModified: product.updatedAt || new Date(),
-     changeFrequency: 'weekly',
-     priority: 0.7,
-    });
+    const path = getProductUrl(product);
+    if (path && path !== '/') {
+     const url = `${baseUrl}${path}`;
+     if (!seenUrls.has(url)) {
+      seenUrls.add(url);
+      entries.push(toEntry(path, { lastModified: lastMod, changeFrequency: 'weekly', priority: 0.7 }));
+     }
+    }
    }
-
-   return pages;
+   return entries;
   });
- } catch (_) {}
+ } catch (_) {
+ }
 
- return [...staticPages, ...categoryPages, ...productPages];
+ const all = [...staticPages, ...categoryPages, ...productPages];
+ return all.filter((e) => e.url && typeof e.url === 'string');
 }
