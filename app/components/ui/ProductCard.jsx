@@ -37,7 +37,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
  const colorDiscountPrice = currentColor?.discountPrice !== undefined ? currentColor.discountPrice : product.discountPrice;
  const colorSerialNumber = currentColor?.serialNumber || product.serialNumber;
 
-const finalPrice = colorDiscountPrice && colorDiscountPrice < colorPrice ? colorDiscountPrice : colorPrice;
+ const finalPrice = colorDiscountPrice && colorDiscountPrice < colorPrice ? colorDiscountPrice : colorPrice;
 
  const sortedColors = validColors;
  const hasMultipleColors = sortedColors.length > 1;
@@ -229,7 +229,7 @@ const finalPrice = colorDiscountPrice && colorDiscountPrice < colorPrice ? color
     )}
    </div>
 
-   <div className="px-4 pt-2 pb-2 flex justify-center gap-2">
+   <div className="px-4 pt-1 pb-1 flex justify-center gap-1">
     {images.length > 1 ? (
      images.map((_, index) => (
       <button
@@ -239,12 +239,15 @@ const finalPrice = colorDiscountPrice && colorDiscountPrice < colorPrice ? color
         e.stopPropagation();
         setCurrentImageIndex(index);
        }}
-       className={`transition-all ${currentImageIndex === index
-        ? "w-2.5 h-2.5 bg-indigo-600 rounded-full"
-        : "w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400"
-        }`}
+       className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
        aria-label={`Resim ${index + 1}`}
-      />
+      >
+       <span className={`block transition-all rounded-full ${currentImageIndex === index
+        ? "w-2.5 h-2.5 bg-indigo-600"
+        : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
+        }`}
+       />
+      </button>
      ))
     ) : (
      <div className="h-2.5" />

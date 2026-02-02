@@ -925,7 +925,6 @@ export default function Hesabim() {
     lastName: lastName,
     email: data.user.email,
    });
-   // Form'u da güncelle
    setUserInfo({
     ...userInfo,
     firstName: firstName,
@@ -1234,7 +1233,6 @@ export default function Hesabim() {
 
  return (
   <div className="min-h-screen bg-gray-50 py-12">
-   {/* Toast Bildirimi */}
    <Toast toast={toast} setToast={setToast} />
 
 
@@ -1248,7 +1246,7 @@ export default function Hesabim() {
       onTabChange={setActiveTab}
      />
 
-     <main className="lg:col-span-3">
+     <div className="lg:col-span-3" aria-label="Hesap içeriği">
       {activeTab === "profil" && (
        <ProfileTab
         userInfo={userInfo}
@@ -1355,7 +1353,7 @@ export default function Hesabim() {
         hasActiveOrders={hasActiveOrders}
        />
       )}
-     </main>
+     </div>
     </div>
 
     <AddressModal

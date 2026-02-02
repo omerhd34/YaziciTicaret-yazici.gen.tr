@@ -172,7 +172,7 @@ export default function ProductImageGallery({
      </div>
 
      {images.length > 1 && (
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-0 z-10">
        {images.map((_, idx) => (
         <button
          key={idx}
@@ -180,10 +180,11 @@ export default function ProductImageGallery({
           e.stopPropagation();
           setLightboxIndex(idx);
          }}
-         className={`w-2 h-2 rounded-full transition ${lightboxIndex === idx ? "bg-white" : "bg-white/50 hover:bg-white/75"
-          }`}
+         className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
          aria-label={`Resim ${idx + 1}`}
-        />
+        >
+         <span className={`block w-2.5 h-2.5 rounded-full transition ${lightboxIndex === idx ? "bg-white" : "bg-white/50 hover:bg-white/75"}`} />
+        </button>
        ))}
       </div>
      )}

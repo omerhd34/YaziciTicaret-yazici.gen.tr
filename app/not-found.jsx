@@ -20,7 +20,7 @@ export default function NotFound() {
  return (
   <>
    <Header />
-   <div className="min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/30 to-gray-50 flex items-start justify-center px-4 pt-16 pb-8">
+   <main id="main-content" className="min-h-screen flex-1 bg-linear-to-br from-gray-50 via-indigo-50/30 to-gray-50 flex items-start justify-center px-4 pt-16 pb-8">
     <div className="max-w-4xl w-full">
      <div className="text-center mb-6">
       <div className="relative inline-block">
@@ -82,7 +82,7 @@ export default function NotFound() {
       </form>
      </div>
     </div>
-   </div>
+   </main>
    <Footer />
   </>
  );

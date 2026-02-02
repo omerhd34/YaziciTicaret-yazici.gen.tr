@@ -269,19 +269,25 @@ const Header = () => {
      <div className="flex items-center gap-1 md:gap-2 lg:gap-3 xl:gap-4 text-slate-700">
       <button
        onClick={() => setIsSearchModalOpen(true)}
-       className="search-icon-button flex flex-col items-center group hover:bg-slate-50 p-1 sm:p-2 rounded-lg transition cursor-pointer"
+       aria-label="Ara"
+       className="search-icon-button flex flex-col items-center justify-center group hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
       >
        <HiSearch size={22} className="group-hover:text-indigo-600 transition" />
       </button>
 
       <button
        onClick={handleHesabimClick}
-       className="flex flex-col items-center group hover:bg-slate-50 p-1 sm:p-2 rounded-lg transition cursor-pointer"
+       aria-label="Hesabım"
+       className="flex flex-col items-center justify-center group hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
       >
        <HiUser size={22} className="group-hover:text-indigo-600 transition" />
       </button>
 
-      <Link href="/sepet" className="flex flex-col items-center group relative hover:bg-slate-50 p-1 sm:p-2 rounded-lg transition">
+      <Link
+       href="/sepet"
+       aria-label={isClient && getCartItemCount() > 0 ? `Sepet (${getCartItemCount()} ürün)` : "Sepet"}
+       className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition"
+      >
        <div className="relative">
         <FaShoppingCart size={22} className="group-hover:text-indigo-600 transition" />
         {isClient && getCartItemCount() > 0 && (
@@ -292,7 +298,11 @@ const Header = () => {
        </div>
       </Link>
 
-      <Link href="/favoriler" className="flex flex-col items-center group relative hover:bg-slate-50 p-1 sm:p-2 rounded-lg transition">
+      <Link
+       href="/favoriler"
+       aria-label={isClient && getFavoriteCount() > 0 ? `Favoriler (${getFavoriteCount()} ürün)` : "Favoriler"}
+       className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition"
+      >
        <div className="relative">
         <HiHeart size={22} className="group-hover:text-indigo-600 transition" />
         {isClient && getFavoriteCount() > 0 && (
@@ -304,7 +314,8 @@ const Header = () => {
       </Link>
 
       <button
-       className="md:hidden text-slate-900 p-1 sm:p-2 cursor-pointer"
+       className="md:hidden text-slate-900 min-w-[44px] min-h-[44px] flex items-center justify-center p-1 sm:p-2 cursor-pointer"
+       aria-label={isMobileMenuOpen ? "Menüyü kapat" : "Menüyü aç"}
        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
        {isMobileMenuOpen ? <HiX size={24} /> : <HiMenu size={24} />}

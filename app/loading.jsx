@@ -8,7 +8,7 @@ export default function Loading() {
  return (
   <>
    <Header />
-   <div className="min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/30 to-gray-50 flex items-center justify-center px-4 py-12">
+   <main id="main-content" className="min-h-screen flex-1 bg-linear-to-br from-gray-50 via-indigo-50/30 to-gray-50 flex items-center justify-center px-4 py-12">
     <div className="text-center">
      <div className="relative inline-block mb-8">
       <HiSparkles className="text-6xl text-indigo-600 animate-spin" />
@@ -23,7 +23,7 @@ export default function Loading() {
       Lütfen bekleyin.
      </p>
     </div>
-   </div>
+   </main>
    <Footer />
   </>
  );

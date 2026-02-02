@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import ScrollToTop from "../components/ui/ScrollToTop";
@@ -20,9 +21,9 @@ export default function PagesLayout({ children }) {
     </>
    )}
    {!isAdminPage && <Header />}
-   <div className="flex-1">
+   <main className="flex-1" id="main-content">
     {children}
-   </div>
+   </main>
    {!isAdminPage && <Footer />}
    {!isAdminPage && <ScrollToTop />}
    {!isAdminPage && <ComparisonWidget />}
