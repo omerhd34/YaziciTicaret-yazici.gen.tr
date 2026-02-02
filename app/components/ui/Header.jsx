@@ -58,7 +58,7 @@ const Header = () => {
 
   let isChecking = false;
   let lastCheckTime = 0;
-  const CHECK_COOLDOWN = 60 * 1000; // 60 saniye (10 saniyeden çok daha uzun)
+  const CHECK_COOLDOWN = 60 * 1000; // 60 saniye
 
   const checkAuth = async () => {
    const now = Date.now();
@@ -252,15 +252,15 @@ const Header = () => {
      <Link href="/" className="flex items-center group shrink-0" onClick={closeMenu}>
       <div className="flex flex-col leading-tight">
        <div className="block max-[450px]:hidden">
-        <span className="font-[Open_Sans] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-[0.15em] md:tracking-[0.2em] lg:tracking-[0.25em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
+        <span className="font-sans text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-[0.15em] md:tracking-[0.2em] lg:tracking-[0.25em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
          YAZICI TİCARET
         </span>
        </div>
        <div className="hidden max-[450px]:flex flex-col">
-        <span className="font-[Open_Sans] text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
+        <span className="font-sans text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
          YAZICI
         </span>
-        <span className="font-[Open_Sans] text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
+        <span className="font-sans text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
          TİCARET
         </span>
        </div>

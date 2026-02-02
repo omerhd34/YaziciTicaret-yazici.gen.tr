@@ -42,7 +42,7 @@ const Footer = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
      <div className="md:pr-10">
       <div className="mb-4">
-       <Link href="/" className="font-[Open_Sans] text-xl sm:text-2xl font-extrabold tracking-[0.25em] text-white select-none duration-1000 ease-out hover:text-indigo-600">
+       <Link href="/" className="font-sans text-xl sm:text-2xl font-extrabold tracking-[0.25em] text-white select-none duration-1000 ease-out hover:text-indigo-600">
         YAZICI TİCARET
        </Link>
       </div>

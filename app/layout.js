@@ -65,7 +65,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
  return (
   <html lang="tr">
-   <body className="antialiased min-h-screen flex flex-col">
+   <body className="antialiased min-h-screen flex flex-col font-sans">
     <ClientProviders>
      {children}
     </ClientProviders>

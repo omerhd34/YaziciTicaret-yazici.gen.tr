@@ -133,9 +133,8 @@ export default function ProductSection({ title, description, products, loading, 
        ))}
       </div>
 
-      {/* Navigation Buttons */}
       {products.length > 4 && (
-       <div className="flex items-center justify-center gap-3 mt-6">
+       <div className="hidden md:flex items-center justify-center gap-3 mt-6">
         <button
          onClick={() => scroll('left')}
          disabled={!showLeftArrow}
