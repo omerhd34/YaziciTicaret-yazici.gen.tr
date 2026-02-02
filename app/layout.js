@@ -35,7 +35,12 @@ export const metadata = {
   url: process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr',
   siteName: 'Yazıcı Ticaret',
   title: 'Yazıcı Ticaret',
-  description: 'Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
+  description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
+ },
+ twitter: {
+  card: 'summary_large_image',
+  title: 'Yazıcı Ticaret',
+  description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
  },
  robots: {
   index: true,
@@ -53,7 +58,6 @@ export const metadata = {
   },
  },
  verification: {
-  // https://search.google.com/search-console/about
   google: 'GszFc7yfzD4axitIFXz_tMDeVjWm7xmAl5TsEgWh7SU',
  },
 };
