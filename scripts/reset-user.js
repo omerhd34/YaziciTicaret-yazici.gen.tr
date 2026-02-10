@@ -22,20 +22,13 @@ async function resetUsers() {
  try {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-   console.error('MONGODB_URI bulunamadı (.env.local kontrol edin).');
    process.exit(1);
   }
 
   await mongoose.connect(mongoUri);
-
-  const result = await User.deleteMany({});
-
-  console.log('Tüm kullanıcılar silindi.');
-  console.log('Silinen kullanıcı sayısı:', result.deletedCount);
-
+  await User.deleteMany({});
   await mongoose.disconnect();
  } catch (error) {
-  console.error('Hata:', error.message);
   await mongoose.disconnect().catch(() => { });
   process.exit(1);
  }

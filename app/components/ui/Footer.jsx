@@ -56,7 +56,7 @@ const Footer = () => {
          <Link
           key={social.label}
           href={social.href}
-          target="_blank"
+          target="_blank" 
           className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition"
           aria-label={social.label}
          >

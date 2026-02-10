@@ -27,7 +27,6 @@ const Product = mongoose.models.Product || mongoose.model('Product', ProductSche
 try {
  const mongoUri = process.env.MONGODB_URI;
  if (!mongoUri) {
-  console.error('MONGODB_URI bulunamadı (.env.local kontrol edin).');
   process.exit(1);
  }
 
@@ -38,12 +37,8 @@ try {
   { $set: { rating: 0, reviewCount: 0, ratings: [] } }
  );
 
- console.log('Ürün puanlamaları sıfırlandı.');
- console.log('Güncellenen ürün sayısı:', result.modifiedCount);
-
  await mongoose.disconnect();
 } catch (error) {
- console.error('Hata:', error.message);
  await mongoose.disconnect().catch(() => { });
  process.exit(1);
 }

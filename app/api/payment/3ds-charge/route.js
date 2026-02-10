@@ -221,16 +221,7 @@ export async function POST(request) {
      }
     }
 
-    // Eğer stok güncelleme hataları varsa logla (ama ödeme başarılı olduğu için iptal etme)
-    if (stockUpdateErrors.length > 0) {
-     console.error('Stok güncelleme hataları:', stockUpdateErrors);
-     // Bu durumda admin'e bildirim gönderilmeli ama ödeme iptal edilmemeli
-     // Çünkü ödeme zaten iyzico'da başarılı oldu
-    }
-   } catch (stockError) {
-    console.error('Stok güncelleme genel hatası:', stockError);
-    // Ödeme başarılı olduğu için iptal etmiyoruz ama logluyoruz
-   }
+   } catch (_) { }
 
    // Admin'e e-posta gönder
    try {

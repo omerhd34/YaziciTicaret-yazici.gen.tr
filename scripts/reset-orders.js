@@ -25,7 +25,6 @@ async function resetOrders() {
  try {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-   console.error('MONGODB_URI bulunamadı (.env.local kontrol edin).');
    process.exit(1);
   }
 
@@ -36,12 +35,8 @@ async function resetOrders() {
    { $set: { orders: [], tempOrders: [] } }
   );
 
-  console.log('Siparişler sıfırlandı.');
-  console.log('Güncellenen kullanıcı sayısı:', result.modifiedCount);
-
   await mongoose.disconnect();
  } catch (error) {
-  console.error('Hata:', error.message);
   await mongoose.disconnect().catch(() => { });
   process.exit(1);
  }

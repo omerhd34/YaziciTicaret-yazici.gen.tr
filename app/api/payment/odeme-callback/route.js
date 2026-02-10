@@ -233,14 +233,7 @@ export async function POST(request) {
      }
     }
 
-    if (stockUpdateErrors.length > 0) {
-     console.error('Stok güncelleme hataları:', stockUpdateErrors);
-    }
-   } catch (stockError) {
-    console.error('Stok güncelleme genel hatası:', stockError);
-   }
-
-   // E-posta gönderilmiyor (mail gitmesin kimseye)
+   } catch (_) { }
 
    // Başarılı sayfasına yönlendir
    const redirectUrl = `${baseUrl}/odeme-callback?paymentId=${paymentId}&conversationId=${conversationId}&orderId=${orderId}&success=true`;
