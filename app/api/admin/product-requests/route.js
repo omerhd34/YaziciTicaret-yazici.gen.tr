@@ -5,11 +5,11 @@ import ProductRequest from '@/models/ProductRequest';
 import User from '@/models/User';
 import Admin from '@/models/Admin';
 import { sendProductRequestApprovedEmail, sendProductRequestRejectedEmail } from '@/lib/email';
+import { isAdminAuthenticated } from '@/lib/adminSession';
 
 async function requireAdmin() {
  const cookieStore = await cookies();
- const session = cookieStore.get("admin-session");
- return session && session.value === "authenticated";
+ return isAdminAuthenticated(cookieStore);
 }
 
 export async function GET(request) {
@@ -132,10 +132,9 @@ export async function PATCH(request) {
 
   // Admin bilgisini al
   const cookieStore = await cookies();
-  const session = cookieStore.get("admin-session");
   let adminId = null;
 
-  if (session && session.value === "authenticated") {
+  if (isAdminAuthenticated(cookieStore)) {
    const admin = await Admin.findOne();
    if (admin) {
     adminId = admin._id;

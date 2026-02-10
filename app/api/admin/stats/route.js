@@ -5,11 +5,11 @@ import User from "@/models/User";
 import Product from "@/models/Product";
 import Contact from "@/models/Contact";
 import ProductRequest from "@/models/ProductRequest";
+import { isAdminAuthenticated } from "@/lib/adminSession";
 
 async function requireAdmin() {
  const cookieStore = await cookies();
- const session = cookieStore.get("admin-session");
- return session && session.value === "authenticated";
+ return isAdminAuthenticated(cookieStore);
 }
 
 // GET - Admin: kullanıcı sayısı, sipariş sayısı, ürün sayısı

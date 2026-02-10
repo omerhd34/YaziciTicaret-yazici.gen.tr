@@ -2,12 +2,11 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import Contact from '@/models/Contact';
 import { cookies } from 'next/headers';
+import { isAdminAuthenticated } from '@/lib/adminSession';
 
-// Admin kontrolü
 async function requireAdmin() {
  const cookieStore = await cookies();
- const session = cookieStore.get("admin-session");
- return session && session.value === "authenticated";
+ return isAdminAuthenticated(cookieStore);
 }
 
 // GET - Tüm mesajları getir

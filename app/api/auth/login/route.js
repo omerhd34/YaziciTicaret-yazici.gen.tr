@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import Admin from '@/models/Admin';
+import { createSignedToken, COOKIE_NAME } from '@/lib/adminSession';
 
 export async function POST(request) {
  try {
@@ -36,7 +37,8 @@ export async function POST(request) {
   }
 
   const cookieStore = await cookies();
-  cookieStore.set('admin-session', 'authenticated', {
+  const signedToken = createSignedToken();
+  cookieStore.set(COOKIE_NAME, signedToken, {
    httpOnly: true,
    secure: process.env.NODE_ENV === 'production',
    sameSite: 'strict',

@@ -6,6 +6,7 @@ import Product from '@/models/Product';
 import User from '@/models/User';
 import { sendPriceChangeEmail, sendStockAvailableEmail } from '@/lib/notifications';
 import { getProductUrl } from '@/app/utils/productUrl';
+import { isAdminAuthenticated } from '@/lib/adminSession';
 
 // GET - Tek ürün getir
 export async function GET(request, { params }) {
@@ -39,11 +40,8 @@ export async function GET(request, { params }) {
 // PUT - Ürün güncelle (Admin)
 export async function PUT(request, { params }) {
  try {
-  // Admin kontrolü
   const cookieStore = await cookies();
-  const adminSession = cookieStore.get('admin-session');
-
-  if (!adminSession || adminSession.value !== 'authenticated') {
+  if (!isAdminAuthenticated(cookieStore)) {
    return NextResponse.json(
     { success: false, error: 'Yetkisiz erişim. Admin girişi gereklidir.' },
     { status: 401 }
@@ -375,11 +373,8 @@ export async function PUT(request, { params }) {
 // DELETE - Ürün sil (Admin) veya renk varyantı sil
 export async function DELETE(request, { params }) {
  try {
-  // Admin kontrolü
   const cookieStore = await cookies();
-  const adminSession = cookieStore.get('admin-session');
-
-  if (!adminSession || adminSession.value !== 'authenticated') {
+  if (!isAdminAuthenticated(cookieStore)) {
    return NextResponse.json(
     { success: false, error: 'Yetkisiz erişim. Admin girişi gereklidir.' },
     { status: 401 }

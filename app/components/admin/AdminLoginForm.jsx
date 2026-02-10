@@ -49,7 +49,7 @@ export default function AdminLoginForm({ onSuccess }) {
    <div className="space-y-6">
     {/* Hesap Adı */}
     <div>
-     <label className="block text-sm font-bold text-gray-700 mb-2">
+     <label htmlFor="admin-login-username" className="block text-sm font-bold text-gray-700 mb-2">
       Hesap Adı
      </label>
      <div className="relative">
@@ -58,20 +58,23 @@ export default function AdminLoginForm({ onSuccess }) {
        size={20}
       />
       <input
+       id="admin-login-username"
+       name="username"
        type="text"
        value={username}
        onChange={(e) => setUsername(e.target.value)}
        className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
        placeholder="Hesap Adınızı Giriniz"
        required
+       autoComplete="username"
        suppressHydrationWarning
       />
      </div>
     </div>
 
-    {/* Password */}
+    {/* Şifre */}
     <div>
-     <label className="block text-sm font-bold text-gray-700 mb-2">
+     <label htmlFor="admin-login-password" className="block text-sm font-bold text-gray-700 mb-2">
       Şifre
      </label>
      <div className="relative">
@@ -80,12 +83,15 @@ export default function AdminLoginForm({ onSuccess }) {
        size={20}
       />
       <input
+       id="admin-login-password"
+       name="password"
        type={showPassword ? "text" : "password"}
        value={password}
        onChange={(e) => setPassword(e.target.value)}
        className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
        placeholder="••••••••••"
        required
+       autoComplete="current-password"
        suppressHydrationWarning
       />
       <button

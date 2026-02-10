@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import { isAdminAuthenticated } from "@/lib/adminSession";
 
 async function requireAdmin() {
  const cookieStore = await cookies();
- const session = cookieStore.get("admin-session");
- return session && session.value === "authenticated";
+ return isAdminAuthenticated(cookieStore);
 }
 
 export async function GET(request, { params }) {

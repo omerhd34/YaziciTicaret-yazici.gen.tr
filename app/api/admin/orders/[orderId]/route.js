@@ -5,11 +5,11 @@ import User from "@/models/User";
 import Product from "@/models/Product";
 import normalizeText from "@/lib/normalizeText";
 import { sendUserReturnApprovedEmail, sendUserReturnRejectedEmail, sendUserOrderStatusUpdateEmail } from "@/lib/notifications";
+import { isAdminAuthenticated } from "@/lib/adminSession";
 
 async function requireAdmin() {
  const cookieStore = await cookies();
- const session = cookieStore.get("admin-session");
- return session && session.value === "authenticated";
+ return isAdminAuthenticated(cookieStore);
 }
 
 export async function PATCH(request, { params }) {

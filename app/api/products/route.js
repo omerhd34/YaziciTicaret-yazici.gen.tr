@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import Product from '@/models/Product';
+import { isAdminAuthenticated } from '@/lib/adminSession';
 
 // CORS header'larını ekleyen helper function
 function addCorsHeaders(response) {
@@ -117,11 +118,8 @@ export async function GET(request) {
 // POST - Yeni ürün ekle (Admin)
 export async function POST(request) {
  try {
-  // Admin kontrolü
   const cookieStore = await cookies();
-  const adminSession = cookieStore.get('admin-session');
-
-  if (!adminSession || adminSession.value !== 'authenticated') {
+  if (!isAdminAuthenticated(cookieStore)) {
    return NextResponse.json(
     { success: false, error: 'Yetkisiz erişim. Admin girişi gereklidir.' },
     { status: 401 }
