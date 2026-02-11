@@ -9,15 +9,27 @@ import CartItemsList from "@/app/components/cart/CartItemsList";
 import CartOrderSummary from "@/app/components/cart/CartOrderSummary";
 
 export default function SepetPage() {
- const { cart: localStorageCart, removeFromCart, updateQuantity, clearCart } = useCart();
+ const { cart: localStorageCart, removeFromCart, updateQuantity, clearCart, getCartTotal, getNormalCartTotal } = useCart();
  const router = useRouter();
  const [cartItems, setCartItems] = useState([]);
  const [loading, setLoading] = useState(true);
  const [hasInitialLoad, setHasInitialLoad] = useState(false);
 
- // Sadece ilk yüklemede fetchCartProducts çalışsın
+ // CartContext yüklendikten sonra veya sepet değiştiğinde fetchCartProducts çalışsın
  useEffect(() => {
-  if (hasInitialLoad) return; // Zaten yüklendiyse tekrar çalıştırma
+  // Sepet boşsa hemen temizle
+  if (localStorageCart.length === 0) {
+   setCartItems([]);
+   setLoading(false);
+   setHasInitialLoad(true);
+   return;
+  }
+
+  // Cart değiştiğinde veya ilk yüklemede sepet ürünlerini getir
+  // (Önceki yüklemede aynı ürünler varsa sadece quantity güncellemesi için atla)
+  const cartIds = localStorageCart.map((i) => String(i._id || i.id)).sort().join(",");
+  const prevIds = cartItems.map((i) => String(i._id || i.id)).sort().join(",");
+  if (hasInitialLoad && cartIds === prevIds) return;
 
   const fetchCartProducts = async () => {
    const cart = localStorageCart;
@@ -30,15 +42,11 @@ export default function SepetPage() {
 
    setLoading(true);
    try {
-    // Ürünleri yükle
     const productsRes = await axiosInstance.get("/api/products?limit=1000");
-
     const productsData = productsRes.data;
-
     const allProducts = productsData.data || productsData.products || [];
 
     if (productsData.success && allProducts.length > 0) {
-     // Sepetteki ürünleri güncelle
      const updatedCart = cart.map(cartItem => {
       const productId = String(cartItem._id || cartItem.id);
       const currentProduct = allProducts.find(p => String(p._id) === productId);
@@ -78,7 +86,7 @@ export default function SepetPage() {
 
   fetchCartProducts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
- }, []); // Sadece component mount olduğunda çalışsın
+ }, [localStorageCart]);
 
  // localStorageCart değiştiğinde sadece quantity değerlerini güncelle (API çağrısı yapmadan)
  // Sadece ilk yükleme tamamlandıktan sonra çalışsın
@@ -175,13 +183,6 @@ export default function SepetPage() {
   setCartItems([]);
  };
 
- const getCartTotal = () => {
-  return cartItems.reduce((total, item) => {
-   const price = (item.discountPrice && item.discountPrice < item.price) ? item.discountPrice : item.price;
-   return total + price * item.quantity;
-  }, 0);
- };
-
  const handleCheckout = () => {
   if (!canCheckout) return;
   router.push("/odeme");
@@ -195,10 +196,11 @@ export default function SepetPage() {
   return <CartEmpty />;
  }
 
- const shippingCost = getCartTotal() >= 500 ? 0 : 29.99;
- const total = getCartTotal() + shippingCost;
+ const cartTotalValue = getCartTotal();
+ const shippingCost = cartTotalValue >= 500 ? 0 : 29.99;
+ const total = cartTotalValue + shippingCost;
  const minOrderTotal = 300;
- const canCheckout = getCartTotal() >= minOrderTotal;
+ const canCheckout = cartTotalValue >= minOrderTotal;
 
  return (
   <div className="min-h-screen bg-gray-50 py-12">
@@ -214,7 +216,8 @@ export default function SepetPage() {
      />
 
      <CartOrderSummary
-      cartTotal={getCartTotal()}
+      cartTotal={cartTotalValue}
+      normalCartTotal={getNormalCartTotal()}
       shippingCost={shippingCost}
       total={total}
       canCheckout={canCheckout}

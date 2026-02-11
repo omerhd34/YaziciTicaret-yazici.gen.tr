@@ -120,7 +120,6 @@ export default function UrunKarsilastirPage() {
   return item ? item.value : "-";
  };
 
- // Virgülle ayrılmış değerleri satır başına maksimum 10 öğe olacak şekilde formatla
  const formatSpecValue = (value) => {
   if (!value || value === "-") return value;
   const items = value.split(',').map(item => item.trim()).filter(item => item);

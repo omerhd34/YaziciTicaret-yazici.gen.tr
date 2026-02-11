@@ -76,7 +76,7 @@ export default function KategoriPage() {
  const [ratingMessage, setRatingMessage] = useState("");
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
- const { addToCart, addToFavorites, removeFromFavorites, isFavorite } = useCart();
+ const { addToCart, addToFavorites, removeFromFavorites, isFavorite, userId } = useCart();
  const { addToComparison, removeFromComparison, isInComparison } = useComparison();
 
  const isProductDetailPage = useMemo(() => {
@@ -597,6 +597,11 @@ export default function KategoriPage() {
  const handleAddToCart = () => {
   if (!product) return;
 
+  if (!userId) {
+   router.push("/giris");
+   return;
+  }
+
   // Renk bazlı bilgileri hesapla
   const currentColorObj = selectedColorObj || (product.colors && product.colors.length > 0
    ? (typeof product.colors[0] === 'object' ? product.colors[0] : null)
@@ -636,6 +641,11 @@ export default function KategoriPage() {
 
  const handleFavoriteToggle = () => {
   if (!product) return;
+
+  if (!userId) {
+   router.push("/giris");
+   return;
+  }
 
   if (isFavorite(product._id)) {
    removeFromFavorites(product._id);

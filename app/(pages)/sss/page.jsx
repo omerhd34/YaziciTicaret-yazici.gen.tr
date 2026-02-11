@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { HiChevronDown, HiChevronUp, HiQuestionMarkCircle } from "react-icons/hi";
 
 export default function SSSPage() {
  const [openIndex, setOpenIndex] = useState(null);
@@ -62,6 +62,10 @@ export default function SSSPage() {
   {
    question: "Müşteri hizmetlerine nasıl ulaşabilirim?",
    answer: "Müşteri hizmetlerimize 'Destek' sayfasından, e-posta veya telefon ile ulaşabilirsiniz. Çalışma saatlerimiz hafta içi 09:00 - 19:00 arasındadır. Size en kısa sürede dönüş yapacağız."
+  },
+  {
+   question: "Ürünü favorilere eklemek ve sepete eklemek için üye olmak şart mı?",
+   answer: "Ürünü favorilere eklemek ve sepete eklemek için üye olmak şarttır. Giriş yapmadan favori veya sepet butonuna tıkladığınızda otomatik olarak giriş sayfasına yönlendirilirsiniz. Ücretsiz hesap oluşturarak giriş yapabilir, ardından ürünleri favorilerinize ekleyebilir ve sepete ekleyebilirsiniz."
   }
  ];
 
@@ -74,9 +78,12 @@ export default function SSSPage() {
    <div className="container mx-auto px-4">
     {/* Header */}
     <div className="text-center mb-8 md:mb-12">
-     <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3 md:mb-4">
-      Sık Sorulan Sorular
-     </h1>
+     <div className="flex items-center justify-center gap-3 mb-3 md:mb-4">
+      <HiQuestionMarkCircle className="text-indigo-600 shrink-0" size={32} />
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900">
+       Sık Sorulan Sorular
+      </h1>
+     </div>
      <p className="text-gray-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
       Merak ettiğiniz soruların yanıtlarını burada bulabilirsiniz. Aradığınızı bulamazsanız, müşteri hizmetlerimizle iletişime geçebilirsiniz.
      </p>

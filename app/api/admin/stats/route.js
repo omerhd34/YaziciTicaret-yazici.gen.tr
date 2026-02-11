@@ -5,6 +5,7 @@ import User from "@/models/User";
 import Product from "@/models/Product";
 import Contact from "@/models/Contact";
 import ProductRequest from "@/models/ProductRequest";
+import ProductBundle from "@/models/ProductBundle";
 import { isAdminAuthenticated } from "@/lib/adminSession";
 
 async function requireAdmin() {
@@ -21,13 +22,14 @@ export async function GET() {
 
   await dbConnect();
 
-  const [userCount, productCount, inStockProductCount, totalContacts, unreadContacts, totalProductRequests] = await Promise.all([
+  const [userCount, productCount, inStockProductCount, totalContacts, unreadContacts, totalProductRequests, bundleCount] = await Promise.all([
    User.countDocuments(),
    Product.countDocuments(),
    Product.countDocuments({ stock: { $gt: 0 } }),
    Contact.countDocuments(),
    Contact.countDocuments({ read: false }),
    ProductRequest.countDocuments(),
+   ProductBundle.countDocuments(),
   ]);
 
   // Tüm kullanıcıları ve siparişlerini al
@@ -84,6 +86,7 @@ export async function GET() {
     totalContacts,
     unreadContacts,
     totalProductRequests,
+    bundleCount,
    },
   });
  } catch (error) {

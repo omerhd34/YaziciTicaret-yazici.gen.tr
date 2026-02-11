@@ -1,6 +1,6 @@
 "use client";
-import { MdReceiptLong, MdInventory2, MdPeople, MdTrendingUp, MdEmail } from "react-icons/md";
-import { HiShoppingBag } from "react-icons/hi";
+import { MdReceiptLong, MdInventory2, MdPeople } from "react-icons/md";
+import { HiShoppingBag, HiTicket } from "react-icons/hi";
 
 export default function AdminStatsCards({ stats, loading }) {
  const cards = [
@@ -10,7 +10,7 @@ export default function AdminStatsCards({ stats, loading }) {
  ];
 
  return (
-  <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
    {cards.map((c, idx) => (
     <div key={idx} className="bg-gray-50 rounded-xl border p-5 flex items-center gap-4">
      <div className={`${c.color} w-10 h-10 rounded-lg text-white flex items-center justify-center`}>
@@ -35,6 +35,21 @@ export default function AdminStatsCards({ stats, loading }) {
      <div className="flex items-center gap-2">
       <div className="text-xl font-black text-gray-900">
        {loading ? "…" : (typeof stats?.totalProductRequests === "number" ? stats.totalProductRequests : "-")}
+      </div>
+     </div>
+    </div>
+   </div>
+
+   {/* Toplam Paket Kartı */}
+   <div className="bg-gray-50 rounded-xl border p-5 flex items-center gap-4">
+    <div className="bg-indigo-500 w-10 h-10 rounded-lg text-white flex items-center justify-center">
+     <HiTicket size={20} />
+    </div>
+    <div className="flex-1">
+     <div className="text-xs text-gray-500 font-semibold">Toplam Paket</div>
+     <div className="flex items-center gap-2">
+      <div className="text-xl font-black text-gray-900">
+       {loading ? "…" : (typeof stats?.bundleCount === "number" ? stats.bundleCount : "-")}
       </div>
      </div>
     </div>

@@ -16,21 +16,15 @@ import SavedCardsSection from "@/app/components/payment/SavedCardsSection";
 
 export default function OdemePage() {
  const router = useRouter();
- const { cart, clearCart } = useCart();
+ const { cart, clearCart, getCartTotal, getNormalCartTotal } = useCart();
  const [mounted, setMounted] = useState(false);
 
  useEffect(() => {
   setMounted(true);
  }, []);
 
- const cartTotal = useMemo(() => {
-  return (cart || []).reduce((sum, item) => {
-   const price = item.discountPrice && item.discountPrice < item.price
-    ? item.discountPrice
-    : item.price;
-   return sum + (price || 0) * (item.quantity || 1);
-  }, 0);
- }, [cart]);
+ const cartTotal = useMemo(() => getCartTotal(), [cart, getCartTotal]);
+ const normalCartTotal = useMemo(() => getNormalCartTotal(), [cart, getNormalCartTotal]);
 
  const shippingCost = cartTotal >= 500 ? 0 : 29.99;
  const grandTotal = cartTotal + shippingCost;
@@ -554,6 +548,7 @@ export default function OdemePage() {
      <div className="lg:col-span-1">
       <OrderSummary
        cartTotal={cartTotal}
+       normalCartTotal={normalCartTotal}
        shippingCost={shippingCost}
        grandTotal={grandTotal}
        acceptedTerms={acceptedTerms}

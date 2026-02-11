@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter } from "next/navigation";
-import { HiSearch, HiUser, HiHeart, HiMenu, HiX, HiPhone, HiChevronDown, HiArrowRight, HiClipboardList, HiTruck, HiTag, HiGift } from "react-icons/hi";
+import { HiSearch, HiUser, HiHeart, HiMenu, HiX, HiPhone, HiChevronDown, HiArrowRight, HiClipboardList, HiTruck, HiTag, HiGift, HiTicket } from "react-icons/hi";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -545,6 +545,16 @@ const Header = () => {
              borderColor: "border-green-100",
              iconBg: "bg-green-100"
             };
+           } else if (item.name === "Kampanyalar") {
+            return {
+             textColor: "text-indigo-600",
+             bgFrom: "from-indigo-50",
+             bgTo: "to-indigo-50/50",
+             hoverFrom: "hover:from-indigo-100",
+             hoverTo: "hover:to-indigo-100/50",
+             borderColor: "border-indigo-100",
+             iconBg: "bg-indigo-100"
+            };
            }
            return {
             textColor: "text-red-600",
@@ -567,6 +577,7 @@ const Header = () => {
             <div className={`w-10 h-10 ${styles.iconBg} rounded-lg flex items-center justify-center shrink-0`}>
              {item.name === "Yeniler" && <HiGift size={20} className="text-red-600" />}
              {item.name === "İndirimler" && <HiTag size={20} className="text-green-600" />}
+             {item.name === "Kampanyalar" && <HiTicket size={20} className="text-indigo-600" />}
             </div>
             <span className="text-base">{item.name}</span>
            </Link>

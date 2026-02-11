@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { HiHeart, HiChevronLeft, HiChevronRight, HiSwitchHorizontal } from "react-icons/hi";
 import { FaShoppingCart, FaStar, FaRegStar } from "react-icons/fa";
 import { useState, useEffect } from "react";
@@ -10,9 +11,10 @@ import { getProductUrl } from "@/app/utils/productUrl";
 import { getColorHex } from "@/app/utils/colorUtils";
 
 export default function ProductCard({ product, priority = false, onColorChange, selectedColorName }) {
+ const router = useRouter();
  const [isImageHovered, setIsImageHovered] = useState(false);
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
- const { addToFavorites, removeFromFavorites, isFavorite: checkFavorite, addToCart, removeFromCart, cart } = useCart();
+ const { addToFavorites, removeFromFavorites, isFavorite: checkFavorite, addToCart, removeFromCart, cart, userId } = useCart();
  const { addToComparison, removeFromComparison, isInComparison, canAddMore } = useComparison();
  const isFavorite = checkFavorite(product._id);
  const inComparison = isInComparison(product._id);
@@ -51,6 +53,11 @@ export default function ProductCard({ product, priority = false, onColorChange, 
  const handleAddToCart = async (e) => {
   e.preventDefault();
   e.stopPropagation();
+
+  if (!userId) {
+   router.push("/giris");
+   return;
+  }
 
   if (isInCart) {
    const colorName = currentColor?.name || null;
@@ -117,14 +124,18 @@ export default function ProductCard({ product, priority = false, onColorChange, 
 
    <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
     <button
-     onClick={(e) => {
-      e.preventDefault();
-      if (inComparison) {
-       removeFromComparison(product._id);
-      } else {
-       addToComparison(product);
-      }
-     }}
+    onClick={(e) => {
+     e.preventDefault();
+     if (!userId) {
+      router.push("/giris");
+      return;
+     }
+     if (inComparison) {
+      removeFromComparison(product._id);
+     } else {
+      addToComparison(product);
+     }
+    }}
      className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${inComparison
       ? "bg-green-700 text-white"
       : "bg-white text-gray-400 hover:bg-green-50 hover:text-green-600"
@@ -134,14 +145,18 @@ export default function ProductCard({ product, priority = false, onColorChange, 
      <HiSwitchHorizontal size={18} />
     </button>
     <button
-     onClick={(e) => {
-      e.preventDefault();
-      if (isFavorite) {
-       removeFromFavorites(product._id);
-      } else {
-       addToFavorites(product);
-      }
-     }}
+    onClick={(e) => {
+     e.preventDefault();
+     if (!userId) {
+      router.push("/giris");
+      return;
+     }
+     if (isFavorite) {
+      removeFromFavorites(product._id);
+     } else {
+      addToFavorites(product);
+     }
+    }}
      className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${isFavorite
       ? "bg-red-600 text-white"
       : "bg-white text-gray-400 hover:bg-red-50 hover:text-red-500"
@@ -229,31 +244,6 @@ export default function ProductCard({ product, priority = false, onColorChange, 
     )}
    </div>
 
-   <div className="px-4 pt-1 pb-1 flex justify-center gap-1">
-    {images.length > 1 ? (
-     images.map((_, index) => (
-      <button
-       key={index}
-       onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex(index);
-       }}
-       className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
-       aria-label={`Resim ${index + 1}`}
-      >
-       <span className={`block transition-all rounded-full ${currentImageIndex === index
-        ? "w-2.5 h-2.5 bg-indigo-600"
-        : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
-        }`}
-       />
-      </button>
-     ))
-    ) : (
-     <div className="h-2.5" />
-    )}
-   </div>
-
    <div className="p-3 bg-gray-100 flex-1 flex flex-col">
     <div className="flex items-center justify-between mb-2">
      {product.brand && (
@@ -290,7 +280,6 @@ export default function ProductCard({ product, priority = false, onColorChange, 
       </span>
      </div>
     </div>
-
 
     <div className="mt-auto pt-3 border-t border-gray-200">
      <div className="px-1 pb-1 flex items-center justify-between gap-4">

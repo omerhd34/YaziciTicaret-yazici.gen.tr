@@ -14,6 +14,7 @@ export function CartProvider({ children }) {
  const [cart, setCart] = useState([]);
  const [favorites, setFavorites] = useState([]);
  const [hasLoaded, setHasLoaded] = useState(false);
+ const [bundles, setBundles] = useState([]);
 
  // Admin sayfalarında sepet/favoriler gerekmez
  const isAdminPage = pathname?.startsWith('/admin');
@@ -55,7 +56,7 @@ export function CartProvider({ children }) {
     const data = res.data;
     const uid = data?.authenticated && data?.user?.id ? data.user.id : null;
     setUserId(uid);
-    
+
     // Cache'e kaydet
     if (uid) {
      localStorage.setItem('auth_user_id', uid);
@@ -424,6 +425,11 @@ export function CartProvider({ children }) {
  }, [favorites, userId, hasLoaded, isAdminPage]);
 
  const addToCart = async (product, selectedSize = null, selectedColor = null, quantity = 1) => {
+  // Kullanıcı giriş yapmamışsa sepete eklenemez
+  if (!userId) {
+   return;
+  }
+
   if (product.stock === 0 || product.stock < quantity) {
    return;
   }
@@ -475,6 +481,52 @@ export function CartProvider({ children }) {
     // 401 hatası = kullanıcı authenticated değil, sessizce devam et
     // Sepet veritabanına kaydedilemedi - localStorage'da kalacak
    }
+  }
+ };
+
+ /** Kampanya gibi birden fazla ürünü tek seferde sepete ekler */
+ const addMultipleToCart = async (products) => {
+  if (!userId || !Array.isArray(products) || products.length === 0) return;
+  let newCart;
+  setCart((prevCart) => {
+   let next = [...prevCart];
+   for (const product of products) {
+    if (product.stock === 0) continue;
+    const selectedColor = product.colors?.[0] && typeof product.colors[0] === 'object'
+     ? product.colors[0].name
+     : null;
+    const existingIndex = next.findIndex(
+     (item) => item._id === product._id && item.selectedColor === selectedColor
+    );
+    if (existingIndex >= 0) {
+     const maxQty = Math.min(next[existingIndex].stock || 10, 10);
+     next[existingIndex] = {
+      ...next[existingIndex],
+      quantity: Math.min((next[existingIndex].quantity || 1) + 1, maxQty),
+     };
+    } else {
+     next = [
+      ...next,
+      {
+       ...product,
+       selectedColor,
+       quantity: 1,
+       addedAt: Date.now(),
+      },
+     ];
+    }
+   }
+   newCart = next;
+   return next;
+  });
+  if (newCart) {
+   try {
+    const productIds = newCart.map((item) => String(item._id || item.id)).filter(Boolean);
+    await axiosInstance.put("/api/user/cart", { productIds });
+   } catch (_) { }
+  }
+  if (typeof globalThis.window !== "undefined") {
+   globalThis.window.dispatchEvent(new Event("cartUpdated"));
   }
  };
 
@@ -562,11 +614,91 @@ export function CartProvider({ children }) {
   }
  }, [userId]);
 
+ // Kampanyaları yükle (paket fiyatı hesaplamak için)
+ useEffect(() => {
+  if (typeof globalThis.window === "undefined" || isAdminPage) return;
+  const fetchBundles = async () => {
+   try {
+    const res = await axiosInstance.get("/api/bundles");
+    if (res.data?.success && Array.isArray(res.data.bundles)) {
+     setBundles(res.data.bundles);
+    }
+   } catch (_) {
+    setBundles([]);
+   }
+  };
+  fetchBundles();
+ }, [isAdminPage]);
+
  const getCartTotal = () => {
-  return cart.reduce((total, item) => {
+  const itemTotal = (item) => {
    const price = (item.discountPrice && item.discountPrice < item.price) ? item.discountPrice : item.price;
-   return total + price * item.quantity;
-  }, 0);
+   return (price || 0) * (item.quantity || 1);
+  };
+  const unitPrice = (item) => {
+   const price = (item.discountPrice && item.discountPrice < item.price) ? item.discountPrice : item.price;
+   return price || 0;
+  };
+  const normalTotal = cart.reduce((total, item) => total + itemTotal(item), 0);
+  if (!bundles.length || cart.length === 0) return normalTotal;
+
+  const cartIds = new Set(cart.map((item) => String(item._id || item.id)));
+  const applicableBundles = bundles.filter((b) => {
+   const ids = b.productIds || [];
+   return ids.length > 0 && ids.every((pid) => cartIds.has(String(pid)));
+  });
+  if (applicableBundles.length === 0) return normalTotal;
+
+  let best = null;
+  let bestSaving = 0;
+  for (const b of applicableBundles) {
+   const bundleIdSet = new Set((b.productIds || []).map((id) => String(id)));
+   const bundleItems = cart.filter((item) => bundleIdSet.has(String(item._id || item.id)));
+   const bundleItemsTotal = bundleItems.reduce((sum, item) => sum + itemTotal(item), 0);
+   const saving = bundleItemsTotal - (b.bundlePrice || 0);
+   if (saving > bestSaving) {
+    bestSaving = saving;
+    best = b;
+   }
+  }
+  if (!best) return normalTotal;
+
+  const bundleIdSet = new Set((best.productIds || []).map((id) => String(id)));
+  const bundleItems = cart.filter((item) => bundleIdSet.has(String(item._id || item.id)));
+  const restTotal = cart
+   .filter((item) => !bundleIdSet.has(String(item._id || item.id)))
+   .reduce((sum, item) => sum + itemTotal(item), 0);
+
+  // 1 üye 1 paket 1 kere: Sadece 1 set kampanya fiyatından yararlanır, diğer setler normal fiyat
+  const bundleSetCount = Math.min(
+   ...bundleItems.map((item) => Number(item.quantity || 1) || 1)
+  );
+  const normalPricePerBundle = bundleItems.reduce(
+   (sum, item) => sum + unitPrice(item) * 1,
+   0
+  );
+  const bundlePartTotal =
+   (best.bundlePrice || 0) * 1 +
+   Math.max(0, bundleSetCount - 1) * normalPricePerBundle;
+
+  // Tam set oluşturmayan fazla adetler (örn. 3. ürün tek kaldığında) normal fiyat
+  let extraQtyTotal = 0;
+  for (const item of bundleItems) {
+   const qty = Number(item.quantity || 1) || 1;
+   const extra = qty - bundleSetCount;
+   if (extra > 0) extraQtyTotal += extra * unitPrice(item);
+  }
+
+  return bundlePartTotal + extraQtyTotal + restTotal;
+ };
+
+ /** Kampanya uygulanmadan önceki ürünler toplamı (normalde ne kadar) */
+ const getNormalCartTotal = () => {
+  const itemTotal = (item) => {
+   const price = (item.discountPrice && item.discountPrice < item.price) ? item.discountPrice : item.price;
+   return (price || 0) * (item.quantity || 1);
+  };
+  return cart.reduce((total, item) => total + itemTotal(item), 0);
  };
 
  const getCartItemCount = () => {
@@ -770,11 +902,15 @@ export function CartProvider({ children }) {
  const value = {
   cart,
   favorites,
+  userId,
+  isAuthenticated: !!userId,
   addToCart,
+  addMultipleToCart,
   removeFromCart,
   updateQuantity,
   clearCart,
   getCartTotal,
+  getNormalCartTotal,
   getCartItemCount,
   getFavoriteCount,
   addToFavorites,

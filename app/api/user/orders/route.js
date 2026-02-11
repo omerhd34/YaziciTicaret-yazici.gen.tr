@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Product from '@/models/Product';
+import ProductBundle from '@/models/ProductBundle';
 import { sendAdminNewOrderEmail, sendUserOrderConfirmationEmail } from '@/lib/notifications';
 
 // GET - Kullanıcının siparişlerini getir
@@ -197,16 +198,52 @@ export async function POST(request) {
    );
   }
 
+  const user = await User.findById(session.id);
+  if (!user) {
+   return NextResponse.json({ success: false, message: 'Kullanıcı bulunamadı' }, { status: 404 });
+  }
+
+  // 1 üye 1 paket 1 kere: Daha önce satın alınmış kampanyayı tekrar siparişe eklemeyi engelle
+  const completedOrders = (user.orders || []).filter((o) => {
+   const hasPaidAt = o.payment && (o.payment.paidAt || o.payment.transactionId);
+   return o.status !== 'Ödeme Bekleniyor' && o.status !== 'Ödeme Başarısız' && hasPaidAt;
+  });
+  const orderProductMap = new Map();
+  repricedItems.forEach((it) => {
+   const pid = String(it.productId || it._id || it.id || '');
+   if (pid) {
+    const qty = Number(it.quantity || 1);
+    orderProductMap.set(pid, (orderProductMap.get(pid) || 0) + qty);
+   }
+  });
+  const allBundles = await ProductBundle.find({}).select('_id productIds name').lean();
+  for (const bundle of allBundles) {
+   const bundleProductIds = (bundle.productIds || []).map((id) => String(id));
+   if (bundleProductIds.length === 0) continue;
+   const hasAllBundleProducts = bundleProductIds.every((pid) => (orderProductMap.get(pid) || 0) >= 1);
+   if (!hasAllBundleProducts) continue;
+   const alreadyPurchased = completedOrders.some((order) => {
+    const oItems = order.items || [];
+    const oMap = new Map();
+    oItems.forEach((item) => {
+     const pid = String(item.productId || item._id || item.id || '');
+     if (pid) oMap.set(pid, (oMap.get(pid) || 0) + Number(item.quantity || 1));
+    });
+    return bundleProductIds.every((pid) => (oMap.get(pid) || 0) >= 1);
+   });
+   if (alreadyPurchased) {
+    return NextResponse.json(
+     { success: false, message: 'Bu kampanyayı daha önce satın aldınız. Her üye her kampanya paketini yalnızca bir kez satın alabilir.' },
+     { status: 400 }
+    );
+   }
+  }
+
   const itemsTotal = repricedItems.reduce((sum, it) => sum + (Number(it.price || 0) * (Number(it.quantity || 1) || 1)), 0);
   const shippingCost = itemsTotal >= 500 ? 0 : 29.99;
   const serverGrandTotal = Math.round((itemsTotal + shippingCost) * 100) / 100;
   const clientTotal = Number(total || 0) || 0;
   const priceUpdated = Math.abs(serverGrandTotal - clientTotal) > 0.01;
-
-  const user = await User.findById(session.id);
-  if (!user) {
-   return NextResponse.json({ success: false, message: 'Kullanıcı bulunamadı' }, { status: 404 });
-  }
 
   // Çift sipariş koruması: Son 3 saniye içinde sipariş varsa reddet
   if (Array.isArray(user.orders) && user.orders.length > 0) {

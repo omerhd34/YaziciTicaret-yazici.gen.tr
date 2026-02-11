@@ -29,6 +29,12 @@ const AdminFooter = () => {
        Ürünler
       </Link>
       <Link
+       href="/admin/paket-fiyatlari"
+       className="text-sm text-gray-400 hover:text-indigo-400 transition-colors duration-200"
+      >
+       Kampanyalar
+      </Link>
+      <Link
        href="/admin/mesajlar"
        className="text-sm text-gray-400 hover:text-indigo-400 transition-colors duration-200"
       >

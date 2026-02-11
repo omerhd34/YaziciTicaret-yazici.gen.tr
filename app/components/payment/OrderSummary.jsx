@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export default function OrderSummary({
  cartTotal,
+ normalCartTotal,
  shippingCost,
  grandTotal,
  acceptedTerms,
@@ -13,11 +14,26 @@ export default function OrderSummary({
  paymentMethodType,
  isSubmitting = false,
 }) {
+ const hasBundleDiscount = normalCartTotal != null && normalCartTotal > cartTotal && normalCartTotal > 0;
+ const discountAmount = hasBundleDiscount ? normalCartTotal - cartTotal : 0;
+
  return (
   <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
    <h3 className="font-bold text-lg mb-4">Sipariş Özeti</h3>
 
    <div className="space-y-3 mb-4 pb-4 border-b">
+    {hasBundleDiscount && (
+     <>
+      <div className="flex justify-between text-sm">
+       <span className="text-gray-600">Ürünler toplamı</span>
+       <span className="text-gray-500 line-through">{normalCartTotal.toFixed(2)} ₺</span>
+      </div>
+      <div className="flex justify-between text-sm">
+       <span className="text-gray-600">Kampanya paket indirimi</span>
+       <span className="font-semibold text-green-600">-{discountAmount.toFixed(2)} ₺</span>
+      </div>
+     </>
+    )}
     <div className="flex justify-between text-sm">
      <span className="text-gray-600">Ürünler Toplamı</span>
      <span className="font-semibold">{cartTotal.toFixed(2)} ₺</span>

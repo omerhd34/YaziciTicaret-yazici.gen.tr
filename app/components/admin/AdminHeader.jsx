@@ -95,6 +95,15 @@ const AdminHeader = () => {
        Ürünler
       </Link>
       <Link
+       href="/admin/paket-fiyatlari"
+       className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${pathname?.startsWith("/admin/paket-fiyatlari")
+        ? "bg-indigo-100 text-indigo-700 font-semibold"
+        : "text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
+        }`}
+      >
+       Paket Fiyatları
+      </Link>
+      <Link
        href="/admin/mesajlar"
        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${pathname?.startsWith("/admin/mesajlar")
         ? "bg-indigo-100 text-indigo-700 font-semibold"
