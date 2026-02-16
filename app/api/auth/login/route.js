@@ -56,6 +56,7 @@ export async function POST(request) {
    }
   });
  } catch (error) {
+  console.error('[admin login]', error?.message || error);
   return NextResponse.json(
    { success: false, message: 'Bir hata oluştu' },
    { status: 500 }

@@ -115,11 +115,27 @@ export async function GET(request) {
  }
 }
 
-// POST - Yeni ürün ekle (Admin)
+// POST - Yeni ürün ekle (Admin veya script ile)
 export async function POST(request) {
  try {
-  const cookieStore = await cookies();
-  if (!isAdminAuthenticated(cookieStore)) {
+  // 1) Ürün ekleme script'i için header tabanlı gizli anahtar kontrolü
+  const scriptSecretHeader = request.headers.get('x-admin-script-secret');
+  const scriptSecretEnv = process.env.ADMIN_SESSION_SECRET;
+
+  let isAuthorized = false;
+
+  if (scriptSecretEnv && scriptSecretHeader && scriptSecretHeader === scriptSecretEnv) {
+   // Script doğru gizli anahtarı gönderiyorsa, admin gibi yetkili say
+   isAuthorized = true;
+  } else {
+   // 2) Normal admin cookie kontrolü
+   const cookieStore = await cookies();
+   if (isAdminAuthenticated(cookieStore)) {
+    isAuthorized = true;
+   }
+  }
+
+  if (!isAuthorized) {
    return NextResponse.json(
     { success: false, error: 'Yetkisiz erişim. Admin girişi gereklidir.' },
     { status: 401 }
