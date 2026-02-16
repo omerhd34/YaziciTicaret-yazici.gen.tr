@@ -22,15 +22,47 @@ export async function GET() {
 
   await dbConnect();
 
-  const [userCount, productCount, inStockProductCount, totalContacts, unreadContacts, totalProductRequests, bundleCount] = await Promise.all([
+  const [userCount, productVariantResult, inStockProductCount, totalContacts, unreadContacts, totalProductRequests, bundleCount] = await Promise.all([
    User.countDocuments(),
-   Product.countDocuments(),
+   Product.aggregate([
+    {
+     $addFields: {
+      validColors: {
+       $filter: {
+        input: { $ifNull: ["$colors", []] },
+        as: "c",
+        cond: {
+         $and: [
+          { $eq: [{ $type: "$$c" }, "object"] },
+          { $ne: ["$$c.serialNumber", null] },
+          { $gt: [{ $strLenCP: { $toString: { $ifNull: ["$$c.serialNumber", ""] } } }, 0] },
+         ],
+        },
+       },
+      },
+     },
+    },
+    {
+     $addFields: {
+      variantCount: {
+       $cond: {
+        if: { $gt: [{ $size: "$validColors" }, 0] },
+        then: { $size: "$validColors" },
+        else: 1,
+       },
+      },
+     },
+    },
+    { $group: { _id: null, total: { $sum: "$variantCount" } } },
+   ]),
    Product.countDocuments({ stock: { $gt: 0 } }),
    Contact.countDocuments(),
    Contact.countDocuments({ read: false }),
    ProductRequest.countDocuments(),
    ProductBundle.countDocuments(),
   ]);
+
+  const productCount = productVariantResult[0]?.total ?? 0;
 
   // Tüm kullanıcıları ve siparişlerini al
   const users = await User.find({}, 'orders').lean();

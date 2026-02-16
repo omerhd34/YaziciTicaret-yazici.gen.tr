@@ -168,7 +168,20 @@ export default function AdminUrunYonetimiPage() {
    />
    <AdminProductsHeader onLogout={handleLogout} />
    <AdminProductsStats
-    totalProducts={products.length}
+    totalProducts={(() => {
+     // Renk varyantlarını (serialNumber) say - her SKU ayrı ürün sayılır
+     let count = 0;
+     products.forEach((product) => {
+      const colorVariants = product.colors?.filter(c => typeof c === 'object' && c.serialNumber) || [];
+      if (colorVariants.length > 0) {
+       count += colorVariants.length;
+      } else {
+       // Renk varyantı yoksa ana ürünü say
+       count += 1;
+      }
+     });
+     return count;
+    })()}
     outOfStockProducts={(() => {
      // Stokta olmayan ürünleri say (renk varyantları dahil)
      let count = 0;
@@ -197,7 +210,7 @@ export default function AdminUrunYonetimiPage() {
      let count = 0;
      products.forEach((product) => {
       let hasDiscount = false;
-      
+
       // Renk varyantları varsa kontrol et
       if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
        const colorVariants = product.colors.filter(c => typeof c === 'object' && c.serialNumber);
@@ -216,7 +229,7 @@ export default function AdminUrunYonetimiPage() {
        // Renk yoksa ana ürünün indirimini kontrol et
        hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined && product.discountPrice < product.price;
       }
-      
+
       if (hasDiscount) count++;
      });
      return count;
