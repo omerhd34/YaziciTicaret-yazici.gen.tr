@@ -92,7 +92,7 @@ const Footer = () => {
       </ul>
      </div>
 
-     <div>
+     <div className="data-nosnippet">
       <h2 className="text-white font-bold mb-4 text-base">İletişim</h2>
       <ul className="space-y-3">
        <li className="flex items-center gap-3">
