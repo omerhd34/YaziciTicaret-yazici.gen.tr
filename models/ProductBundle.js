@@ -12,7 +12,7 @@ const ProductBundleSchema = new mongoose.Schema({
   ref: 'Product',
   required: true,
  }],
- /** Paket kampanya fiyatı (TL) */
+ /** Kampanya fiyatı (TL) */
  bundlePrice: {
   type: Number,
   required: true,

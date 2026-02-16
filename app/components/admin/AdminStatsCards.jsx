@@ -40,13 +40,13 @@ export default function AdminStatsCards({ stats, loading }) {
     </div>
    </div>
 
-   {/* Toplam Paket Kartı */}
+   {/* Toplam Kampanya Kartı */}
    <div className="bg-gray-50 rounded-xl border p-5 flex items-center gap-4">
     <div className="bg-indigo-500 w-10 h-10 rounded-lg text-white flex items-center justify-center">
      <HiTicket size={20} />
     </div>
     <div className="flex-1">
-     <div className="text-xs text-gray-500 font-semibold">Toplam Paket</div>
+     <div className="text-xs text-gray-500 font-semibold">Toplam Kampanya</div>
      <div className="flex items-center gap-2">
       <div className="text-xl font-black text-gray-900">
        {loading ? "…" : (typeof stats?.bundleCount === "number" ? stats.bundleCount : "-")}

@@ -101,7 +101,7 @@ const AdminHeader = () => {
         : "text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
         }`}
       >
-       Paket Fiyatları
+       Kampanyalar
       </Link>
       <Link
        href="/admin/mesajlar"

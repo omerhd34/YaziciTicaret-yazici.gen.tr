@@ -8,7 +8,7 @@ import AdminOrdersHeader from "@/app/components/admin/AdminOrdersHeader";
 import { HiTicket, HiTag, HiTrash, HiPlus } from "react-icons/hi";
 import { FaTurkishLiraSign } from "react-icons/fa6";
 
-export default function AdminPaketFiyatlariPage() {
+export default function AdminKampanyaFiyatlariPage() {
  const router = useRouter();
  const [authLoading, setAuthLoading] = useState(true);
  const [bundles, setBundles] = useState([]);
@@ -93,7 +93,7 @@ export default function AdminPaketFiyatlariPage() {
      bundlePrice: price,
     });
     if (res.data?.success) {
-     setToast({ show: true, message: "Paket kampanyası eklendi.", type: "success" });
+     setToast({ show: true, message: "Kampanya eklendi.", type: "success" });
      setForm({ name: "", productCodes: "", bundlePrice: "" });
      fetchBundles();
     } else {
@@ -179,7 +179,7 @@ export default function AdminPaketFiyatlariPage() {
  return (
   <div className="min-h-screen bg-gray-50 pb-12">
    <Toast toast={toast} setToast={setToast} />
-   <AdminOrdersHeader title="Paket Fiyatları (Kampanyalar)" />
+   <AdminOrdersHeader title="Kampanya Fiyatları" />
 
    <div className="container mx-auto px-4 py-6">
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
@@ -225,7 +225,7 @@ export default function AdminPaketFiyatlariPage() {
            >
             <div className="flex items-start justify-between gap-2 mb-2">
              <p className="font-bold text-gray-900 text-base truncate flex-1">
-              {b.name || "Paket Kampanya"}
+              {b.name || "Kampanya"}
              </p>
              <button
               type="button"
@@ -262,12 +262,12 @@ export default function AdminPaketFiyatlariPage() {
            </div>
            <div className="flex-1 min-w-0">
             <p className="font-bold text-gray-900 text-lg">
-             {editingBundle ? "Kampanyayı düzenle" : selectedBundle ? "Kampanya detayı" : "Yeni paket kampanyası"}
+             {editingBundle ? "Kampanyayı düzenle" : selectedBundle ? "Kampanya detayı" : "Yeni kampanya"}
             </p>
             <p className="text-sm text-gray-500 mt-0.5">
              {selectedBundle
-              ? (selectedBundle.name || "Paket Kampanya") + " · " + Number(selectedBundle.bundlePrice).toLocaleString("tr-TR") + " ₺"
-              : "Ürün kodlarını girin, paket fiyatını belirleyin"}
+              ? (selectedBundle.name || "Kampanya") + " · " + Number(selectedBundle.bundlePrice).toLocaleString("tr-TR") + " ₺"
+              : "Ürün kodlarını girin, kampanya fiyatını belirleyin"}
             </p>
            </div>
           </div>
@@ -302,7 +302,7 @@ export default function AdminPaketFiyatlariPage() {
               />
              </div>
              <div>
-              <label className="block font-bold text-gray-700 text-sm mb-1">Paket fiyatı (₺)</label>
+              <label className="block font-bold text-gray-700 text-sm mb-1">Kampanya fiyatı (₺)</label>
               <input
                type="text"
                value={form.bundlePrice}

@@ -110,7 +110,7 @@ function BundleCard({ bundle, productsMap, onAddToCart, isAdding, isPurchased })
       id={`bundle-title-${bundle._id}`}
       className="text-lg font-bold text-gray-900"
      >
-      {bundle.name || "Paket Kampanya"}
+      {bundle.name || "Kampanya"}
      </h2>
      <span
       className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold"
