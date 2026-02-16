@@ -120,7 +120,7 @@ export async function POST(request) {
  try {
   // 1) Ürün ekleme script'i için header tabanlı gizli anahtar kontrolü
   const scriptSecretHeader = request.headers.get('x-admin-script-secret');
-  const scriptSecretEnv = process.env.ADMIN_SESSION_SECRET;
+  const scriptSecretEnv = process.env.ADMIN_SCRIPT_SECRET;
 
   let isAuthorized = false;
 
