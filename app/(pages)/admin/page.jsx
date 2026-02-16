@@ -6,7 +6,6 @@ import Toast from "@/app/components/ui/Toast";
 import AdminHomeLoading from "@/app/components/admin/AdminHomeLoading";
 import AdminHomeHeader from "@/app/components/admin/AdminHomeHeader";
 import QuickAccessCards from "@/app/components/admin/QuickAccessCards";
-import AdminStatsCards from "@/app/components/admin/AdminStatsCards";
 
 
 export default function AdminHomePage() {
@@ -111,15 +110,14 @@ export default function AdminHomePage() {
  return (
   <div className="px-4 flex-1 flex flex-col">
    <div className="flex-1 flex flex-col justify-center py-20">
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto min-w-0 px-2 sm:px-4">
      <Toast toast={toast} setToast={setToast} />
 
-     <div className="bg-white rounded-3xl shadow-xl overflow-hidden border">
+     <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border">
       <AdminHomeHeader />
 
-      <div className="p-8 space-y-8">
-       <QuickAccessCards />
-       <AdminStatsCards stats={stats} loading={dashboardLoading} />
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+       <QuickAccessCards stats={stats} loading={dashboardLoading} />
       </div>
      </div>
     </div>
