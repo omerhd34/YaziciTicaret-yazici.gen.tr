@@ -37,7 +37,14 @@ export default function AdminLoginForm({ onSuccess }) {
     setLoading(false);
    }
   } catch (error) {
-   setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+   // Sunucudan gelen hata mesajını göster (çoklu cihaz desteği için)
+   const serverMessage = error.response?.data?.message;
+   const status = error.response?.status;
+   let message = "Bir hata oluştu. Lütfen tekrar deneyin.";
+   if (serverMessage) message = serverMessage;
+   else if (status === 401) message = "Hesap adı veya şifre hatalı.";
+   else if (status === 500) message = "Sunucu hatası. Lütfen daha sonra tekrar deneyin.";
+   setError(message);
    setLoading(false);
   }
  };

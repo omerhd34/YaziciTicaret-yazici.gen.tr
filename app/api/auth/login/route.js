@@ -36,6 +36,7 @@ export async function POST(request) {
    );
   }
 
+  // Her cihaz kendi cookie'sini alır - birden fazla cihazdan eşzamanlı giriş desteklenir
   const cookieStore = await cookies();
   const signedToken = createSignedToken();
   cookieStore.set(COOKIE_NAME, signedToken, {
