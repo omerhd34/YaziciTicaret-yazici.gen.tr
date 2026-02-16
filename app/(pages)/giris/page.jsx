@@ -9,7 +9,6 @@ import RegisterForm from "@/app/components/auth/RegisterForm";
 import ForgotPasswordModal from "@/app/components/auth/ForgotPasswordModal";
 import EmailVerificationModal from "@/app/components/auth/EmailVerificationModal";
 import AlertMessage from "@/app/components/auth/AlertMessage";
-import ConfirmDialog from "@/app/components/auth/ConfirmDialog";
 
 export default function GirisPage() {
  const router = useRouter();
