@@ -268,7 +268,7 @@ const Header = () => {
       </button>
 
       <Link
-       href="/sepet"
+       href={isAuthenticated ? "/sepet" : "/giris"}
        aria-label={isClient && getCartItemCount() > 0 ? `Sepet (${getCartItemCount()} ürün)` : "Sepet"}
        className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition"
       >
