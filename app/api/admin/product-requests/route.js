@@ -204,3 +204,46 @@ export async function PATCH(request) {
  }
 }
 
+// DELETE - Ürün isteğini sil (Admin)
+export async function DELETE(request) {
+ try {
+  if (!(await requireAdmin())) {
+   return NextResponse.json(
+    { success: false, message: 'Yetkisiz erişim' },
+    { status: 401 }
+   );
+  }
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+   return NextResponse.json(
+    { success: false, message: 'İstek ID gereklidir' },
+    { status: 400 }
+   );
+  }
+
+  await dbConnect();
+
+  const deleted = await ProductRequest.findByIdAndDelete(id);
+
+  if (!deleted) {
+   return NextResponse.json(
+    { success: false, message: 'İstek bulunamadı' },
+    { status: 404 }
+   );
+  }
+
+  return NextResponse.json({
+   success: true,
+   message: 'İstek silindi',
+  });
+ } catch (error) {
+  return NextResponse.json(
+   { success: false, message: 'İstek silinemedi' },
+   { status: 500 }
+  );
+ }
+}
+

@@ -11,7 +11,9 @@ import {
  HiCalendar,
  HiUser,
  HiChevronDown,
+ HiTrash,
 } from "react-icons/hi";
+import ConfirmDialog from "@/app/components/auth/ConfirmDialog";
 
 export default function AdminUrunIstekleriPage() {
  const router = useRouter();
@@ -31,6 +33,7 @@ export default function AdminUrunIstekleriPage() {
  });
  const [statusForm, setStatusForm] = useState("");
  const [submitting, setSubmitting] = useState(false);
+ const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
  const fetchRequests = useCallback(async (statusFilter = filter) => {
   try {
@@ -127,6 +130,32 @@ export default function AdminUrunIstekleriPage() {
   }
  };
 
+ const handleDelete = (e, requestId) => {
+  e.stopPropagation();
+  setDeleteConfirm({ show: true, id: requestId });
+ };
+
+ const confirmDelete = async () => {
+  const id = deleteConfirm.id;
+  setDeleteConfirm({ show: false, id: null });
+
+  try {
+   const response = await axiosInstance.delete(`/api/admin/product-requests?id=${id}`);
+
+   if (response.data.success) {
+    setRequests(requests.filter(req => req._id !== id));
+    if (selectedRequest?._id === id) {
+     setSelectedRequest(null);
+     setStatusForm("");
+    }
+    setToast({ show: true, message: "İstek silindi", type: "success" });
+    fetchRequests(filter);
+   }
+  } catch (error) {
+   setToast({ show: true, message: "İstek silinemedi", type: "error" });
+  }
+ };
+
  const handleLogout = async () => {
   try {
    await axiosInstance.post("/api/auth/logout");
@@ -171,6 +200,15 @@ export default function AdminUrunIstekleriPage() {
  return (
   <div className="min-h-screen bg-gray-50 pb-12">
    <Toast toast={toast} setToast={setToast} />
+   <ConfirmDialog
+    show={deleteConfirm.show}
+    message="Bu ürün isteğini silmek istediğinize emin misiniz?"
+    onConfirm={confirmDelete}
+    onCancel={() => setDeleteConfirm({ show: false, id: null })}
+    confirmText="Sil"
+    cancelText="İptal"
+    confirmColor="red"
+   />
    <AdminOrdersHeader title="Ürün İstekleri" onLogout={handleLogout} />
 
    <div className="container mx-auto px-4 py-6">
@@ -253,8 +291,8 @@ export default function AdminUrunIstekleriPage() {
               : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
              }`}
            >
-            <div className="flex items-start justify-between mb-2">
-             <div className="flex-1 min-w-0 pr-2">
+            <div className="flex items-start justify-between gap-2 mb-2">
+             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                <p className="font-bold truncate text-gray-900 text-base">
                 {request.productName}
@@ -267,17 +305,25 @@ export default function AdminUrunIstekleriPage() {
                {request.name}
               </p>
              </div>
-             <div className="shrink-0">
-              <span className={`text-xs px-2 py-1 rounded-full font-semibold border ${getStatusColor(request.status)}`}>
-               {request.status}
-              </span>
-             </div>
+             <button
+              onClick={(e) => handleDelete(e, request._id)}
+              className="shrink-0 p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+              title="İsteği sil"
+              aria-label="İsteği sil"
+             >
+              <HiTrash size={18} />
+             </button>
             </div>
-            <div className="flex items-center gap-1.5">
-             <HiClock size={14} className="text-gray-400" />
-             <p className="text-xs text-gray-400" suppressHydrationWarning>
-              {formatDate(request.createdAt)}
-             </p>
+            <div className="flex items-center justify-between gap-2">
+             <div className="flex items-center gap-1.5">
+              <HiClock size={14} className="text-gray-400" />
+              <p className="text-xs text-gray-400" suppressHydrationWarning>
+               {formatDate(request.createdAt)}
+              </p>
+             </div>
+             <span className={`text-xs px-2 py-1 rounded-full font-semibold border shrink-0 ${getStatusColor(request.status)}`}>
+              {request.status}
+             </span>
             </div>
            </div>
           ))
