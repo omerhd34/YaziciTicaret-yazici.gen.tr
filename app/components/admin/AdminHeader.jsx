@@ -129,7 +129,7 @@ const AdminHeader = () => {
         className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 hover:text-red-700 hover:bg-red-100 active:bg-red-200 border border-red-200 hover:border-red-300 rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow cursor-pointer"
        >
         <HiLogout size={20} />
-        <span className="hidden sm:inline">Çıkış Yap</span>
+        <span className="hidden sm:inline">Çıkış</span>
        </button>
       )}
      </div>

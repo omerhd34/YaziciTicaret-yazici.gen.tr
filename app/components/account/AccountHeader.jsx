@@ -13,7 +13,7 @@ export default function AccountHeader({ onLogout }) {
     className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition cursor-pointer"
    >
     <HiLogout size={20} />
-    Çıkış Yap
+    Çıkış
    </button>
   </div>
  );

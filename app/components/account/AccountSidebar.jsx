@@ -1,8 +1,7 @@
 "use client";
-import Link from "next/link";
 import { HiUser, HiLocationMarker, HiCog, HiShoppingBag } from "react-icons/hi";
 import { MdInventory2 } from "react-icons/md";
-import { FaHeart, FaCreditCard } from "react-icons/fa";
+import { FaCreditCard } from "react-icons/fa";
 
 export default function AccountSidebar({ userInfo, activeTab, onTabChange }) {
  return (
@@ -38,14 +37,6 @@ export default function AccountSidebar({ userInfo, activeTab, onTabChange }) {
       <MdInventory2 size={20} />
       Siparişlerim
      </button>
-
-     <Link
-      href="/favoriler"
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition cursor-pointer"
-     >
-      <FaHeart size={20} />
-      Favorilerim
-     </Link>
 
      <button
       onClick={() => onTabChange("adresler")}
