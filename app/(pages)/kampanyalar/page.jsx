@@ -9,17 +9,29 @@ import { getProductUrl } from "@/app/utils/productUrl";
 import { useCart } from "@/context/CartContext";
 import Toast from "@/app/components/ui/Toast";
 
-// Kompakt ürün kartı - kampanya listesi için
-function BundleProductCard({ product }) {
- const img = product.images?.[0] || product.colors?.[0]?.images?.[0];
- const url = getProductUrl(product);
- const code = product.serialNumber || product.colors?.[0]?.serialNumber || "—";
+// expectedCode ile eşleşen renk varyantını bul
+function findMatchingColor(product, expectedCode) {
+ if (!expectedCode || !product?.colors?.length) return null;
+ const code = String(expectedCode).trim().toLowerCase();
+ return product.colors.find((c) => {
+  const sn = c?.serialNumber?.trim().toLowerCase();
+  return sn && sn === code;
+ }) || null;
+}
+
+// Kompakt ürün kartı - expectedCode ile eşleşen varyantın görseli kullanılır
+function BundleProductCard({ product, expectedCode }) {
+ const matchingColor = findMatchingColor(product, expectedCode);
+ const img = matchingColor?.images?.[0]
+  || product.images?.[0]
+  || product.colors?.[0]?.images?.[0];
+ const url = getProductUrl(product, expectedCode || matchingColor?.serialNumber);
+ const code = expectedCode || matchingColor?.serialNumber || product.serialNumber || product.colors?.[0]?.serialNumber || "—";
+ const price = matchingColor?.price ?? product.price;
+ const discountPrice = matchingColor?.discountPrice ?? product.discountPrice;
  const displayPrice =
-  product.discountPrice != null && product.discountPrice < product.price
-   ? product.discountPrice
-   : product.price;
- const hasDiscount =
-  product.discountPrice != null && product.discountPrice < product.price;
+  discountPrice != null && discountPrice < price ? discountPrice : price;
+ const hasDiscount = discountPrice != null && discountPrice < price;
 
  return (
   <Link
@@ -65,7 +77,7 @@ function BundleProductCard({ product }) {
      </span>
      {hasDiscount && (
       <span className="text-xs text-gray-400 line-through ml-1">
-       {Number(product.price).toLocaleString("tr-TR")} ₺
+       {Number(price).toLocaleString("tr-TR")} ₺
       </span>
      )}
     </div>
@@ -76,10 +88,15 @@ function BundleProductCard({ product }) {
 
 // Kampanya kartı
 function BundleCard({ bundle, productsMap, onAddToCart, isAdding, isPurchased }) {
- const bundleProducts = (bundle.productIds || [])
+ const productIds = bundle.productIds || [];
+ const productCodes = bundle.productCodes || [];
+ const productIdToCode = Object.fromEntries(
+  productIds.map((id, i) => [id?.toString(), productCodes[i]]).filter(([id]) => id)
+ );
+ const bundleProducts = productIds
   .map((id) => productsMap[id?.toString()])
   .filter(Boolean);
- const count = (bundle.productIds || []).length;
+ const count = productIds.length;
  const productCount = bundleProducts.length || count;
 
  return (
@@ -115,7 +132,11 @@ function BundleCard({ bundle, productsMap, onAddToCart, isAdding, isPurchased })
     <div className="flex flex-nowrap gap-4 overflow-x-auto pb-2 mb-6 -mx-1 px-1">
      {bundleProducts.length > 0 ? (
       bundleProducts.map((product) => (
-       <BundleProductCard key={product._id} product={product} />
+       <BundleProductCard
+        key={product._id}
+        product={product}
+        expectedCode={productIdToCode[product._id?.toString()]}
+       />
       ))
      ) : (
       <p className="text-sm text-gray-500 py-4">
