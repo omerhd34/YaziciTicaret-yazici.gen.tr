@@ -1,5 +1,25 @@
+const fs = require('fs');
+const path = require('path');
+
+// .env.local varsa yükle (canlı site + admin cookie için)
+const envPath = path.join(__dirname, '.env.local');
+if (fs.existsSync(envPath)) {
+ const content = fs.readFileSync(envPath, 'utf8');
+ content.split('\n').forEach((line) => {
+  const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+  if (m) {
+   const key = m[1];
+   let val = (m[2] || '').trim();
+   if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+    val = val.slice(1, -1);
+   }
+   if (!process.env[key]) process.env[key] = val;
+  }
+ });
+}
+
 const axios = require('axios');
-const BASE_URL = process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://yazici.gen.tr";
+const BASE_URL = (process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://yazici.gen.tr").replace(/\/+$/, "");
 const ADMIN_COOKIE = process.env.ADMIN_COOKIE || "admin-session=authenticated";
 
 let products;
