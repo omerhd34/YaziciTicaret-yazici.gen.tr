@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import Logo from "@/app/components/ui/Logo";
 import { useState, useEffect } from "react";
 import { HiLogout } from "react-icons/hi";
 import axiosInstance from "@/lib/axios";
@@ -68,13 +69,7 @@ const AdminHeader = () => {
   <header className="w-full bg-white shadow-md sticky top-0 z-50 border-b border-gray-200">
    <div className="container mx-auto px-4 py-3">
     <div className="flex justify-between items-center gap-4">
-     <Link href="/admin" className="flex items-center group shrink-0">
-      <div className="flex flex-col leading-tight">
-       <span className="font-sans text-2xl md:text-3xl font-extrabold tracking-[0.2em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
-        YAZICI TİCARET
-       </span>
-      </div>
-     </Link>
+     <Logo href="/admin" />
      <nav className="hidden lg:flex items-center gap-1">
       <Link
        href="/admin/son-siparisler"

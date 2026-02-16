@@ -11,6 +11,7 @@ import axiosInstance from "@/lib/axios";
 import { getProductUrl } from "@/app/utils/productUrl";
 import ProductRequestModal from "@/app/components/product/ProductRequestModal";
 import { MENU_ITEMS } from "@/app/utils/menuItems";
+import Logo from "./Logo";
 const HEADER_MESSAGES = [
  "Tüm Türkiye'ye nakliye ve montaj hizmeti !",
  "Bursa'ya özel ücretsiz kargo fırsatı !"
@@ -49,7 +50,7 @@ const Header = () => {
   const cachedAuth = localStorage.getItem('auth_status');
   const cachedAuthTime = localStorage.getItem('auth_status_time');
   const now = Date.now();
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika cache
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 dk
 
   // Cache geçerliyse kullan
   if (cachedAuth && cachedAuthTime && (now - parseInt(cachedAuthTime, 10)) < CACHE_DURATION) {
@@ -58,7 +59,7 @@ const Header = () => {
 
   let isChecking = false;
   let lastCheckTime = 0;
-  const CHECK_COOLDOWN = 60 * 1000; // 60 saniye
+  const CHECK_COOLDOWN = 60 * 1000; // 60 sn
 
   const checkAuth = async () => {
    const now = Date.now();
@@ -100,7 +101,6 @@ const Header = () => {
     localStorage.removeItem('auth_status');
     localStorage.removeItem('auth_status_time');
    } else if (e.key === 'auth_status') {
-    // Auth durumu değiştiyse güncelle
     const newAuth = localStorage.getItem('auth_status');
     setIsAuthenticated(newAuth === 'true');
    }
@@ -249,23 +249,7 @@ const Header = () => {
 
    <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-5" onMouseEnter={() => setActiveMenu(null)}>
     <div className="flex justify-between items-center gap-2 sm:gap-4 lg:gap-6">
-     <Link href="/" className="flex items-center group shrink-0" onClick={closeMenu}>
-      <div className="flex flex-col leading-tight">
-       <div className="block max-[450px]:hidden">
-        <span className="font-sans text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-[0.15em] md:tracking-[0.2em] lg:tracking-[0.25em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
-         YAZICI TİCARET
-        </span>
-       </div>
-       <div className="hidden max-[450px]:flex flex-col">
-        <span className="font-sans text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
-         YAZICI
-        </span>
-        <span className="font-sans text-xl font-extrabold tracking-[0.15em] text-indigo-600 transition-colors duration-1000 ease-out group-hover:text-blue-900 select-none">
-         TİCARET
-        </span>
-       </div>
-      </div>
-     </Link>
+     <Logo closeMenu={closeMenu} />
      <div className="flex items-center gap-1 md:gap-2 lg:gap-3 xl:gap-4 text-slate-700">
       <button
        onClick={() => setIsSearchModalOpen(true)}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaFacebook, FaInstagram } from "react-icons/fa";
 import { HiMail, HiLocationMarker, HiPhone } from "react-icons/hi";
+import Logo from "./Logo";
 
 
 const SOCIAL_LINKS = [
@@ -42,9 +43,7 @@ const Footer = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
      <div className="md:pr-10">
       <div className="mb-4">
-       <Link href="/" className="font-sans text-xl sm:text-2xl font-extrabold tracking-[0.25em] text-white select-none duration-1000 ease-out hover:text-indigo-600">
-        YAZICI TİCARET
-       </Link>
+       <Logo />
       </div>
       <p className="text-sm mb-4 leading-relaxed">
        Beyaz eşyadan elektroniğe, ankastreden klimalara kadar geniş ürün yelpazemizde en kaliteli ürünleri keşfedin. Modern teknoloji, güvenilir markalar ve müşteri memnuniyeti önceliğimizdir.
