@@ -98,8 +98,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
  }, [shipping, billing]);
 
  const payment = order?.payment || null;
- const finalPayment = payment;
- const paymentText = "Kart ile Ödeme (3D Secure)";
+ const paymentText = "Kart ile Ödeme";
 
  const items = useMemo(() => Array.isArray(order?.items) ? order.items : [], [order]);
  const groups = new Map();
@@ -236,7 +235,7 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
      {/* İptal edildiyse iptal nedeni / yönetici mesajı */}
      {isCancelled && (
       <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
-       <div className="text-xs font-semibold text-red-700 mb-1">İptal nedeni (yönetici mesajı):</div>
+       <div className="text-xs font-semibold text-red-700 mb-1">İptal nedeni:</div>
        <div className="text-sm text-gray-800 whitespace-pre-wrap">
         {order?.adminCancelMessage && String(order.adminCancelMessage).trim()
          ? order.adminCancelMessage
