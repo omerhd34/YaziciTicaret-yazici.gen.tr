@@ -3,7 +3,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { HiX } from "react-icons/hi";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
-import { getCardTypeByValue } from "@/lib/cardTypes";
+import { getCardTypeByValue, getCardTypeByType } from "@/lib/cardTypes";
+import { getBankNameFromBin } from "@/lib/binToBank";
 
 export default function CardModal({ show, editingCard, cardForm, setCardForm, cardErrors, setCardErrors, onSubmit, onClose }) {
  useEscapeKey(onClose, { enabled: show });
@@ -11,7 +12,9 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
 
  if (!show) return null;
 
- const cardTypeInfo = getCardTypeByValue(cardForm.cardNumber || "");
+ const cardTypeInfo = editingCard
+  ? getCardTypeByType((editingCard.cardType || "").toLowerCase())
+  : getCardTypeByValue(cardForm.cardNumber || "");
  const isAmex = cardTypeInfo?.type === "amex";
 
  const formatCardNumber = (value) => {
@@ -92,7 +95,7 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
         <div className="relative h-full p-5 flex flex-col justify-between text-white">
          <div className="flex justify-between items-start">
           <span className="text-white font-semibold text-sm uppercase tracking-wide">
-           {cardForm.title?.trim() || "Banka Adı"}
+           {getBankNameFromBin(cardForm.cardNumber || "") || ""}
           </span>
           <div className="h-8 flex items-center">{renderCardLogo()}</div>
          </div>
