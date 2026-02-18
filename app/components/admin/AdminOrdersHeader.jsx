@@ -1,6 +1,6 @@
 "use client";
 
-export default function AdminOrdersHeader({ onLogout, title = "Son Siparişler" }) {
+export default function AdminOrdersHeader({ title = "Son Siparişler" }) {
  return (
   <div className="bg-linear-to-r from-indigo-600 to-purple-600 text-white">
    <div className="container mx-auto px-4 py-8">

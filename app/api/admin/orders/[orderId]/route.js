@@ -23,7 +23,7 @@ export async function PATCH(request, { params }) {
   const resolvedParams = await params;
   const { orderId } = resolvedParams;
   const body = await request.json();
-  const { status, returnRequestStatus, adminMessage } = body || {};
+  const { status, returnRequestStatus, adminMessage, cancelMessage } = body || {};
 
   if (!orderId) {
    return NextResponse.json({ success: false, message: "Sipariş bulunamadı" }, { status: 400 });
@@ -77,6 +77,10 @@ export async function PATCH(request, { params }) {
    // Teslim edildi olarak işaretlenirse teslim tarihini sabitle
    if (statusNorm.includes("teslim") && !user.orders[idx].deliveredAt) {
     update["orders.$.deliveredAt"] = now;
+   }
+   // İptal edildiyse admin mesajını kaydet (müşteri detay ve e-postada gösterilir)
+   if (statusNorm.includes("iptal") && cancelMessage && String(cancelMessage).trim()) {
+    update["orders.$.adminCancelMessage"] = String(cancelMessage).trim().slice(0, 2000);
    }
   }
 
@@ -233,6 +237,7 @@ export async function PATCH(request, { params }) {
      // Güncellenmiş siparişi tekrar oku
      const updatedUser = await User.findById(user._id);
      const updatedOrder = updatedUser?.orders?.find((o) => o.orderId === String(orderId));
+     const adminMsg = (cancelMessage && String(cancelMessage).trim()) || updatedOrder?.adminCancelMessage || "";
 
      await sendUserOrderStatusUpdateEmail({
       userEmail: user.email,
@@ -244,6 +249,7 @@ export async function PATCH(request, { params }) {
       total: updatedOrder?.total || 0,
       items: updatedOrder?.items || [],
       addressSummary: updatedOrder?.addressSummary || "",
+      statusMessageOverride: statusNorm.includes("iptal") && adminMsg ? adminMsg : undefined,
      });
     }
    } catch (e) {

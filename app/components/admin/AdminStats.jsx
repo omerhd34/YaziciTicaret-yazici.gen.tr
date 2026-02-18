@@ -1,15 +1,20 @@
 "use client";
-import { MdPeople, MdReceiptLong } from "react-icons/md";
+import { MdReceiptLong } from "react-icons/md";
 
-export default function AdminStats({ userCount, totalOrders }) {
+export default function AdminStats({
+ shippedOrders = 0,
+ pendingOrders = 0,
+ preparingOrders = 0,
+}) {
  const stats = [
-  { icon: MdPeople, label: "Toplam Kullanıcı", value: userCount, color: "bg-emerald-500" },
-  { icon: MdReceiptLong, label: "Toplam Sipariş", value: totalOrders, color: "bg-indigo-500" },
+  { icon: MdReceiptLong, label: "Bekleyen", value: pendingOrders, color: "bg-yellow-500" },
+  { icon: MdReceiptLong, label: "Hazırlanıyor", value: preparingOrders, color: "bg-yellow-500" },
+  { icon: MdReceiptLong, label: "Kargoya Verilen", value: shippedOrders, color: "bg-blue-500" },
  ];
 
  return (
   <div className="container mx-auto px-4 -mt-6">
-   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+   <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-8">
     {stats.map((stat, idx) => (
      <div key={idx} className="bg-white rounded-xl shadow-md p-6 flex items-center gap-4">
       <div className={`${stat.color} p-4 rounded-lg text-white`}>

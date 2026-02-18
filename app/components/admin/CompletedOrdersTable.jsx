@@ -7,6 +7,7 @@ export default function CompletedOrdersTable({
  orders,
  filter,
  onFilterChange,
+ filterCounts = {},
  getRowBgClass,
  onReturnStatusChange,
  onDetailClick,
@@ -26,11 +27,13 @@ export default function CompletedOrdersTable({
   { key: `rr:${normalizeText("Tamamlandı")}`, label: "İade: Tamamlandı" },
  ];
 
+ const getCount = (key) => filterCounts[key] ?? 0;
+
  if (orders.length === 0) {
   return (
    <div className="bg-white rounded-xl shadow-md p-6">
     <div className="flex items-center justify-between mb-4">
-     <h2 className="text-xl font-bold">Tamamlanan Siparişler</h2>
+     <h2 className="text-xl font-bold">Siparişler</h2>
      <div className="flex flex-wrap items-center justify-end gap-2">
       {filterOptions.map((f) => {
        const active = filter === f.key;
@@ -45,7 +48,7 @@ export default function CompletedOrdersTable({
            : "bg-white border-gray-200 text-gray-700 hover:border-slate-300 hover:bg-gray-50"
           }`}
         >
-         {f.label}
+         {f.label} ({getCount(f.key)})
         </button>
        );
       })}
@@ -59,7 +62,7 @@ export default function CompletedOrdersTable({
  return (
   <div className="bg-white rounded-xl shadow-md p-6">
    <div className="flex items-center justify-between mb-4">
-    <h2 className="text-xl font-bold">Tamamlanan Siparişler</h2>
+    <h2 className="text-xl font-bold">Siparişler</h2>
     <div className="flex flex-wrap items-center justify-end gap-2">
      {filterOptions.map((f) => {
       const active = filter === f.key;
@@ -74,7 +77,7 @@ export default function CompletedOrdersTable({
           : "bg-white border-gray-200 text-gray-700 hover:border-slate-300 hover:bg-gray-50"
          }`}
        >
-        {f.label}
+        {f.label} ({getCount(f.key)})
        </button>
       );
      })}

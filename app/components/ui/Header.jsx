@@ -154,6 +154,20 @@ const Header = () => {
   }
  };
 
+ const handleSepetClick = async (e) => {
+  e.preventDefault();
+  try {
+   const res = await axiosInstance.get("/api/user/check", { cache: 'no-store' });
+   if (res.data?.authenticated) {
+    router.push("/sepet");
+   } else {
+    router.push("/giris");
+   }
+  } catch (error) {
+   router.push("/giris");
+  }
+ };
+
  const closeMenu = () => {
   setActiveMenu(null);
   setIsMobileMenuOpen(false);
@@ -267,10 +281,11 @@ const Header = () => {
        <HiUser size={22} className="group-hover:text-indigo-600 transition" />
       </button>
 
-      <Link
-       href={isAuthenticated ? "/sepet" : "/giris"}
+      <button
+       type="button"
+       onClick={handleSepetClick}
        aria-label={isClient && getCartItemCount() > 0 ? `Sepet (${getCartItemCount()} ürün)` : "Sepet"}
-       className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition"
+       className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
       >
        <div className="relative">
         <FaShoppingCart size={22} className="group-hover:text-indigo-600 transition" />
@@ -280,7 +295,7 @@ const Header = () => {
          </span>
         )}
        </div>
-      </Link>
+      </button>
 
       <Link
        href="/favoriler"

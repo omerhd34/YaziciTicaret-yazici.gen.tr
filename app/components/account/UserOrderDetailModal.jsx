@@ -233,7 +233,19 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
     </div>
 
     <div className="p-6 space-y-6 bg-gray-50">
-     {/* Sipariş özeti - Admin ile aynı 4 sütun düzeni */}
+     {/* İptal edildiyse iptal nedeni / yönetici mesajı */}
+     {isCancelled && (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+       <div className="text-xs font-semibold text-red-700 mb-1">İptal nedeni (yönetici mesajı):</div>
+       <div className="text-sm text-gray-800 whitespace-pre-wrap">
+        {order?.adminCancelMessage && String(order.adminCancelMessage).trim()
+         ? order.adminCancelMessage
+         : "İptal nedeni belirtilmemiş."}
+       </div>
+      </div>
+     )}
+
+     {/* Sipariş özeti  */}
      <div className="grid md:grid-cols-4 gap-4">
       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
        <div className="text-xs text-gray-500 mb-1">Durum:</div>

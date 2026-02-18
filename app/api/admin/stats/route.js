@@ -70,9 +70,14 @@ export async function GET() {
   // Tüm siparişleri topla ve filtrele
   let totalOrders = 0;
   let pendingOrders = 0;
+  let preparingOrders = 0;
   let shippedOrders = 0;
   let deliveredOrders = 0;
   let cancelledOrders = 0;
+  let returnTalepEdildi = 0;
+  let returnOnaylandi = 0;
+  let returnIptalEdildi = 0;
+  let returnTamamlandi = 0;
 
   users.forEach(user => {
    if (!user.orders || !Array.isArray(user.orders)) return;
@@ -98,9 +103,17 @@ export async function GET() {
 
     // Durum bazlı sayım
     if (status === 'Beklemede') pendingOrders++;
+    else if (status.includes('Hazırlanıyor')) preparingOrders++;
     else if (status.includes('Kargoya')) shippedOrders++;
     else if (status.includes('Teslim')) deliveredOrders++;
     else if (status.includes('İptal') || status.includes('iptal')) cancelledOrders++;
+
+    // İade talebi durumları
+    const rrStatus = (order.returnRequest?.status || '').trim();
+    if (rrStatus === 'Talep Edildi') returnTalepEdildi++;
+    else if (rrStatus === 'Onaylandı') returnOnaylandi++;
+    else if (rrStatus === 'İptal Edildi') returnIptalEdildi++;
+    else if (rrStatus === 'Tamamlandı') returnTamamlandi++;
    });
   });
 
@@ -112,9 +125,14 @@ export async function GET() {
     inStockProductCount,
     totalOrders,
     pendingOrders,
+    preparingOrders,
     shippedOrders,
     deliveredOrders,
     cancelledOrders,
+    returnTalepEdildi,
+    returnOnaylandi,
+    returnIptalEdildi,
+    returnTamamlandi,
     totalContacts,
     unreadContacts,
     totalProductRequests,

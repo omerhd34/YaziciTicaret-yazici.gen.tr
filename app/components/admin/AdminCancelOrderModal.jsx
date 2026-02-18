@@ -8,12 +8,16 @@ import { useEscapeKey } from "@/hooks/useEscapeKey";
 export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCancel }) {
  const [loading, setLoading] = useState(false);
  const [password, setPassword] = useState("");
+ const [message, setMessage] = useState("");
  const [showPassword, setShowPassword] = useState(false);
  const [verificationError, setVerificationError] = useState("");
+ const [messageError, setMessageError] = useState("");
 
  const handleCancel = () => {
   setPassword("");
+  setMessage("");
   setVerificationError("");
+  setMessageError("");
   onCancel();
  };
 
@@ -26,8 +30,13 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
    setVerificationError("Lütfen şifrenizi giriniz.");
    return;
   }
+  if (!message.trim()) {
+   setMessageError("Müşteriye ileteceğiniz iptal mesajını yazınız.");
+   return;
+  }
 
   setVerificationError("");
+  setMessageError("");
   setLoading(true);
 
   try {
@@ -42,9 +51,10 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
     return;
    }
 
-   // Şifre doğrulandı, siparişi iptal et
-   await onConfirm(orderId);
-   setPassword(""); // Başarılı olursa temizle
+   // Şifre doğrulandı, siparişi iptal et (mesaj ile)
+   await onConfirm(orderId, message.trim());
+   setPassword("");
+   setMessage("");
   } catch (error) {
    setVerificationError("Bir hata oluştu. Lütfen tekrar deneyin.");
    setLoading(false);
@@ -118,6 +128,29 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
       )}
      </div>
 
+     {/* Müşteriye iletilen iptal mesajı */}
+     <div className="mb-4">
+      <label htmlFor="admin-cancel-message" className="block text-sm font-semibold text-gray-700 mb-2">
+       Müşteriye iletilen mesaj <span className="text-red-500">*</span>
+      </label>
+      <textarea
+       id="admin-cancel-message"
+       value={message}
+       onChange={(e) => {
+        setMessage(e.target.value);
+        setMessageError("");
+       }}
+       placeholder="İptal nedenini veya müşteriye iletmek istediğiniz mesajı yazınız. Bu mesaj sipariş detayında ve e-postada görünecektir."
+       disabled={loading}
+       rows={3}
+       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none ${messageError ? "border-red-500" : "border-gray-300"
+        } disabled:opacity-50 disabled:cursor-not-allowed`}
+      />
+      {messageError && (
+       <p className="text-xs text-red-600 mt-1">{messageError}</p>
+      )}
+     </div>
+
      <div className="flex justify-end gap-3">
       <button
        onClick={handleCancel}
@@ -128,7 +161,7 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
       </button>
       <button
        onClick={handleConfirm}
-       disabled={loading || !password.trim()}
+       disabled={loading || !password.trim() || !message.trim()}
        className="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed relative"
       >
        {loading ? (

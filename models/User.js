@@ -133,6 +133,7 @@ const UserSchema = new mongoose.Schema({
   addressSummary: String,
   shippingAddress: mongoose.Schema.Types.Mixed,
   billingAddress: mongoose.Schema.Types.Mixed,
+  adminCancelMessage: { type: String, default: '' },
   returnRequest: {
    status: { type: String, default: "" },   // Talep Edildi / Onaylandı / Reddedildi vb.
    requestedAt: Date,

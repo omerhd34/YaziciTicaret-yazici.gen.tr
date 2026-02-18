@@ -18,7 +18,11 @@ export default function AdminSonSiparislerPage() {
  const [isAuthenticated, setIsAuthenticated] = useState(false);
  const [authLoading, setAuthLoading] = useState(true);
 
- const [adminStats, setAdminStats] = useState({ userCount: 0, totalOrders: 0 });
+ const [adminStats, setAdminStats] = useState({
+  shippedOrders: 0,
+  pendingOrders: 0,
+  preparingOrders: 0,
+ });
  const [recentOrders, setRecentOrders] = useState([]);
  const [updatingOrderId, setUpdatingOrderId] = useState(null);
  const [updatingReturnOrderId, setUpdatingReturnOrderId] = useState(null);
@@ -93,9 +97,11 @@ export default function AdminSonSiparislerPage() {
   try {
    const res = await axiosInstance.get("/api/admin/stats");
    if (res.data?.success) {
+    const s = res.data.stats || {};
     setAdminStats({
-     userCount: res.data.stats?.userCount || 0,
-     totalOrders: res.data.stats?.totalOrders || 0,
+     shippedOrders: s.shippedOrders ?? 0,
+     pendingOrders: s.pendingOrders ?? 0,
+     preparingOrders: s.preparingOrders ?? 0,
     });
    }
   } catch {
@@ -220,7 +226,7 @@ export default function AdminSonSiparislerPage() {
   setCancelOrderModal({ show: true, orderId });
  };
 
- const handleCancelOrderConfirm = async (orderId) => {
+ const handleCancelOrderConfirm = async (orderId, cancelMessage) => {
   if (!orderId) return;
 
   try {
@@ -229,6 +235,7 @@ export default function AdminSonSiparislerPage() {
 
    const res = await axiosInstance.patch(`/api/admin/orders/${orderId}`, {
     status: "İptal Edildi",
+    cancelMessage: cancelMessage || "",
    });
 
    if (!res.data?.success) {
@@ -236,9 +243,14 @@ export default function AdminSonSiparislerPage() {
     return;
    }
 
+   const adminCancelMessage = (cancelMessage && String(cancelMessage).trim()) || "";
    setToast({ show: true, message: "Sipariş başarıyla iptal edildi.", type: "success" });
    setRecentOrders((prev) =>
-    prev.map((r) => (r?.order?.orderId === orderId ? { ...r, order: { ...r.order, status: "İptal Edildi" } } : r))
+    prev.map((r) =>
+     r?.order?.orderId === orderId
+      ? { ...r, order: { ...r.order, status: "İptal Edildi", adminCancelMessage } }
+      : r
+    )
    );
    setDetailModal((prev) => {
     if (!prev?.show || prev?.row?.order?.orderId !== orderId) return prev;
@@ -249,6 +261,7 @@ export default function AdminSonSiparislerPage() {
       order: {
        ...(prev.row?.order || {}),
        status: "İptal Edildi",
+       adminCancelMessage,
       },
      },
     };
@@ -294,6 +307,36 @@ export default function AdminSonSiparislerPage() {
   });
  }, [completedOrders, completedFilter]);
 
+ const completedFilterCounts = useMemo(() => {
+  const list = completedOrders || [];
+  const counts = {
+   all: list.length,
+   cancelled: 0,
+   delivered: 0,
+   [`rr:${normalizeText("Talep Edildi")}`]: 0,
+   [`rr:${normalizeText("Onaylandı")}`]: 0,
+   [`rr:${normalizeText("Reddedildi")}`]: 0,
+   [`rr:${normalizeText("İptal Edildi")}`]: 0,
+   [`rr:${normalizeText("Tamamlandı")}`]: 0,
+  };
+  list.forEach((row) => {
+   const o = row?.order || {};
+   const statusNorm = normalizeText(o?.status || "");
+   const rrStatus = String(o?.returnRequest?.status || "").trim();
+   const hasRR = Boolean(rrStatus);
+   const rrNorm = normalizeText(rrStatus);
+
+   if (statusNorm.includes("iptal")) counts.cancelled++;
+   else if (!hasRR) counts.delivered++;
+   else if (rrNorm === normalizeText("Talep Edildi")) counts[`rr:${normalizeText("Talep Edildi")}`]++;
+   else if (rrNorm === normalizeText("Onaylandı")) counts[`rr:${normalizeText("Onaylandı")}`]++;
+   else if (rrNorm === normalizeText("Reddedildi")) counts[`rr:${normalizeText("Reddedildi")}`]++;
+   else if (rrNorm === normalizeText("İptal Edildi")) counts[`rr:${normalizeText("İptal Edildi")}`]++;
+   else if (rrNorm === normalizeText("Tamamlandı")) counts[`rr:${normalizeText("Tamamlandı")}`]++;
+  });
+  return counts;
+ }, [completedOrders]);
+
  useEffect(() => {
   setCompletedPage(0);
  }, [completedFilter]);
@@ -335,7 +378,11 @@ export default function AdminSonSiparislerPage() {
   <div className="min-h-screen bg-gray-50 pb-12">
    <Toast toast={toast} setToast={setToast} />
    <AdminOrdersHeader onLogout={handleLogout} />
-   <AdminStats userCount={adminStats.userCount} totalOrders={adminStats.totalOrders} />
+   <AdminStats
+    pendingOrders={adminStats.pendingOrders}
+    shippedOrders={adminStats.shippedOrders}
+    preparingOrders={adminStats.preparingOrders}
+   />
 
    <div className="container mx-auto px-4">
     <ActiveOrdersTable
@@ -356,6 +403,7 @@ export default function AdminSonSiparislerPage() {
      orders={pagedCompletedOrders}
      filter={completedFilter}
      onFilterChange={setCompletedFilter}
+     filterCounts={completedFilterCounts}
      getRowBgClass={getRowBgClass}
      onReturnStatusChange={handleReturnStatusChangeRequest}
      onDetailClick={openOrderDetail}
