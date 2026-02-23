@@ -198,48 +198,21 @@ export async function PUT(request) {
    user.password = hashedNewPassword;
   }
 
-  // Email değişikliği kontrolü - başka bir kullanıcıda aynı email var mı?
-  if (body.email && body.email !== user.email) {
-   const existingUser = await User.findOne({ email: body.email.toLowerCase() });
-   if (existingUser && existingUser._id.toString() !== user._id.toString()) {
-    return NextResponse.json(
-     { success: false, message: 'Bu e-posta adresi zaten kullanılıyor' },
-     { status: 400 }
-    );
-   }
-  }
-
   // Profil bilgilerini güncelle
   if (body.firstName) user.firstName = body.firstName.trim();
   if (body.lastName) user.lastName = body.lastName.trim();
-  // Geriye dönük uyumluluk için name'i de güncelle
   if (body.firstName || body.lastName) {
    const firstName = body.firstName !== undefined ? body.firstName.trim() : (user.firstName || '');
    const lastName = body.lastName !== undefined ? body.lastName.trim() : (user.lastName || '');
    user.name = `${firstName} ${lastName}`.trim();
   } else if (body.name) {
    user.name = body.name.trim();
-   // Eğer sadece name gönderilmişse firstName ve lastName'i de güncelle
    if (!user.firstName && !user.lastName) {
     const parts = body.name.trim().split(' ');
     user.firstName = parts[0] || '';
     user.lastName = parts.slice(1).join(' ') || '';
    }
   }
-  if (body.email) user.email = body.email.toLowerCase();
-  if (body.phone !== undefined) user.phone = body.phone || '';
-
-  if (body.identityNumber !== undefined) {
-   const tc = String(body.identityNumber || '').replace(/\D/g, '').trim();
-   if (tc && tc.length !== 11) {
-    return NextResponse.json(
-     { success: false, message: 'TC Kimlik No 11 haneli olmalıdır.' },
-     { status: 400 }
-    );
-   }
-   user.identityNumber = tc || '';
-  }
-
   // Bildirim tercihlerini güncelle
   if (body.notificationPreferences) {
    if (!user.notificationPreferences) {

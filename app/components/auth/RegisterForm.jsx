@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import axiosInstance from "@/lib/axios";
-import { HiMail, HiLockClosed, HiUser, HiPhone, HiEye, HiEyeOff } from "react-icons/hi";
+import { HiMail, HiLockClosed, HiUser, HiPhone, HiIdentification, HiEye, HiEyeOff } from "react-icons/hi";
 import { FaAsterisk } from "react-icons/fa";
 import Link from "next/link";
 import AlertMessage from "./AlertMessage";
@@ -12,6 +12,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
   lastName: "",
   email: "",
   phone: "",
+  identityNumber: "",
   password: "",
   confirmPassword: "",
  });
@@ -90,12 +91,20 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
    return;
   }
 
+  const tcDigits = (form.identityNumber || "").replace(/\D/g, "");
+  if (tcDigits.length !== 11) {
+   setError("TC Kimlik No 11 haneli olmalıdır");
+   setLoading(false);
+   return;
+  }
+
   try {
    const res = await axiosInstance.post("/api/user/register", {
     firstName: form.firstName.trim(),
     lastName: form.lastName.trim(),
     email: form.email,
     phone: form.phone,
+    identityNumber: tcDigits,
     password: form.password,
    });
 
@@ -111,6 +120,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       lastName: "",
       email: "",
       phone: "",
+      identityNumber: "",
       password: "",
       confirmPassword: "",
      });
@@ -220,6 +230,28 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       onChange={(e) => setForm({ ...form, phone: e.target.value })}
       className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
       placeholder="0XXXXXXXXXX"
+      required
+     />
+    </div>
+   </div>
+
+   <div>
+    <label className="block text-sm font-bold text-gray-700 mb-2">
+     TC Kimlik No <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
+    </label>
+    <div className="relative">
+     <HiIdentification
+      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+      size={20}
+     />
+     <input
+      type="text"
+      inputMode="numeric"
+      value={form.identityNumber}
+      onChange={(e) => setForm({ ...form, identityNumber: e.target.value.replace(/\D/g, "").slice(0, 11) })}
+      className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+      placeholder="11 haneli TC Kimlik No"
+      maxLength={11}
       required
      />
     </div>

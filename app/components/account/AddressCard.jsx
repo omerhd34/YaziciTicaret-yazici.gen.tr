@@ -15,7 +15,7 @@ ${address.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 
     <div className="absolute top-0 right-0">
      <div className="flex items-center gap-1 bg-indigo-600 text-white text-xs font-semibold pl-3 pr-2.5 py-1 rounded-bl-xl shadow-sm">
       <HiStar size={12} className="shrink-0" />
-      Varsayılan
+       
      </div>
     </div>
    )}

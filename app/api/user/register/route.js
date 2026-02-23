@@ -7,7 +7,7 @@ export async function POST(request) {
  try {
   await dbConnect();
 
-  const { firstName, lastName, name, email, phone, password } = await request.json();
+  const { firstName, lastName, email, phone, identityNumber, password } = await request.json();
 
   // Validasyon
   if (!firstName || !firstName.trim()) {
@@ -103,6 +103,22 @@ export async function POST(request) {
    );
   }
 
+  const tcDigits = String(identityNumber || '').replace(/\D/g, '').trim();
+  if (tcDigits.length !== 11) {
+   return NextResponse.json(
+    { success: false, message: 'TC Kimlik No 11 haneli olmalıdır.' },
+    { status: 400 }
+   );
+  }
+
+  const existingUserByTc = await User.findOne({ identityNumber: tcDigits });
+  if (existingUserByTc) {
+   return NextResponse.json(
+    { success: false, message: 'Bu TC Kimlik No ile daha önce hesap oluşturulmuş.' },
+    { status: 400 }
+   );
+  }
+
   const hashedPassword = Buffer.from(password).toString('base64');
   const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
   const verificationCodeExpires = new Date();
@@ -118,6 +134,7 @@ export async function POST(request) {
    name: fullName, // Geriye dönük uyumluluk için
    email: email.toLowerCase(),
    phone,
+   identityNumber: tcDigits,
    password: hashedPassword,
    emailVerificationCode: codeString,
    emailVerificationCodeExpires: verificationCodeExpires,

@@ -9,7 +9,7 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
     <div className="grid md:grid-cols-2 gap-6">
      <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-       Ad <span className="text-red-500">*</span>
+       İsim <span className="text-red-500">*</span>
       </label>
       <input
        type="text"
@@ -32,7 +32,7 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
 
      <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-       Soyad <span className="text-red-500">*</span>
+       Soyisim <span className="text-red-500">*</span>
       </label>
       <input
        type="text"
@@ -60,34 +60,9 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
       <input
        type="email"
        value={userInfo.email}
-       onChange={(e) => {
-        setUserInfo({ ...userInfo, email: e.target.value });
-        if (profileErrors.email) {
-         setProfileErrors({ ...profileErrors, email: '' });
-        }
-       }}
-       onBlur={(e) => {
-        const email = e.target.value.trim();
-        if (email) {
-         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-         if (!emailRegex.test(email)) {
-          setProfileErrors(prev => ({ ...prev, email: "Geçerli bir e-posta adresi giriniz! (Örn: ornek@email.com)" }));
-         } else {
-          const parts = email.split('@');
-          if (parts.length !== 2) {
-           setProfileErrors(prev => ({ ...prev, email: "Geçerli bir e-posta adresi giriniz!" }));
-          } else {
-           const domain = parts[1];
-           if (domain.endsWith('.') || !domain.includes('.') || domain.split('.').pop().length < 2) {
-            setProfileErrors(prev => ({ ...prev, email: "E-posta adresinin domain kısmı geçersiz! (Örn: @gmail.com)" }));
-           } else {
-            setProfileErrors(prev => ({ ...prev, email: '' }));
-           }
-          }
-         }
-        }
-       }}
-       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.email ? 'border-red-500' : 'border-gray-300'
+       readOnly
+       title="Üyelik sonrası e-posta adresi değiştirilemez."
+       className={`w-full border rounded-lg px-4 py-3 bg-gray-50 text-gray-600 cursor-not-allowed ${profileErrors.email ? 'border-red-500' : 'border-gray-300'
         }`}
        required
       />
@@ -103,16 +78,11 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
       <input
        type="tel"
        value={userInfo.phone}
-       onChange={(e) => {
-        const value = e.target.value.replace(/[^\d]/g, '');
-        setUserInfo({ ...userInfo, phone: value });
-        if (profileErrors.phone) {
-         setProfileErrors({ ...profileErrors, phone: '' });
-        }
-       }}
+       readOnly
+       title="Üyelik sonrası telefon numarası değiştirilemez."
        maxLength={11}
        placeholder="0XXXXXXXXXX"
-       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.phone ? 'border-red-500' : 'border-gray-300'
+       className={`w-full border rounded-lg px-4 py-3 bg-gray-50 text-gray-600 cursor-not-allowed ${profileErrors.phone ? 'border-red-500' : 'border-gray-300'
         }`}
        required
       />
@@ -129,16 +99,11 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
        type="text"
        inputMode="numeric"
        value={userInfo.identityNumber || ''}
-       onChange={(e) => {
-        const value = e.target.value.replace(/[^\d]/g, '').slice(0, 11);
-        setUserInfo({ ...userInfo, identityNumber: value });
-        if (profileErrors.identityNumber) {
-         setProfileErrors({ ...profileErrors, identityNumber: '' });
-        }
-       }}
+       readOnly
+       title="Üyelik sonrası TC Kimlik No değiştirilemez."
        maxLength={11}
        placeholder="11 haneli TC Kimlik No"
-       className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none ${profileErrors.identityNumber ? 'border-red-500' : 'border-gray-300'
+       className={`w-full border rounded-lg px-4 py-3 bg-gray-50 text-gray-600 cursor-not-allowed ${profileErrors.identityNumber ? 'border-red-500' : 'border-gray-300'
         }`}
       />
       {profileErrors.identityNumber && (
