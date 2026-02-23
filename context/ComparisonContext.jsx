@@ -3,6 +3,23 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const ComparisonContext = createContext();
 
+// Menüde Ankastre: "Ankastre Bulaşık Makinesi", Beyaz Eşya: "Bulaşık Makinesi". Aynı tip = karşılaştırılabilir.
+// "Set Üstü Ocak" (Beyaz) ile "Ankastre Ocak" aynı grupta.
+const normalizeComparisonSubCategory = (sub) => {
+ let s = (sub || "").trim();
+ if (!s) return "";
+ if (s.startsWith("Ankastre ")) s = s.slice("Ankastre ".length).trim();
+ if (s === "Set Üstü Ocak") return "Ocak";
+ return s;
+};
+
+const getComparisonCategoryKey = (product) => {
+ if (!product) return "";
+ const sub = normalizeComparisonSubCategory(product.subCategory);
+ if (sub) return sub;
+ return (product.category || "").trim();
+};
+
 // Ekran boyutuna göre maksimum ürün sayısını hesapla
 const getMaxComparisonItems = () => {
  if (typeof window === "undefined") return 4;
@@ -132,6 +149,18 @@ export function ComparisonProvider({ children }) {
    return { success: false, message: "Bu ürün zaten karşılaştırmada" };
   }
 
+  // Aynı kategori kuralı: listede ürün varsa sadece aynı category+subCategory eklenebilir
+  if (comparisonItems.length > 0) {
+   const listKey = getComparisonCategoryKey(comparisonItems[0]);
+   const productKey = getComparisonCategoryKey(product);
+   if (listKey !== productKey) {
+    return {
+     success: false,
+     message: "Sadece aynı kategorideki ürünler karşılaştırılabilir."
+    };
+   }
+  }
+
   // Maksimum ürün sayısını kontrol et
   const currentMaxItems = typeof window !== "undefined" ? getMaxComparisonItems() : maxItems;
   if (comparisonItems.length >= currentMaxItems) {
@@ -175,6 +204,21 @@ export function ComparisonProvider({ children }) {
   return comparisonItems.length < currentMaxItems;
  };
 
+ // Ürün karşılaştırmaya eklenebilir mi? (aynı kategori + limit)
+ const canAddToComparison = (product) => {
+  if (!product || !product._id) return false;
+  if (comparisonItems.some((item) => String(item._id) === String(product._id))) return true;
+  if (comparisonItems.length === 0) {
+   const currentMaxItems = typeof window !== "undefined" ? getMaxComparisonItems() : maxItems;
+   return currentMaxItems > 0;
+  }
+  const listKey = getComparisonCategoryKey(comparisonItems[0]);
+  const productKey = getComparisonCategoryKey(product);
+  if (listKey !== productKey) return false;
+  const currentMaxItems = typeof window !== "undefined" ? getMaxComparisonItems() : maxItems;
+  return comparisonItems.length < currentMaxItems;
+ };
+
  const value = {
   comparisonItems,
   addToComparison,
@@ -183,6 +227,7 @@ export function ComparisonProvider({ children }) {
   isInComparison,
   getComparisonCount,
   canAddMore,
+  canAddToComparison,
   maxItems,
  };
 
