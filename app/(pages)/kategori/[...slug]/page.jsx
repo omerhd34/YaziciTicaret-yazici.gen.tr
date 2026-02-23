@@ -77,7 +77,7 @@ export default function KategoriPage() {
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
  const { addToCart, addToFavorites, removeFromFavorites, isFavorite, userId } = useCart();
- const { addToComparison, removeFromComparison, isInComparison } = useComparison();
+ const { addToComparison, removeFromComparison, isInComparison, canAddToComparison } = useComparison();
 
  const isProductDetailPage = useMemo(() => {
   if (slug.length === 3) {
@@ -663,7 +663,10 @@ export default function KategoriPage() {
   if (isCurrentlyInComparison) {
    removeFromComparison(productId);
   } else {
-   addToComparison(product);
+   const result = addToComparison(product);
+   if (!result.success && result.message) {
+    setToast({ show: true, message: result.message, type: "error" });
+   }
   }
  };
 
@@ -1024,6 +1027,7 @@ export default function KategoriPage() {
         addedToCart={addedToCart}
         isFavorite={isFavorite(product._id)}
         isInComparison={isInComparison(product._id)}
+        comparisonDisabled={product ? !canAddToComparison(product) : false}
         onAddToCart={handleAddToCart}
         onFavoriteToggle={handleFavoriteToggle}
         onComparisonToggle={handleComparisonToggle}

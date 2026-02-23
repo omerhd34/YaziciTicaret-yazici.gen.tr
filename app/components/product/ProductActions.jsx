@@ -8,6 +8,7 @@ export default function ProductActions({
  addedToCart,
  isFavorite,
  isInComparison,
+ comparisonDisabled,
  onAddToCart,
  onFavoriteToggle,
  onComparisonToggle,
@@ -35,11 +36,16 @@ export default function ProductActions({
    </button>
    <button
     onClick={onComparisonToggle}
-    className={`p-3 sm:p-4 rounded-lg border-2 transition cursor-pointer ${isInComparison
-     ? "border-green-700 bg-green-700 text-white"
-     : "border-gray-300 bg-white text-gray-500 hover:border-green-400 hover:bg-indigo-50 hover:text-green-400"
+    disabled={comparisonDisabled && !isInComparison}
+    className={`p-3 sm:p-4 rounded-lg border-2 transition ${(isInComparison || !comparisonDisabled)
+     ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+     } ${isInComparison
+      ? "border-green-700 bg-green-700 text-white"
+      : comparisonDisabled
+       ? "border-gray-200 bg-gray-50 text-gray-400"
+       : "border-gray-300 bg-white text-gray-500 hover:border-green-400 hover:bg-indigo-50 hover:text-green-400"
      }`}
-    title={isInComparison ? "Karşılaştırmadan Çıkar" : "Karşılaştırmaya Ekle"}
+    title={isInComparison ? "Karşılaştırmadan Çıkar" : comparisonDisabled ? "Sadece aynı kategorideki ürünler karşılaştırılabilir" : "Karşılaştırmaya Ekle"}
    >
     <HiSwitchHorizontal size={20} className="sm:w-6 sm:h-6" />
    </button>

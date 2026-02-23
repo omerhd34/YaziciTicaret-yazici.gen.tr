@@ -15,9 +15,10 @@ export default function ProductCard({ product, priority = false, onColorChange, 
  const [isImageHovered, setIsImageHovered] = useState(false);
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
  const { addToFavorites, removeFromFavorites, isFavorite: checkFavorite, addToCart, removeFromCart, cart, userId } = useCart();
- const { addToComparison, removeFromComparison, isInComparison, canAddMore } = useComparison();
+ const { addToComparison, removeFromComparison, isInComparison, canAddToComparison } = useComparison();
  const isFavorite = checkFavorite(product._id);
  const inComparison = isInComparison(product._id);
+ const canAddCompare = canAddToComparison(product);
 
  const allColors = product._allColors || product.colors;
  const validColors = allColors ? allColors.filter(c => typeof c === 'object' && c.serialNumber) : [];
@@ -124,39 +125,46 @@ export default function ProductCard({ product, priority = false, onColorChange, 
 
    <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
     <button
-    onClick={(e) => {
-     e.preventDefault();
-     if (!userId) {
-      router.push("/giris");
-      return;
-     }
-     if (inComparison) {
-      removeFromComparison(product._id);
-     } else {
-      addToComparison(product);
-     }
-    }}
-     className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${inComparison
-      ? "bg-green-700 text-white"
-      : "bg-white text-gray-400 hover:bg-green-50 hover:text-green-600"
+     onClick={(e) => {
+      e.preventDefault();
+      if (!userId) {
+       router.push("/giris");
+       return;
+      }
+      if (!canAddCompare && !inComparison) return;
+      if (inComparison) {
+       removeFromComparison(product._id);
+      } else {
+       addToComparison(product);
+      }
+     }}
+     disabled={!canAddCompare && !inComparison}
+     className={`p-2 rounded-full shadow-md transition-all ${(inComparison || canAddCompare)
+      ? "cursor-pointer"
+      : "cursor-not-allowed opacity-50"
+      } ${inComparison
+       ? "bg-green-700 text-white"
+       : canAddCompare
+        ? "bg-white text-gray-400 hover:bg-green-50 hover:text-green-600"
+        : "bg-white text-gray-300"
       }`}
-     title={inComparison ? "Karşılaştırmadan Çıkar" : "Karşılaştırmaya Ekle"}
+     title={inComparison ? "Karşılaştırmadan Çıkar" : canAddCompare ? "Karşılaştırmaya Ekle" : "Sadece aynı kategorideki ürünler karşılaştırılabilir"}
     >
      <HiSwitchHorizontal size={18} />
     </button>
     <button
-    onClick={(e) => {
-     e.preventDefault();
-     if (!userId) {
-      router.push("/giris");
-      return;
-     }
-     if (isFavorite) {
-      removeFromFavorites(product._id);
-     } else {
-      addToFavorites(product);
-     }
-    }}
+     onClick={(e) => {
+      e.preventDefault();
+      if (!userId) {
+       router.push("/giris");
+       return;
+      }
+      if (isFavorite) {
+       removeFromFavorites(product._id);
+      } else {
+       addToFavorites(product);
+      }
+     }}
      className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${isFavorite
       ? "bg-red-600 text-white"
       : "bg-white text-gray-400 hover:bg-red-50 hover:text-red-500"
