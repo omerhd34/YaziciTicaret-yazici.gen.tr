@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createIyzicoClient } from '@/lib/iyzico';
 import { getIyzicoUserMessage } from '@/lib/iyzicoErrorMessages';
+import { sendUserOrderReceivedEmail } from '@/lib/notifications';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Product from '@/models/Product';
@@ -234,6 +235,27 @@ export async function POST(request) {
     }
 
    } catch (_) { }
+
+   // 3D Secure (SMS kodu + Submit) tamamlandıktan sonra "Siparişiniz Alındı" e-postası gönder
+   try {
+    const userName = userRefresh.name || (userRefresh.firstName && userRefresh.lastName ? `${userRefresh.firstName} ${userRefresh.lastName}`.trim() : '');
+    await sendUserOrderReceivedEmail({
+     userEmail: userRefresh.email,
+     userName,
+     orderId,
+     orderDate: orderRefresh.date || new Date(),
+     total: Number(orderRefresh.total || 0),
+     paymentMethod: '3D Secure',
+     addressSummary: orderRefresh.addressSummary || '',
+     items: (orderRefresh.items || []).map((it) => ({
+      name: it.name || 'Ürün',
+      quantity: Number(it.quantity || 1),
+      price: Number(it.price || 0),
+     })),
+    });
+   } catch (emailErr) {
+    // E-posta hatası yönlendirmeyi engellemez
+   }
 
    // Başarılı sayfasına yönlendir
    const redirectUrl = `${baseUrl}/odeme-callback?paymentId=${paymentId}&conversationId=${conversationId}&orderId=${orderId}&success=true`;

@@ -6,7 +6,7 @@ import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { getCardTypeByValue, getCardTypeByType } from "@/lib/cardTypes";
 import { getBankNameFromBin } from "@/lib/binToBank";
 
-export default function CardModal({ show, editingCard, cardForm, setCardForm, cardErrors, setCardErrors, onSubmit, onClose }) {
+export default function CardModal({ show, editingCard, cardForm, setCardForm, cardErrors, setCardErrors, submitError, onClearSubmitError, onSubmit, onClose }) {
  useEscapeKey(onClose, { enabled: show });
  const [cardFocus, setCardFocus] = useState("");
 
@@ -74,6 +74,17 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
      </button>
     </div>
 
+    {submitError && (
+     <div className="mx-6 mt-4 p-4 rounded-lg bg-red-50 border border-red-200 flex items-start gap-3">
+      <p className="text-red-700 text-sm flex-1">{submitError}</p>
+      {onClearSubmitError && (
+       <button type="button" onClick={onClearSubmitError} className="text-red-500 hover:text-red-700 shrink-0 cursor-pointer" aria-label="Kapat">
+        <HiX size={20} />
+       </button>
+      )}
+     </div>
+    )}
+
     {/* Kart önizlemesi */}
     <div className="p-6 pb-0">
      <div className="w-full max-w-[400px] mx-auto aspect-[1.586/1]" style={{ perspective: "1000px" }}>
@@ -111,14 +122,14 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
            <p className="text-sm font-medium uppercase tracking-wide">{cardForm.cardHolder || "Kart Sahibi"}</p>
           </div>
           <div className="text-right">
-           <p className="text-white/70 text-[10px] uppercase tracking-widest mb-0.5">Geçerlilik</p>
+           <p className="text-white/70 text-[10px] uppercase tracking-widest mb-0.5">Son Kullanma Tarihi</p>
            <p className="text-sm font-mono font-medium">{cardExpiry || "••/••"}</p>
           </div>
          </div>
         </div>
        </div>
 
-       {/* Arka yüz – CVC */}
+       {/* Arka yüz – CVV/CVC */}
        <div
         className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl"
         style={{
@@ -133,7 +144,7 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
         <div className="absolute top-4 left-0 right-0 h-10 bg-gray-900/80" />
         <div className="absolute top-24 left-0 right-0 px-5">
          <div className="bg-white/95 rounded px-3 py-2 mb-3">
-          <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-0.5">Güvenlik kodu (CVC / CVV)</p>
+          <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-0.5">Güvenlik kodu</p>
           <p className="text-gray-900 font-mono text-right text-lg font-semibold tracking-widest">{cardForm.cvc || "•••"}</p>
          </div>
          <p className="text-white/60 text-[10px]">Kartın arkasındaki 3 veya 4 haneli kodu girin.</p>
@@ -201,8 +212,8 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
       {cardErrors.cardHolder && <p className="text-xs text-red-500 mt-1">{cardErrors.cardHolder}</p>}
      </div>
 
-     <div className="grid md:grid-cols-3 gap-4">
-      <div>
+     <div className={`grid grid-cols-1 gap-4 ${editingCard ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+      <div className="">
        <label className="block text-sm font-semibold mb-2">Son Kullanma Ayı <span className="text-red-500">*</span></label>
        <input
         type="number"
@@ -225,7 +236,7 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
        {cardErrors.month && <p className="text-xs text-red-500 mt-1">{cardErrors.month}</p>}
       </div>
       <div>
-       <label className="block text-sm font-semibold mb-2">Son Kullanma Yılı <span className="text-red-500">*</span></label>
+       <label className="block text-sm font-semibold mb-2">Son Kullanma Tarihi (YY) <span className="text-red-500">*</span></label>
        <input
         type="text"
         inputMode="numeric"
@@ -243,27 +254,29 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
        />
        {cardErrors.year && <p className="text-xs text-red-500 mt-1">{cardErrors.year}</p>}
       </div>
-      <div>
-       <label className="block text-sm font-semibold mb-2">Güvenlik kodu (CVC / CVV) <span className="text-red-500">*</span></label>
-       <input
-        type="text"
-        inputMode="numeric"
-        value={cardForm.cvc || ""}
-        onFocus={() => setCardFocus("cvc")}
-        onBlur={() => setCardFocus("")}
-        onChange={(e) => {
-         const maxLen = isAmex ? 4 : 3;
-         const value = e.target.value.replace(/\D/g, "").slice(0, maxLen);
-         setCardForm({ ...cardForm, cvc: value });
-         if (cardErrors.cvc) setCardErrors({ ...cardErrors, cvc: "" });
-        }}
-        className={inputClass(cardErrors.cvc)}
-        placeholder={isAmex ? "1234" : "123"}
-        maxLength={isAmex ? 4 : 3}
-        required
-       />
-       {cardErrors.cvc && <p className="text-xs text-red-500 mt-1">{cardErrors.cvc}</p>}
-      </div>
+      {!editingCard && (
+       <div>
+        <label className="block text-sm font-semibold mb-2">Güvenlik kodu (CVV) <span className="text-red-500">*</span></label>
+        <input
+         type="text"
+         inputMode="numeric"
+         value={cardForm.cvc || ""}
+         onFocus={() => setCardFocus("cvc")}
+         onBlur={() => setCardFocus("")}
+         onChange={(e) => {
+          const maxLen = isAmex ? 4 : 3;
+          const value = e.target.value.replace(/\D/g, "").slice(0, maxLen);
+          setCardForm({ ...cardForm, cvc: value });
+          if (cardErrors.cvc) setCardErrors({ ...cardErrors, cvc: "" });
+         }}
+         className={`${inputClass(cardErrors.cvc)}`}
+         placeholder={isAmex ? "1234" : "123"}
+         maxLength={isAmex ? 4 : 3}
+         required
+        />
+        {cardErrors.cvc && <p className="text-xs text-red-500 mt-1">{cardErrors.cvc}</p>}
+       </div>
+      )}
      </div>
 
      <div className="flex items-center gap-2">

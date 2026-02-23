@@ -194,6 +194,7 @@ export default function Hesabim() {
   isDefault: false,
  });
  const [cardErrors, setCardErrors] = useState({});
+ const [cardSubmitError, setCardSubmitError] = useState("");
  const [addressForm, setAddressForm] = useState({
   title: "",
   firstName: "",
@@ -604,24 +605,26 @@ export default function Hesabim() {
    }
   }
 
-  const isAmex = editingCard
-   ? (editingCard.cardType === "Amex")
-   : (() => {
+  // CVC sadece yeni kart eklerken zorunlu (düzenlemede alan gösterilmiyor)
+  if (!editingCard) {
+   const isAmex = (() => {
     const cn = (cardForm.cardNumber || "").replace(/\s/g, "");
     return cn.startsWith("34") || cn.startsWith("37");
    })();
-  const expectedCvcLen = isAmex ? 4 : 3;
-
-  if (!cardForm.cvc || cardForm.cvc.trim() === "") {
-   errors.cvc = "Güvenlik kodu (CVC/CVV) zorunludur!";
-  } else if (cardForm.cvc.trim().length !== expectedCvcLen) {
-   errors.cvc = isAmex
-    ? "American Express kartlarında güvenlik kodu 4 haneli olmalıdır!"
-    : "Güvenlik kodu (CVC/CVV) 3 haneli olmalıdır!";
+   const expectedCvcLen = isAmex ? 4 : 3;
+   if (!cardForm.cvc || cardForm.cvc.trim() === "") {
+    errors.cvc = "Güvenlik kodu zorunludur!";
+   } else if (cardForm.cvc.trim().length !== expectedCvcLen) {
+    errors.cvc = isAmex
+     ? "American Express kartlarında güvenlik kodu 4 haneli olmalıdır!"
+     : "Güvenlik kodu 3 haneli olmalıdır!";
+   }
   }
 
   if (Object.keys(errors).length > 0) {
    setCardErrors(errors);
+   const firstError = Object.values(errors)[0];
+   showToast(firstError || "Lütfen tüm zorunlu alanları doldurun.", "error");
    return;
   }
 
@@ -653,10 +656,11 @@ export default function Hesabim() {
    const data = res.data;
 
    if (!data.success) {
-    showToast(data.message || "İşlem başarısız!", "error");
+    setCardSubmitError(data.message || "İşlem başarısız!");
     return;
    }
 
+   setCardSubmitError("");
    showToast(editingCard ? "Kart güncellendi!" : "Kart eklendi!", "success");
    setShowCardModal(false);
    resetCardForm();
@@ -673,7 +677,7 @@ export default function Hesabim() {
     await fetchCards();
    }
   } catch (error) {
-   showToast(error.response?.data?.message || "Bir hata oluştu! Lütfen tekrar deneyin.", "error");
+   setCardSubmitError(error.response?.data?.message || "Bir hata oluştu! Lütfen tekrar deneyin.");
   }
  };
 
@@ -718,6 +722,7 @@ export default function Hesabim() {
    cvc: card.cvc || '',
    isDefault: isDefaultValue,
   });
+  setCardSubmitError("");
   setShowCardModal(true);
  };
 
@@ -1324,6 +1329,7 @@ export default function Hesabim() {
         cards={cards}
         onAddNew={() => {
          resetCardForm();
+         setCardSubmitError("");
          setShowCardModal(true);
         }}
         onEdit={handleEditCard}
@@ -1377,8 +1383,11 @@ export default function Hesabim() {
      setCardForm={setCardForm}
      cardErrors={cardErrors}
      setCardErrors={setCardErrors}
+     submitError={cardSubmitError}
+     onClearSubmitError={() => setCardSubmitError("")}
      onSubmit={handleCardSubmit}
      onClose={() => {
+      setCardSubmitError("");
       setShowCardModal(false);
       resetCardForm();
      }}

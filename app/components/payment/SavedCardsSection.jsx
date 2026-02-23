@@ -222,9 +222,9 @@ export default function SavedCardsSection({ onSelectCard, selectedCardId, title,
             {cardType}
            </span>
            {card.isDefault && (
-            <span className="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
-             <FaStar size={8} />
-             Varsayılan
+            <span className="text-xs bg-indigo-600 text-white px-2 py-1 rounded-full inline-flex items-center gap-1 leading-none">
+             <FaStar size={8} className="shrink-0 align-middle" />
+             <span className="leading-none align-middle">Varsayılan</span>
             </span>
            )}
           </div>

@@ -4,7 +4,6 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Product from '@/models/Product';
 import ProductBundle from '@/models/ProductBundle';
-import { sendAdminNewOrderEmail, sendUserOrderConfirmationEmail } from '@/lib/notifications';
 
 // GET - Kullanıcının siparişlerini getir
 export async function GET() {
@@ -216,7 +215,7 @@ export async function POST(request) {
     orderProductMap.set(pid, (orderProductMap.get(pid) || 0) + qty);
    }
   });
-  const allBundles = await ProductBundle.find({}).select('_id productIds name').lean();
+  const allBundles = await ProductBundle.find({}).select('_id productIds name bundlePrice').lean();
   for (const bundle of allBundles) {
    const bundleProductIds = (bundle.productIds || []).map((id) => String(id));
    if (bundleProductIds.length === 0) continue;
@@ -241,7 +240,47 @@ export async function POST(request) {
 
   const itemsTotal = repricedItems.reduce((sum, it) => sum + (Number(it.price || 0) * (Number(it.quantity || 1) || 1)), 0);
   const shippingCost = itemsTotal >= 500 ? 0 : 29.99;
-  const serverGrandTotal = Math.round((itemsTotal + shippingCost) * 100) / 100;
+
+  // Kampanya paket indirimi: Frontend (getCartTotal) ile aynı mantık uygulanmalı ki order.total ile ödeme tutarı eşleşsin
+  const orderProductIds = new Set(repricedItems.map((it) => String(it.productId || it._id || it.id || '')).filter(Boolean));
+  const applicableBundles = (allBundles || []).filter((b) => {
+   const ids = (b.productIds || []).map((id) => String(id));
+   return ids.length > 0 && ids.every((pid) => orderProductIds.has(pid));
+  });
+  let itemsTotalAfterBundle = itemsTotal;
+  if (applicableBundles.length > 0) {
+   let best = null;
+   let bestSaving = 0;
+   for (const b of applicableBundles) {
+    const bundleIdSet = new Set((b.productIds || []).map((id) => String(id)));
+    const bundleItems = repricedItems.filter((it) => bundleIdSet.has(String(it.productId || it._id || it.id || '')));
+    const bundleItemsTotal = bundleItems.reduce((sum, it) => sum + (Number(it.price || 0) * (Number(it.quantity || 1) || 1)), 0);
+    const saving = bundleItemsTotal - (Number(b.bundlePrice) || 0);
+    if (saving > bestSaving) {
+     bestSaving = saving;
+     best = b;
+    }
+   }
+   if (best) {
+    const bundleIdSet = new Set((best.productIds || []).map((id) => String(id)));
+    const bundleItems = repricedItems.filter((it) => bundleIdSet.has(String(it.productId || it._id || it.id || '')));
+    const restTotal = repricedItems
+     .filter((it) => !bundleIdSet.has(String(it.productId || it._id || it.id || '')))
+     .reduce((sum, it) => sum + (Number(it.price || 0) * (Number(it.quantity || 1) || 1)), 0);
+    const bundleSetCount = Math.min(...bundleItems.map((it) => Number(it.quantity || 1) || 1));
+    const normalPricePerBundle = bundleItems.reduce((sum, it) => sum + (Number(it.price || 0) * 1), 0);
+    const bundlePartTotal = (Number(best.bundlePrice) || 0) * 1 + Math.max(0, bundleSetCount - 1) * normalPricePerBundle;
+    let extraQtyTotal = 0;
+    for (const it of bundleItems) {
+     const qty = Number(it.quantity || 1) || 1;
+     const extra = qty - bundleSetCount;
+     if (extra > 0) extraQtyTotal += extra * Number(it.price || 0);
+    }
+    itemsTotalAfterBundle = bundlePartTotal + extraQtyTotal + restTotal;
+   }
+  }
+
+  const serverGrandTotal = Math.round((itemsTotalAfterBundle + shippingCost) * 100) / 100;
   const clientTotal = Number(total || 0) || 0;
   const priceUpdated = Math.abs(serverGrandTotal - clientTotal) > 0.01;
 
@@ -284,6 +323,8 @@ export async function POST(request) {
   if (!Array.isArray(user.orders)) user.orders = [];
   user.orders.unshift(order);
   await user.save();
+
+  // "Siparişiniz Alındı" e-postası ödeme tamamlandıktan sonra (3D Secure SMS + Submit) gönderilir (odeme-callback)
 
   return NextResponse.json({
    success: true,

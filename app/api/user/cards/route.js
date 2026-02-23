@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import { encryptCardNumber, decryptCardNumber } from '@/lib/cardCrypto';
 
 // GET - Kullanıcının kartlarını getir
 export async function GET() {
@@ -53,7 +54,7 @@ export async function GET() {
    cardType: card.cardType || 'Kart',
    month: card.month,
    year: card.year,
-   cvc: card.cvc || '',
+   cvc: '',
    isDefault: Boolean(card.isDefault),
    createdAt: card.createdAt,
   }));
@@ -149,7 +150,7 @@ export async function POST(request) {
   const expectedCvcLen = cardType === 'Amex' ? 4 : 3;
   if (trimmedCvc.length !== expectedCvcLen) {
    return NextResponse.json(
-    { success: false, message: cardType === 'Amex' ? 'American Express kartlarında güvenlik kodu 4 haneli olmalıdır' : 'CVC kodu 3 haneli olmalıdır' },
+    { success: false, message: cardType === 'Amex' ? 'American Express kartlarında güvenlik kodu 4 haneli olmalıdır' : 'CVV/CVC kodu 3 haneli olmalıdır' },
     { status: 400 }
    );
   }
@@ -187,22 +188,34 @@ export async function POST(request) {
    user.cards = [];
   }
 
+  // Aynı kart numarası zaten kayıtlı mı kontrol et
+  for (const existing of user.cards) {
+   const existingDecrypted = decryptCardNumber(existing.encryptedCardNumber || '');
+   if (existingDecrypted && existingDecrypted.replace(/\D/g, '') === cleanedCardNumber) {
+    return NextResponse.json(
+     { success: false, message: 'Bu kart numarası zaten kayıtlı. Aynı kartı tekrar ekleyemezsiniz.' },
+     { status: 400 }
+    );
+   }
+  }
+
   if (body.isDefault && user.cards.length > 0) {
    user.cards.forEach(card => {
     card.isDefault = false;
    });
   }
 
-  // Yeni kart oluştur 
+  // Yeni kart oluştur — kart numarası ve CVC şifreli saklanır (ödeme sayfasında CVC eşleşmesi için).
   const newCardData = {
    title: String(title).trim(),
    cardHolder: capitalizeCardHolder(cardHolder),
    cardNumberLast4: String(cardNumberLast),
    cardNumberMasked: String(cardNumberMasked),
+   encryptedCardNumber: encryptCardNumber(cleanedCardNumber),
    cardType: String(cardType),
    month: String(month),
    year: String(year),
-   cvc: trimmedCvc,
+   cvc: encryptCardNumber(trimmedCvc),
    isDefault: Boolean(body.isDefault),
   };
 
@@ -265,7 +278,7 @@ export async function POST(request) {
    cardType: newCard.cardType || 'Kart',
    month: newCard.month,
    year: newCard.year,
-   cvc: newCard.cvc || '',
+   cvc: '',
    isDefault: Boolean(newCard.isDefault),
    createdAt: newCard.createdAt,
   };
@@ -279,7 +292,7 @@ export async function POST(request) {
    cardType: card.cardType || 'Kart',
    month: card.month,
    year: card.year,
-   cvc: card.cvc || '',
+   cvc: '', // CVC istemciye gönderilmez (ödeme sayfasında sadece doğrulama için kullanılır)
    isDefault: Boolean(card.isDefault),
    createdAt: card.createdAt,
   }));

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createIyzicoClient } from '@/lib/iyzico';
 import { getIyzicoUserMessage } from '@/lib/iyzicoErrorMessages';
+import { decryptCardNumber } from '@/lib/cardCrypto';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 
@@ -142,12 +143,49 @@ export async function POST(request) {
    );
   }
 
-  // Kart bilgilerini hazırla
-  const cardNumber = cardData.cardNumber?.replace(/\s/g, '') || '';
-  const cardHolderName = cardData.cardHolder || '';
-  const expireMonth = String(cardData.month || '').padStart(2, '0');
-  const expireYear = String(cardData.year || '').slice(-2);
+  // Kart bilgilerini hazırla — kayıtlı kart (cardId) veya yeni kart
+  let cardNumber = cardData.cardNumber?.replace(/\s/g, '') || '';
+  let cardHolderName = cardData.cardHolder || '';
+  let expireMonth = String(cardData.month || '').padStart(2, '0');
+  let expireYear = String(cardData.year || '').slice(-2);
   const cvc = cardData.cvc || '';
+
+  if (cardData.cardId) {
+   const cardId = String(cardData.cardId).trim();
+   const cardIndex = (user.cards || []).findIndex((c) => {
+    const id = c._id ? (c._id.toString ? c._id.toString() : String(c._id)) : '';
+    return id === cardId;
+   });
+   const savedCard = cardIndex >= 0 ? user.cards[cardIndex] : null;
+   if (!savedCard) {
+    return NextResponse.json(
+     { success: false, message: 'Kayıtlı kart bulunamadı. Lütfen kart seçiminizi kontrol edin veya yeni kart girin.' },
+     { status: 400 }
+    );
+   }
+   const decrypted = decryptCardNumber(savedCard.encryptedCardNumber || '');
+   if (!decrypted) {
+    return NextResponse.json(
+     { success: false, message: 'Bu kartı kullanmak için lütfen hesap ayarlarında bu kartı silip tekrar ekleyin. Eski kayıtlı kartlarda kart numarası güvenlik nedeniyle saklanmıyordu.', requiresReAddCard: true },
+     { status: 400 }
+    );
+   }
+   // Ödeme sayfasında girilen CVC, kartı kaydederken girilen CVC ile aynı olmalı
+   const savedCvcDecrypted = decryptCardNumber(savedCard.cvc || '');
+   if (savedCvcDecrypted) {
+    const enteredCvc = (cardData.cvc || '').trim().replace(/\D/g, '');
+    if (enteredCvc !== savedCvcDecrypted.replace(/\D/g, '')) {
+     return NextResponse.json(
+      { success: false, message: 'Güvenlik kodu (CVV/CVC) hatalıdır.' },
+      { status: 400 }
+     );
+    }
+   }
+   cardNumber = decrypted;
+   cardHolderName = savedCard.cardHolder || '';
+   expireMonth = String(savedCard.month || '').padStart(2, '0');
+   expireYear = String(savedCard.year || '').slice(-2);
+  }
 
   // Sepet öğelerini hazırla
   const orderItems = Array.isArray(order?.items) ? order.items : [];
@@ -164,7 +202,7 @@ export async function POST(request) {
    };
   });
 
-  // Kargo/fark satırı ekle (order.total ile basket toplamını eşitle)
+  // Basket toplamı order.total ile eşit olmalı (iyzico: "Gönderilen tutar tüm kırılımların toplam tutarına eşit olmalıdır")
   const basketSum = basketItems.reduce((sum, bi) => sum + (Number(bi.price) || 0), 0);
   const orderTotalRounded = Math.round(Number(orderTotal || 0) * 100) / 100;
   const diff = Math.round((orderTotalRounded - basketSum) * 100) / 100;
@@ -179,19 +217,51 @@ export async function POST(request) {
      price: diff.toFixed(2),
     });
    } else {
-    // basketSum orderTotal'den büyükse (negatif diff) son satırı azalt
-    if (basketItems.length > 0) {
-     const last = basketItems.at(-1);
-     const patched = Math.round(((Number(last.price) || 0) + diff) * 100) / 100; // diff negatif
-     last.price = Math.max(patched, 0.01).toFixed(2);
+    // Kampanya indirimi vb.: basketSum > orderTotal — indirimi tüm kalemlere orantılı dağıt (tek satıra yansıtınca toplam eşleşmiyor)
+    const totalToReduce = -diff;
+    if (basketSum >= totalToReduce && basketItems.length > 0) {
+     const pricesInCents = basketItems.map((bi) => Math.round((Number(bi.price) || 0) * 100));
+     const totalCents = pricesInCents.reduce((s, p) => s + p, 0);
+     const reduceCents = Math.min(Math.round(totalToReduce * 100), totalCents - basketItems.length); // en az her satırda 1 kuruş kalsın
+     let appliedReduce = 0;
+     const newCents = pricesInCents.map((p, i) => {
+      if (i === basketItems.length - 1) {
+       const reduceLast = reduceCents - appliedReduce;
+       return Math.max(1, p - reduceLast);
+      }
+      const ratio = totalCents > 0 ? p / totalCents : 1 / basketItems.length;
+      const reduce = Math.round(reduceCents * ratio);
+      appliedReduce += reduce;
+      return Math.max(1, p - reduce);
+     });
+     const sumNew = newCents.reduce((s, p) => s + p, 0);
+     const targetCents = Math.round(orderTotalRounded * 100);
+     const roundingDiff = targetCents - sumNew;
+     if (roundingDiff !== 0 && basketItems.length > 0) {
+      const lastIdx = basketItems.length - 1;
+      newCents[lastIdx] = Math.max(1, newCents[lastIdx] + roundingDiff);
+     }
+     basketItems.forEach((bi, i) => {
+      bi.price = ((newCents[i] || 1) / 100).toFixed(2);
+     });
     }
    }
   } else if (Math.abs(diff) > 0) {
-   // küçük yuvarlama farkını son satıra yansıt
+   // Küçük yuvarlama farkını son satıra yansıt
    if (basketItems.length > 0) {
     const last = basketItems.at(-1);
     const patched = Math.round(((Number(last.price) || 0) + diff) * 100) / 100;
     last.price = Math.max(patched, 0.01).toFixed(2);
+   }
+  }
+  // Son kontrol: basket toplamı tam eşit olsun (iyzico: kırılımların toplamı = gönderilen tutar)
+  const finalBasketSum = basketItems.reduce((sum, bi) => sum + (Number(bi.price) || 0), 0);
+  const finalDiff = Math.round((orderTotalRounded - finalBasketSum) * 100) / 100;
+  if (Math.abs(finalDiff) > 0.001 && basketItems.length > 0) {
+   const last = basketItems.at(-1);
+   const adjusted = Math.round(((Number(last.price) || 0) + finalDiff) * 100) / 100;
+   if (adjusted >= 0.01) {
+    last.price = adjusted.toFixed(2);
    }
   }
 

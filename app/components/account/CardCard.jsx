@@ -78,8 +78,6 @@ export default function CardCard({ card, onEdit, onDelete, onSetDefault }) {
  };
 
  const cardType = getCardType(card);
- const last4 = card.cardNumberLast4 || "";
- const maskedNumber = cardType === "Amex" ? `•••• •••••• ${last4}` : `•••• ${last4}`;
 
  return (
   <div
@@ -109,7 +107,6 @@ ${card.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 bor
        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md border ${getCardTypeStyle(cardType)}`}>
         {cardType}
        </span>
-       <span className="text-sm text-gray-600 tabular-nums">{maskedNumber}</span>
       </div>
      </div>
     </div>
@@ -125,10 +122,8 @@ ${card.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 bor
       <span className="font-semibold text-gray-800 tabular-nums">{card.month}/{card.year}</span>
      </p>
      <p className="text-gray-700">
-      <span className="text-gray-500 font-medium">Güvenlik kodu (CVC/CVV):</span>{" "}
-      <span className="font-semibold text-gray-800 tabular-nums">
-       {card.cvc && card.cvc.trim() !== "" ? card.cvc : "Yok"}
-      </span>
+      <span className="text-gray-500 font-medium">Kart numarası:</span>{" "}
+      <span className="font-semibold text-gray-800 tabular-nums">{card.cardNumberMasked}</span>
      </p>
     </div>
    </div>

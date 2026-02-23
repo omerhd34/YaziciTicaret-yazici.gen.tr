@@ -101,18 +101,6 @@ export async function PUT(request, { params }) {
   if (body.cardHolder) card.cardHolder = capitalizeCardHolder(body.cardHolder);
   if (body.month) card.month = body.month;
   if (body.year) card.year = body.year;
-  if (body.cvc) {
-   const trimmedCvc = String(body.cvc).trim();
-   const isAmex = (card.cardType || '').toLowerCase() === 'amex';
-   const expectedCvcLen = isAmex ? 4 : 3;
-   if (trimmedCvc.length !== expectedCvcLen) {
-    return NextResponse.json(
-     { success: false, message: isAmex ? 'American Express kartlarında güvenlik kodu 4 haneli olmalıdır' : 'CVC kodu 3 haneli olmalıdır' },
-     { status: 400 }
-    );
-   }
-   card.cvc = trimmedCvc;
-  }
   if (body.isDefault !== undefined) card.isDefault = body.isDefault;
 
   user.markModified('cards');
@@ -162,7 +150,7 @@ export async function PUT(request, { params }) {
    cardType: updatedCard.cardType || 'Kart',
    month: updatedCard.month,
    year: updatedCard.year,
-   cvc: updatedCard.cvc || '',
+   cvc: '',
    isDefault: Boolean(updatedCard.isDefault),
    createdAt: updatedCard.createdAt,
   };
@@ -177,7 +165,7 @@ export async function PUT(request, { params }) {
    cardType: c.cardType || 'Kart',
    month: c.month,
    year: c.year,
-   cvc: c.cvc || '',
+   cvc: '',
    isDefault: Boolean(c.isDefault),
    createdAt: c.createdAt,
   }));

@@ -23,7 +23,9 @@ export default function OdemePage() {
   setMounted(true);
  }, []);
 
+ // eslint-disable-next-line react-hooks/exhaustive-deps
  const cartTotal = useMemo(() => getCartTotal(), [cart, getCartTotal]);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
  const normalCartTotal = useMemo(() => getNormalCartTotal(), [cart, getNormalCartTotal]);
 
  const shippingCost = cartTotal >= 500 ? 0 : 29.99;
@@ -38,6 +40,7 @@ export default function OdemePage() {
 
  const [paymentMethod, setPaymentMethod] = useState({ type: "3dsecure" });
  const [selectedCardId, setSelectedCardId] = useState(null);
+ const [selectedCardIsAmex, setSelectedCardIsAmex] = useState(false);
  const [cardData, setCardData] = useState({
   cardNumber: "",
   cardNumberFormatted: "",
@@ -99,10 +102,11 @@ export default function OdemePage() {
    return false;
   }
 
-  // 3D Secure için kart bilgileri kontrolü
-  // Eğer kayıtlı kart seçilmişse, CVC kontrolü yapılmaz (güvenli ödeme yöntemi)
+  // Kayıtlı kart seçilmişse: CVC zorunlu — Amex 4 hane, diğerleri 3 hane
   if (selectedCardId) {
-   return true;
+   const cvcLen = (cardData.cvc || '').length;
+   const requiredCvcLen = selectedCardIsAmex ? 4 : 3;
+   return cvcLen === requiredCvcLen;
   }
 
   // Yeni kart girişi için tüm alanlar kontrol edilmeli
@@ -129,6 +133,7 @@ export default function OdemePage() {
   if (!card) {
    // Yeni kart girişi
    setSelectedCardId(null);
+   setSelectedCardIsAmex(false);
    setSaveCardError("");
    setSaveCardSuccess(false);
    setCardData({
@@ -145,6 +150,7 @@ export default function OdemePage() {
   // Kayıtlı kart seçildi
   setSelectedCardId(card._id?.toString ? card._id.toString() : String(card._id || ''));
   const isAmex = (card.cardType || "").toLowerCase() === "amex";
+  setSelectedCardIsAmex(isAmex);
   const fallbackMasked = isAmex
    ? `•••• •••••• ${card.cardNumberLast4 || ""}`
    : `•••• •••• •••• ${card.cardNumberLast4 || ""}`;
@@ -313,10 +319,7 @@ export default function OdemePage() {
    // 3D Secure başlat
    // Eğer kayıtlı kart seçilmişse, kart ID'sini gönder
    const cardPayload = selectedCardId
-    ? {
-     cardId: selectedCardId,
-     cvc: cardData.cvc,
-    }
+    ? { cardId: selectedCardId, cvc: cardData.cvc }
     : {
      cardNumber: cardData.cardNumber,
      cardHolder: cardData.cardHolder,
@@ -370,8 +373,7 @@ export default function OdemePage() {
 
    const tdsData = tdsRes.data || {};
    if (!tdsData.success) {
-    const errorMsg = tdsData.message || "Ödeme işlemi başlatılamadı.";
-    setError(errorMsg);
+    setError(tdsData.message || "Ödeme işlemi başlatılamadı.");
     setIsSubmitting(false);
     return;
    }
@@ -517,6 +519,27 @@ export default function OdemePage() {
         title="Kart Bilgileri"
         refreshTrigger={savedCardsRefreshTrigger}
        />
+       {selectedCardId && (
+        <div className="mt-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+         <label className="block text-sm font-semibold text-gray-800 mb-1">Güvenlik kodu (CVC)</label>
+         <p className="text-xs text-gray-500 mb-3">
+          {selectedCardIsAmex ? "Kartınızın ön yüzündeki 4 haneli numara" : "Kartınızın arka yüzündeki 3 haneli numara"}
+         </p>
+         <input
+          type="text"
+          inputMode="numeric"
+          maxLength={selectedCardIsAmex ? 4 : 3}
+          value={cardData.cvc}
+          onChange={(e) => {
+           const raw = e.target.value.replace(/\D/g, '');
+           const maxLen = selectedCardIsAmex ? 4 : 3;
+           setCardData((prev) => ({ ...prev, cvc: raw.slice(0, maxLen) }));
+          }}
+          placeholder={selectedCardIsAmex ? '••••' : '•••'}
+          className="w-full max-w-[140px] border border-gray-200 rounded-lg px-4 py-3 text-lg font-mono tracking-[0.3em] focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white shadow-sm"
+         />
+        </div>
+       )}
        {!selectedCardId && (
         <>
          <CardForm
@@ -558,6 +581,7 @@ export default function OdemePage() {
        onPay={handlePay}
        paymentMethodType={paymentMethod.type}
        isSubmitting={isSubmitting}
+       reAddCardError={error && (error.includes('silip tekrar ekleyin') || error.includes('hesap ayarlarında'))}
       />
      </div>
     </div>

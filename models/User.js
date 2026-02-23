@@ -56,6 +56,10 @@ const CardSchema = new mongoose.Schema({
   type: String,
   required: true,
  },
+ encryptedCardNumber: {
+  type: String,
+  default: '',
+ },
  cardType: {
   type: String,
   enum: ['Visa', 'Mastercard', 'Troy', 'Amex', 'Kart'],
@@ -69,10 +73,7 @@ const CardSchema = new mongoose.Schema({
   type: String,
   required: true,
  },
- cvc: {
-  type: String,
-  required: true,
- },
+ cvc: { type: String, default: '' },
  isDefault: {
   type: Boolean,
   default: false,
@@ -187,5 +188,15 @@ const UserSchema = new mongoose.Schema({
   default: Date.now,
  },
 });
+
+// Her TC Kimlik No ve her telefon yalnızca bir hesapta kullanılabilir (boş değerler hariç)
+UserSchema.index(
+ { identityNumber: 1 },
+ { unique: true, partialFilterExpression: { identityNumber: { $exists: true, $ne: '' } } }
+);
+UserSchema.index(
+ { phone: 1 },
+ { unique: true, partialFilterExpression: { phone: { $exists: true, $ne: '' } } }
+);
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

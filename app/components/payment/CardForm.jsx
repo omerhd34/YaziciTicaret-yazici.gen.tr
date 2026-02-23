@@ -223,7 +223,7 @@ export default function CardForm({ onCardDataChange, cardData, isSavedCard = fal
    <div className="grid grid-cols-3 gap-4">
     <div>
      <label htmlFor="month" className="block text-sm font-medium text-gray-700 mb-2">
-      Son Kullanma Ayı
+      Son Kullanma Tarihi (MM)
      </label>
      <input
       id="month"
@@ -245,7 +245,7 @@ export default function CardForm({ onCardDataChange, cardData, isSavedCard = fal
 
     <div>
      <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-2">
-      Son Kullanma Yılı
+      Son Kullanma Tarihi (YY)
      </label>
      <input
       id="year"
@@ -266,7 +266,7 @@ export default function CardForm({ onCardDataChange, cardData, isSavedCard = fal
 
     <div>
      <label htmlFor="cvc" className="block text-sm font-medium text-gray-700 mb-2">
-      CVC
+      CVV/CVC
      </label>
      <input
       id="cvc"

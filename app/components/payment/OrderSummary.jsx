@@ -13,6 +13,7 @@ export default function OrderSummary({
  onPay,
  paymentMethodType,
  isSubmitting = false,
+ reAddCardError = false,
 }) {
  const hasBundleDiscount = normalCartTotal != null && normalCartTotal > cartTotal && normalCartTotal > 0;
  const discountAmount = hasBundleDiscount ? normalCartTotal - cartTotal : 0;
@@ -74,7 +75,15 @@ export default function OrderSummary({
 
    {error && (
     <div className="mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-700">
-     {error}
+     <p className="mb-0">{error}</p>
+     {reAddCardError && (
+      <Link
+       href="/hesabim"
+       className="inline-block mt-3 font-semibold text-red-800 hover:text-red-900 underline"
+      >
+       Hesap ayarlarına git →
+      </Link>
+     )}
     </div>
    )}
 
