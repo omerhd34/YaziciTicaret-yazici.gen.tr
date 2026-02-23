@@ -30,16 +30,17 @@ async function resetOrders() {
 
   await mongoose.connect(mongoUri);
 
-  const result = await User.updateMany(
-   {},
-   { $set: { orders: [], tempOrders: [] } }
-  );
+  await User.updateMany({}, { $set: { orders: [], tempOrders: [] } });
 
   await mongoose.disconnect();
+  console.log('Siparişler sıfırlandı.');
  } catch (error) {
+  console.error(error);
   await mongoose.disconnect().catch(() => { });
   process.exit(1);
  }
 }
 
-await resetOrders();
+resetOrders()
+ .then(() => process.exit(0))
+ .catch(() => process.exit(1));
