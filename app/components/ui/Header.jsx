@@ -21,6 +21,7 @@ const Header = () => {
  const router = useRouter();
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
  const [activeMenu, setActiveMenu] = useState(null);
+ const [expandedMobileMenu, setExpandedMobileMenu] = useState(null);
  const [isAuthenticated, setIsAuthenticated] = useState(false);
  const [searchTerm, setSearchTerm] = useState("");
  const [searchResults, setSearchResults] = useState([]);
@@ -30,7 +31,6 @@ const Header = () => {
  const [isClient, setIsClient] = useState(false);
  const [showProductRequestModal, setShowProductRequestModal] = useState(false);
  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
- const [expandedMobileMenu, setExpandedMobileMenu] = useState(null);
  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
  useLayoutEffect(() => {
@@ -174,15 +174,15 @@ const Header = () => {
   setExpandedMobileMenu(null);
  };
 
+ const toggleMobileSubmenu = (itemName) => {
+  setExpandedMobileMenu(expandedMobileMenu === itemName ? null : itemName);
+ };
+
  const closeSearchModal = () => {
   setIsSearchModalOpen(false);
   setSearchTerm("");
   setShowSuggestions(false);
   setSearchResults([]);
- };
-
- const toggleMobileSubmenu = (itemName) => {
-  setExpandedMobileMenu(expandedMobileMenu === itemName ? null : itemName);
  };
 
  const fetchSearchSuggestions = async (term) => {
@@ -276,7 +276,7 @@ const Header = () => {
       <button
        onClick={handleHesabimClick}
        aria-label="Hesabım"
-       className="flex flex-col items-center justify-center group hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
+       className="hidden xs:flex flex-col items-center justify-center group hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
       >
        <HiUser size={22} className="group-hover:text-indigo-600 transition" />
       </button>
@@ -285,7 +285,7 @@ const Header = () => {
        type="button"
        onClick={handleSepetClick}
        aria-label={isClient && getCartItemCount() > 0 ? `Sepet (${getCartItemCount()} ürün)` : "Sepet"}
-       className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
+       className="hidden xs:flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition cursor-pointer"
       >
        <div className="relative">
         <FaShoppingCart size={22} className="group-hover:text-indigo-600 transition" />
@@ -300,7 +300,7 @@ const Header = () => {
       <Link
        href="/favoriler"
        aria-label={isClient && getFavoriteCount() > 0 ? `Favoriler (${getFavoriteCount()} ürün)` : "Favoriler"}
-       className="flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition"
+       className="hidden xs:flex flex-col items-center justify-center group relative hover:bg-slate-50 min-w-[44px] min-h-[44px] p-1 sm:p-2 rounded-lg transition"
       >
        <div className="relative">
         <HiHeart size={22} className="group-hover:text-indigo-600 transition" />
@@ -429,7 +429,6 @@ const Header = () => {
       onClick={closeMenu}
      />
      <div className="md:hidden fixed inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-y-auto">
-      {/* Header */}
       <div className="sticky top-0 bg-linear-to-r from-indigo-600 to-purple-600 text-white z-10 shadow-lg">
        <div className="flex items-center justify-end px-4 sm:px-5 py-3">
         <button
@@ -442,14 +441,87 @@ const Header = () => {
        </div>
       </div>
 
+      {/* Mobil menü arama */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-5 py-3">
+       <form
+        className="flex gap-2"
+        onSubmit={(e) => {
+         e.preventDefault();
+         const term = searchTerm?.trim();
+         if (term) {
+          closeMenu();
+          router.push(`/arama?q=${encodeURIComponent(term)}`);
+         }
+        }}
+       >
+        <input
+         type="search"
+         value={searchTerm ?? ""}
+         onChange={handleSearchChange}
+         placeholder="Ürün, kategori ara..."
+         className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+         aria-label="Arama"
+        />
+        <button
+         type="submit"
+         className="flex shrink-0 items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-white transition hover:bg-indigo-700 active:scale-95"
+         aria-label="Ara"
+        >
+         <HiSearch size={20} />
+        </button>
+       </form>
+      </div>
+
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-5 py-4 space-y-2">
+       <button
+        type="button"
+        onClick={(e) => { closeMenu(); handleHesabimClick(e); }}
+        className="flex flex-nowrap items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 transition-all cursor-pointer text-left w-full"
+       >
+        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-sm">
+         <HiUser size={20} className="text-indigo-600" />
+        </div>
+        <span className="font-semibold text-gray-800 whitespace-nowrap">Hesabım</span>
+       </button>
+       <Link
+        href="/favoriler"
+        onClick={closeMenu}
+        className="flex flex-nowrap items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 transition-all text-left w-full"
+       >
+        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 relative">
+         <HiHeart size={20} className="text-indigo-600" />
+         {isClient && getFavoriteCount() > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-4 flex items-center justify-center rounded-full">
+           {getFavoriteCount() >= 9 ? "9+" : getFavoriteCount()}
+          </span>
+         )}
+        </div>
+        <span className="font-semibold text-gray-800 whitespace-nowrap">Favoriler</span>
+       </Link>
+       <button
+        type="button"
+        onClick={(e) => { closeMenu(); handleSepetClick(e); }}
+        className="flex flex-nowrap items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 transition-all cursor-pointer text-left w-full"
+       >
+        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 relative">
+         <FaShoppingCart size={20} className="text-indigo-600" />
+         {isClient && getCartItemCount() > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-4 flex items-center justify-center rounded-full">
+           {getCartItemCount() >= 9 ? "9+" : getCartItemCount()}
+          </span>
+         )}
+        </div>
+        <span className="font-semibold text-gray-800 whitespace-nowrap">Sepetim</span>
+       </button>
+      </div>
+
       <nav className="py-2 bg-gray-50">
-       {/* Ana Kategoriler */}
        <div className="bg-white mb-2">
         <div className="px-4 sm:px-5 py-3 border-b border-gray-100">
          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Kategoriler</h3>
         </div>
         <ul className="flex flex-col">
-         {MENU_ITEMS.filter(item => !item.isSpecial).map((item, index) => (
+         {MENU_ITEMS.filter(item => !item.isSpecial).map((item) => (
           <li key={item.path} className="border-b border-gray-100 last:border-none">
            {item.subCategories ? (
             <div className="flex flex-col">
@@ -466,19 +538,15 @@ const Header = () => {
                </span>
                <HiChevronDown
                 size={20}
-                className={`text-gray-400 group-hover:text-indigo-600 transition-all duration-300 ${expandedMobileMenu === item.name ? 'rotate-180 text-indigo-600' : ''
-                 }`}
+                className={`text-gray-400 group-hover:text-indigo-600 transition-all duration-300 ${expandedMobileMenu === item.name ? 'rotate-180 text-indigo-600' : ''}`}
                />
               </div>
              </button>
              <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedMobileMenu === item.name
-               ? 'max-h-[1000px] opacity-100'
-               : 'max-h-0 opacity-0'
-               }`}
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedMobileMenu === item.name ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}
              >
               <ul className="bg-linear-to-b from-gray-50 to-white px-4 sm:px-5 py-3 space-y-1">
-               {item.subCategories.map((sub, subIndex) => (
+               {item.subCategories.map((sub) => (
                 <li key={sub.path}>
                  <Link
                   href={sub.path}
@@ -516,7 +584,6 @@ const Header = () => {
         </ul>
        </div>
 
-       {/* Özel Kategoriler ve Favoriler */}
        <div className="bg-white px-4 sm:px-5 py-4">
         <div className="mb-3">
          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Özel Fırsatlar</h3>
@@ -525,45 +592,13 @@ const Header = () => {
          {MENU_ITEMS.filter(item => item.isSpecial).map((item) => {
           const getItemStyles = () => {
            if (item.name === "Yeniler") {
-            return {
-             textColor: "text-red-600",
-             bgFrom: "from-red-50",
-             bgTo: "to-red-50/50",
-             hoverFrom: "hover:from-red-100",
-             hoverTo: "hover:to-red-100/50",
-             borderColor: "border-red-100",
-             iconBg: "bg-red-100"
-            };
+            return { textColor: "text-red-600", bgFrom: "from-red-50", bgTo: "to-red-50/50", hoverFrom: "hover:from-red-100", hoverTo: "hover:to-red-100/50", borderColor: "border-red-100", iconBg: "bg-red-100" };
            } else if (item.name === "İndirimler") {
-            return {
-             textColor: "text-green-600",
-             bgFrom: "from-green-50",
-             bgTo: "to-green-50/50",
-             hoverFrom: "hover:from-green-100",
-             hoverTo: "hover:to-green-100/50",
-             borderColor: "border-green-100",
-             iconBg: "bg-green-100"
-            };
+            return { textColor: "text-green-600", bgFrom: "from-green-50", bgTo: "to-green-50/50", hoverFrom: "hover:from-green-100", hoverTo: "hover:to-green-100/50", borderColor: "border-green-100", iconBg: "bg-green-100" };
            } else if (item.name === "Kampanyalar") {
-            return {
-             textColor: "text-indigo-600",
-             bgFrom: "from-indigo-50",
-             bgTo: "to-indigo-50/50",
-             hoverFrom: "hover:from-indigo-100",
-             hoverTo: "hover:to-indigo-100/50",
-             borderColor: "border-indigo-100",
-             iconBg: "bg-indigo-100"
-            };
+            return { textColor: "text-indigo-600", bgFrom: "from-indigo-50", bgTo: "to-indigo-50/50", hoverFrom: "hover:from-indigo-100", hoverTo: "hover:to-indigo-100/50", borderColor: "border-indigo-100", iconBg: "bg-indigo-100" };
            }
-           return {
-            textColor: "text-red-600",
-            bgFrom: "from-red-50",
-            bgTo: "to-red-50/50",
-            hoverFrom: "hover:from-red-100",
-            hoverTo: "hover:to-red-100/50",
-            borderColor: "border-red-100",
-            iconBg: "bg-red-100"
-           };
+           return { textColor: "text-red-600", bgFrom: "from-red-50", bgTo: "to-red-50/50", hoverFrom: "hover:from-red-100", hoverTo: "hover:to-red-100/50", borderColor: "border-red-100", iconBg: "bg-red-100" };
           };
           const styles = getItemStyles();
           return (

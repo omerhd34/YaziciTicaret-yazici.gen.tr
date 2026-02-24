@@ -309,7 +309,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
       </div>
 
       {hasMultipleColors && (
-       <div className="flex gap-2.5 flex-wrap items-center shrink-0">
+       <div className="flex gap-2 md:gap-1 xl:gap-2 flex-wrap items-center shrink-0">
         {sortedColors.map((color, idx) => {
          const isSelected = currentColor && currentColor.serialNumber === color.serialNumber;
          return (
@@ -320,7 +320,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
             e.stopPropagation();
             handleColorChange(color);
            }}
-           className={`w-7 h-7 rounded-full border-2 transition-all cursor-pointer hover:scale-110 shadow-sm ${isSelected
+           className={`w-7 h-7 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 rounded-full border-2 transition-all cursor-pointer hover:scale-110 shadow-sm ${isSelected
             ? "border-indigo-600 scale-110 ring-2 ring-indigo-200 shadow-md"
             : "border-gray-300 hover:border-gray-400"
             }`}

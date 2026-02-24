@@ -95,15 +95,15 @@ const Footer = () => {
      <div className="data-nosnippet">
       <h2 className="text-white font-bold mb-4 text-base">İletişim</h2>
       <ul className="space-y-3">
-       <li className="flex items-center gap-3">
-        <HiMail size={18} className="text-indigo-400 shrink-0" />
-        <Link href="mailto:info@yazici.gen.tr" className="text-sm hover:text-indigo-400 transition">
+       <li>
+        <Link href="mailto:info@yazici.gen.tr" className="flex items-center gap-3 text-sm hover:text-indigo-400 transition">
+         <HiMail size={18} className="text-indigo-400 shrink-0" />
          info@yazici.gen.tr
         </Link>
        </li>
        <li className="flex items-start gap-3">
         <HiPhone size={18} className="mt-0.5 text-indigo-400 shrink-0" />
-        <div className="flex flex-wrap items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-1 text-sm">
          <Link href="tel:+905447967770" className="text-gray-300 hover:text-indigo-400 transition">
           0544 796 7770
          </Link>
