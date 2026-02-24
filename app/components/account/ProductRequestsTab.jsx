@@ -2,15 +2,27 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "@/lib/axios";
 import { HiShoppingBag, HiPlus, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { FaSpinner } from "react-icons/fa";
 import ProductRequestModal from "@/app/components/product/ProductRequestModal";
 import ProductRequestCard from "./ProductRequestCard";
 import Toast from "@/app/components/ui/Toast";
+import {
+ AlertDialog,
+ AlertDialogCancel,
+ AlertDialogContent,
+ AlertDialogDescription,
+ AlertDialogFooter,
+ AlertDialogHeader,
+ AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export default function ProductRequestsTab() {
  const [requests, setRequests] = useState([]);
  const [loading, setLoading] = useState(true);
  const [showRequestModal, setShowRequestModal] = useState(false);
  const [cancelConfirm, setCancelConfirm] = useState({ show: false, requestId: null });
+ const [cancelLoading, setCancelLoading] = useState(false);
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
  const [showAllRequests, setShowAllRequests] = useState(false);
 
@@ -45,20 +57,20 @@ export default function ProductRequestsTab() {
    return;
   }
 
+  setCancelLoading(true);
   try {
    let requestId = cancelConfirm.requestId;
-   if (typeof requestId === 'object' && requestId.toString) {
+   if (typeof requestId === "object" && requestId.toString) {
     requestId = requestId.toString();
-   } else if (typeof requestId !== 'string') {
+   } else if (typeof requestId !== "string") {
     requestId = String(requestId);
    }
 
    const res = await axiosInstance.delete(`/api/product-requests/${requestId}`);
-
    const data = res.data;
 
    if (!data.success) {
-    const errorMessage = data.message || `İstek iptal edilemedi`;
+    const errorMessage = data.message || "İstek iptal edilemedi";
     setToast({ show: true, message: errorMessage, type: "error" });
     return;
    }
@@ -68,6 +80,8 @@ export default function ProductRequestsTab() {
    fetchRequests();
   } catch (error) {
    setToast({ show: true, message: `Bir hata oluştu: ${error.message}`, type: "error" });
+  } finally {
+   setCancelLoading(false);
   }
  };
 
@@ -162,31 +176,42 @@ export default function ProductRequestsTab() {
     </div>
    )}
 
-   {/* İptal Onay Modal */}
-   {cancelConfirm.show && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">İsteği İptal Et</h3>
-      <p className="text-gray-600 mb-6">
+   {/* İptal Onay - Alert Dialog */}
+   <AlertDialog
+    open={cancelConfirm.show}
+    onOpenChange={(open) => {
+     if (!open) setCancelConfirm({ show: false, requestId: null });
+    }}
+   >
+    <AlertDialogContent>
+     <AlertDialogHeader>
+      <AlertDialogTitle>İsteği İptal Et</AlertDialogTitle>
+      <AlertDialogDescription>
        Bu ürün isteğini iptal etmek istediğinize emin misiniz? Bu işlem geri alınamaz.
-      </p>
-      <div className="flex gap-4">
-       <button
-        onClick={() => setCancelConfirm({ show: false, requestId: null })}
-        className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition cursor-pointer"
-       >
-        Vazgeç
-       </button>
-       <button
-        onClick={handleCancelRequest}
-        className="flex-1 px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition cursor-pointer"
-       >
-        İptal Et
-       </button>
-      </div>
-     </div>
-    </div>
-   )}
+      </AlertDialogDescription>
+     </AlertDialogHeader>
+     <AlertDialogFooter>
+      <AlertDialogCancel disabled={cancelLoading}>Vazgeç</AlertDialogCancel>
+      <Button
+       variant="destructive"
+       disabled={cancelLoading}
+       onClick={handleCancelRequest}
+       className="relative cursor-pointer"
+      >
+       {cancelLoading ? (
+        <>
+         <span className="opacity-0">İptal Et</span>
+         <span className="absolute inset-0 flex items-center justify-center gap-2">
+          <FaSpinner className="animate-spin size-4" />
+         </span>
+        </>
+       ) : (
+        "İptal Et"
+       )}
+      </Button>
+     </AlertDialogFooter>
+    </AlertDialogContent>
+   </AlertDialog>
 
    <ProductRequestModal
     show={showRequestModal}
@@ -196,4 +221,3 @@ export default function ProductRequestsTab() {
   </div>
  );
 }
-

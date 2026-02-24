@@ -1,32 +1,50 @@
 "use client";
 
-export default function DeleteAccountModal({ show, deletingAccount, onConfirm, onCancel }) {
- if (!show) return null;
+import {
+ AlertDialog,
+ AlertDialogCancel,
+ AlertDialogContent,
+ AlertDialogDescription,
+ AlertDialogFooter,
+ AlertDialogHeader,
+ AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { FaSpinner } from "react-icons/fa";
 
+export default function DeleteAccountModal({ show, deletingAccount, onConfirm, onCancel }) {
  return (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-   <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-    <h3 className="text-xl font-bold mb-4 text-red-600">Hesabı Sil</h3>
-    <p className="text-gray-600 mb-6">
-     Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.
-    </p>
-    <div className="flex gap-3">
-     <button
+  <AlertDialog open={!!show} onOpenChange={(open) => { if (!open) onCancel(); }}>
+   <AlertDialogContent>
+    <AlertDialogHeader>
+     <AlertDialogTitle className="text-red-600">Hesabı Sil</AlertDialogTitle>
+     <AlertDialogDescription>
+      Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve tüm
+      verileriniz kalıcı olarak silinecektir.
+     </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+     <AlertDialogCancel disabled={deletingAccount}>İptal</AlertDialogCancel>
+     <Button
+      variant="destructive"
+      disabled={deletingAccount}
       onClick={onConfirm}
-      disabled={deletingAccount}
-      className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      className="relative cursor-pointer"
      >
-      {deletingAccount ? "Siliniyor..." : "Evet, Hesabımı Sil"}
-     </button>
-     <button
-      onClick={onCancel}
-      disabled={deletingAccount}
-      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-     >
-      İptal
-     </button>
-    </div>
-   </div>
-  </div>
+      {deletingAccount ? (
+       <div>
+        <span className="opacity-0 ">Evet, Hesabımı Sil</span>
+        <span className="absolute inset-0 flex items-center justify-center gap-2">
+         <FaSpinner className="animate-spin size-4" />
+         Siliniyor...
+        </span>
+       </div>
+      ) : (
+       "Evet, Hesabımı Sil"
+      )}
+     </Button>
+    </AlertDialogFooter>
+   </AlertDialogContent>
+  </AlertDialog>
  );
 }
