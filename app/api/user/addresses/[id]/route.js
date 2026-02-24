@@ -196,8 +196,8 @@ export async function DELETE(request, { params }) {
    }
   }
 
-  // Adresi sil
-  address.deleteOne();
+  // Adresi sil (Mongoose array subdocument için pull kullan)
+  user.addresses.pull(address._id);
   await user.save();
   return NextResponse.json({
    success: true,
