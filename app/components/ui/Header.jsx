@@ -430,7 +430,8 @@ const Header = () => {
      />
      <div className="md:hidden fixed inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-y-auto">
       <div className="sticky top-0 bg-linear-to-r from-indigo-600 to-purple-600 text-white z-10 shadow-lg">
-       <div className="flex items-center justify-end px-4 sm:px-5 py-3">
+       <div className="flex items-center justify-between px-4 sm:px-5 py-3">
+        <Logo closeMenu={closeMenu} href="/" variant="light" />
         <button
          onClick={closeMenu}
          className="p-2 hover:bg-white/20 rounded-lg transition-all duration-200 cursor-pointer active:scale-95"
