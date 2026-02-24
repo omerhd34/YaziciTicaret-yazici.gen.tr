@@ -208,6 +208,7 @@ export default function AdminUrunIstekleriPage() {
     confirmText="Sil"
     cancelText="İptal"
     confirmColor="red"
+    className="cursor-pointer"
    />
    <AdminOrdersHeader title="Ürün İstekleri" onLogout={handleLogout} />
 
