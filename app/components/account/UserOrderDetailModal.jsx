@@ -39,7 +39,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
      allProducts.forEach(product => {
       const productId = String(product._id);
       if (productIds.includes(productId)) {
-       // Orijinal fiyatı hesapla: discountPrice varsa ve price'dan küçükse onu kullan, yoksa price'ı kullan
        const originalPrice = product.discountPrice && product.discountPrice < product.price
         ? product.discountPrice
         : product.price;
@@ -97,7 +96,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
   return JSON.stringify(pick(shipping)) === JSON.stringify(pick(billing));
  }, [shipping, billing]);
 
- const payment = order?.payment || null;
  const paymentText = "Kart ile Ödeme";
 
  const items = useMemo(() => Array.isArray(order?.items) ? order.items : [], [order]);
@@ -232,7 +230,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
     </div>
 
     <div className="p-6 space-y-6 bg-gray-50">
-     {/* İptal edildiyse iptal nedeni / yönetici mesajı */}
      {isCancelled && (
       <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
        <div className="text-xs font-semibold text-red-700 mb-1">İptal nedeni:</div>
@@ -244,7 +241,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
       </div>
      )}
 
-     {/* Sipariş özeti  */}
      <div className="grid md:grid-cols-4 gap-4">
       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
        <div className="text-xs text-gray-500 mb-1">Durum:</div>
@@ -266,7 +262,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
       </div>
      </div>
 
-     {/* Adres - Admin ile aynı 2 sütun düzeni */}
      <div className="grid md:grid-cols-2 gap-4">
       <div className={`bg-white border border-gray-200 rounded-xl p-4 shadow-sm ${billingIsSame ? "md:col-span-2" : ""}`}>
        <div className="text-xs text-gray-500 mb-1">
@@ -342,7 +337,6 @@ export default function UserOrderDetailModal({ show, order, addresses, onClose, 
       </div>
      ) : null}
 
-     {/* Ürünler - Admin ile aynı stil */}
      <div>
       <div className="text-sm font-bold text-gray-900 mb-3">Sipariş Ürünleri:</div>
       <div className="space-y-3">

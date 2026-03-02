@@ -109,16 +109,6 @@ export default function AdminKampanyaFiyatlariPage() {
   }
  };
 
- const handleEdit = (b) => {
-  setSelectedBundle(b);
-  setEditingBundle(b);
-  setForm({
-   name: b.name || "",
-   productCodes: (b.productCodes && b.productCodes.length) ? b.productCodes.join(", ") : "",
-   bundlePrice: String(b.bundlePrice ?? ""),
-  });
- };
-
  const handleCancelEdit = () => {
   setEditingBundle(null);
   setForm({ name: "", productCodes: "", bundlePrice: "" });
@@ -189,7 +179,6 @@ export default function AdminKampanyaFiyatlariPage() {
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-       {/* Sol: Kampanya listesi */}
        <div className="lg:col-span-1">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
          <h2 className="text-lg font-bold text-gray-900">Kampanyalar</h2>
@@ -252,7 +241,6 @@ export default function AdminKampanyaFiyatlariPage() {
         </div>
        </div>
 
-       {/* Sağ: Form / detay */}
        <div className="lg:col-span-2">
         <div className="bg-white border-2 border-gray-200 rounded-xl shadow-xl overflow-hidden transition-all duration-300 max-h-[calc(100vh-320px)] flex flex-col">
          <div className="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-5 shrink-0">

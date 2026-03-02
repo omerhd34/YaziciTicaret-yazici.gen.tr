@@ -34,7 +34,6 @@ export default function DestekPage() {
    <div className="container mx-auto px-4">
     <SupportHeader />
 
-    {/* Mağaza Kartları */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
      <StoreCard {...magaza1} />
      <StoreCard {...magaza2} />

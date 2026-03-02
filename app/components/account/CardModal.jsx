@@ -85,14 +85,12 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
      </div>
     )}
 
-    {/* Kart önizlemesi */}
     <div className="p-6 pb-0">
      <div className="w-full max-w-[400px] mx-auto aspect-[1.586/1]" style={{ perspective: "1000px" }}>
       <div
        className="relative w-full h-full transition-transform duration-500 ease-in-out"
        style={{ transformStyle: "preserve-3d", transform: cvcFocused ? "rotateY(180deg)" : "rotateY(0deg)" }}
       >
-       {/* Ön yüz */}
        <div
         className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl"
         style={{
@@ -129,7 +127,6 @@ export default function CardModal({ show, editingCard, cardForm, setCardForm, ca
         </div>
        </div>
 
-       {/* Arka yüz – CVV/CVC */}
        <div
         className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl"
         style={{

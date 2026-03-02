@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -59,7 +60,6 @@ export default function AdminSonSiparislerPage() {
 
  useEffect(() => {
   checkAuth();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, []);
 
  useEffect(() => {

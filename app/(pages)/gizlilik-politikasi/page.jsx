@@ -12,7 +12,6 @@ export default function GizlilikPolitikasiPage() {
 
     <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
 
-     {/* GİRİŞ */}
      <PolicySection>
       <p className="text-gray-700 leading-relaxed">
        <strong>Yazıcı Ticaret</strong> olarak, kişisel verilerinizin gizliliğine ve güvenliğine büyük önem veriyoruz.
@@ -21,7 +20,6 @@ export default function GizlilikPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* TOPLANAN VERİLER */}
      <PolicySection icon={<HiUser className="text-indigo-600" size={24} />} title="Toplanan Kişisel Veriler">
       <p className="leading-relaxed">
        Web sitemizi kullandığınızda aşağıdaki kişisel verileriniz toplanabilir:
@@ -36,7 +34,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* KULLANIM AMAÇLARI */}
      <PolicySection icon={<HiEye className="text-indigo-600" size={24} />} title="Kişisel Verilerin İşlenme Amaçları">
       <p className="leading-relaxed">
        Toplanan kişisel verileriniz aşağıdaki amaçlarla işlenmektedir:
@@ -51,7 +48,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* PAYLAŞIM */}
      <PolicySection icon={<HiLockClosed className="text-indigo-600" size={24} />} title="Kişisel Verilerin Paylaşılması">
       <p className="leading-relaxed">
        Kişisel verileriniz, aşağıdaki durumlar haricinde üçüncü kişilerle paylaşılmamaktadır:
@@ -63,7 +59,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* VERİ SORUMLUSU */}
      <PolicySection icon={<HiInformationCircle className="text-indigo-600" size={24} />} title="Veri Sorumlusu">
       <p className="leading-relaxed">
        <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu</strong> uyarınca veri sorumlusu:
@@ -91,7 +86,6 @@ export default function GizlilikPolitikasiPage() {
       </div>
      </PolicySection>
 
-     {/* ÇEREZLER */}
      <PolicySection icon={<HiOutlineChip className="text-indigo-600" size={24} />} title="Çerezler">
       <p className="leading-relaxed">
        Web sitemizde kullanıcı deneyimini geliştirmek amacıyla çerezler kullanılmaktadır.
@@ -107,7 +101,6 @@ export default function GizlilikPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* GÜVENLİK */}
      <PolicySection icon={<HiShieldCheck className="text-indigo-600" size={24} />} title="Veri Güvenliği">
       <p className="leading-relaxed">
        Yazıcı Ticaret, kişisel verilerinizin güvenliğini sağlamak için gerekli teknik ve idari tedbirleri almaktadır:
@@ -120,7 +113,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* VERİ SAKLAMA SÜRESİ */}
      <PolicySection icon={<HiClock className="text-indigo-600" size={24} />} title="Veri Saklama Süresi">
       <p className="leading-relaxed">
        Kişisel verileriniz, işleme amacının gerektirdiği süre boyunca saklanmaktadır:
@@ -138,7 +130,6 @@ export default function GizlilikPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* VERİ SİLME VE YOK ETME */}
      <PolicySection icon={<HiExclamationCircle className="text-indigo-600" size={24} />} title="Kişisel Verilerin Silinmesi ve Yok Edilmesi">
       <p className="leading-relaxed">
        Kişisel verilerinizin silinmesini veya yok edilmesini talep edebilirsiniz.
@@ -155,7 +146,6 @@ export default function GizlilikPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* VERİ GÜVENLİK İHLALİ */}
      <PolicySection icon={<HiShieldCheck className="text-indigo-600" size={24} />} title="Veri Güvenliği İhlali Bildirimi">
       <p className="leading-relaxed">
        Kişisel verilerinizin güvenliğini sağlamak için teknik ve idari önlemler alınmıştır.
@@ -168,7 +158,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* ÇOCUKLARIN KİŞİSEL VERİLERİ */}
      <PolicySection icon={<HiUser className="text-indigo-600" size={24} />} title="Çocukların Kişisel Verileri">
       <p className="leading-relaxed">
        Web sitemiz 18 yaş altındaki kişilerin kullanımına yönelik değildir.
@@ -182,7 +171,6 @@ export default function GizlilikPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* KVKK HAKLARI */}
      <PolicySection icon={<HiScale className="text-indigo-600" size={24} />} title="KVKK Kapsamındaki Haklarınız">
       <p className="leading-relaxed">
        <strong>6698 sayılı KVKK</strong> kapsamında kişisel verilerinize ilişkin aşağıdaki haklara sahipsiniz:
@@ -199,7 +187,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* HAKLARIN KULLANIMI */}
      <PolicySection icon={<HiMail className="text-indigo-600" size={24} />} title="Haklarınızı Nasıl Kullanabilirsiniz?">
       <p className="leading-relaxed">
        <strong>KVKK</strong> kapsamındaki haklarınızı kullanmak için:
@@ -223,7 +210,6 @@ export default function GizlilikPolitikasiPage() {
       </div>
      </PolicySection>
 
-     {/* YURTDIŞINA VERİ TRANSFERİ */}
      <PolicySection icon={<HiLockClosed className="text-indigo-600" size={24} />} title="Yurtdışına Veri Transferi">
       <p className="leading-relaxed">
        Kişisel verileriniz, <strong>KVKK Kanunu</strong> ve ilgili mevzuat hükümlerine uygun olarak,
@@ -236,7 +222,6 @@ export default function GizlilikPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* POLİTİKA DEĞİŞİKLİKLERİ */}
      <PolicySection icon={<HiInformationCircle className="text-indigo-600" size={24} />} title="Gizlilik Politikası Değişiklikleri">
       <p className="leading-relaxed">
        Bu Gizlilik Politikası, yasal düzenlemelerdeki değişiklikler veya işletme politikalarımızdaki

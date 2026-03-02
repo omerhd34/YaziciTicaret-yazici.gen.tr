@@ -27,12 +27,7 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
    if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
     const colorVariants = product.colors.filter(c => typeof c === 'object' && c.serialNumber);
     if (colorVariants.length > 0) {
-     const totalStock = colorVariants.reduce((sum, color) => {
-      return sum + (color.stock !== undefined ? Number(color.stock) || 0 : 0);
-     }, 0);
      const maxStock = Math.max(...colorVariants.map(c => c.stock !== undefined ? Number(c.stock) || 0 : 0));
-     const minStock = Math.min(...colorVariants.map(c => c.stock !== undefined ? Number(c.stock) || 0 : 0));
-
      switch (selectedStockFilter) {
       case 'inStock':
        if (maxStock <= 0) return false;
@@ -238,7 +233,6 @@ export default function ProductListTable({ products, onEdit, onDelete, onAddNew,
     </button>
    </div>
 
-   {/* Kategori Filtreleri */}
    <div className="mb-6 bg-linear-to-r from-indigo-50 to-purple-50 rounded-xl p-5 shadow-sm border border-indigo-100">
     <div className="flex flex-wrap gap-4 items-end">
      <div className="flex-1 min-w-[200px]">

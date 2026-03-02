@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -29,7 +30,6 @@ export default function AdminUrunYonetimiPage() {
 
  useEffect(() => {
   checkAuth();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, []);
 
  useEffect(() => {

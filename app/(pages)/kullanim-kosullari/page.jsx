@@ -14,7 +14,6 @@ export default function KullanimKosullariPage() {
     <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
      <TermsIntroduction />
 
-     {/* İLETİŞİM BİLGİLERİ */}
      <PolicySection
       icon={<HiInformationCircle className="text-indigo-600" size={24} />}
       title="İletişim Bilgileri"

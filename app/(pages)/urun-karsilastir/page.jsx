@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useComparison } from "@/context/ComparisonContext";
@@ -18,7 +19,6 @@ export default function UrunKarsilastirPage() {
  const [mounted, setMounted] = useState(false);
 
  useEffect(() => {
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   setMounted(true);
  }, []);
 
@@ -231,7 +231,6 @@ export default function UrunKarsilastirPage() {
      </div>
     </div>
 
-    {/* Desktop Table View */}
     <div className="hidden lg:block bg-white rounded-xl shadow-sm overflow-hidden">
      <div className="overflow-x-auto overflow-y-visible scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
       <table className="w-full border-collapse" style={{ minWidth: `${Math.max(800, comparisonItems.length * 240 + 200)}px` }}>
@@ -323,8 +322,6 @@ export default function UrunKarsilastirPage() {
         </tr>
        </thead>
        <tbody>
-        {/* Genel Bilgiler */}
-        {/* Marka */}
         {comparisonItems.some(p => p.brand) && isGeneralInfoDifferent('brand') && (
          <tr className="border-b border-gray-100">
           <td className="p-3 xl:p-4 font-semibold text-gray-900 sticky left-0 bg-white z-20 border-r border-gray-200 align-middle w-[180px] xl:w-[200px] whitespace-nowrap text-xs xl:text-sm shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
@@ -344,7 +341,6 @@ export default function UrunKarsilastirPage() {
          </tr>
         )}
 
-        {/* Ürün Kodu */}
         {comparisonItems.some(p => {
          const allColors = p.colors || [];
          const validColors = allColors.filter(c => typeof c === 'object' && c.serialNumber);
@@ -394,7 +390,6 @@ export default function UrunKarsilastirPage() {
           </tr>
          )}
 
-        {/* Fiyat */}
         {isGeneralInfoDifferent('price') && (
          <tr className="bg-gray-50 border-b border-gray-100">
           <td className="p-3 xl:p-4 font-semibold text-gray-900 sticky left-0 bg-gray-50 z-20 border-r border-gray-200 align-middle w-[180px] xl:w-[200px] whitespace-nowrap text-xs xl:text-sm shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
@@ -452,7 +447,6 @@ export default function UrunKarsilastirPage() {
          </tr>
         )}
 
-        {/* Stok Durumu */}
         {isGeneralInfoDifferent('stock') && (
          <tr className="border-b border-gray-100">
           <td className="p-3 xl:p-4 font-semibold text-gray-900 sticky left-0 bg-white z-20 border-r border-gray-200 align-middle w-[180px] xl:w-[200px] whitespace-nowrap text-xs xl:text-sm shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
@@ -492,7 +486,6 @@ export default function UrunKarsilastirPage() {
          </tr>
         )}
 
-        {/* Değerlendirme */}
         {isGeneralInfoDifferent('rating') && (
          <tr className="bg-gray-50 border-b border-gray-100">
           <td className="p-3 xl:p-4 font-semibold text-gray-900 sticky left-0 bg-gray-50 z-20 border-r border-gray-200 align-middle w-[180px] xl:w-[200px] whitespace-nowrap text-xs xl:text-sm shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
@@ -544,7 +537,6 @@ export default function UrunKarsilastirPage() {
          </tr>
         )}
 
-        {/* Özellikler - Tablo */}
         {Array.from(allSpecs.entries()).map(([categoryName, keysMap]) => {
          const differentKeys = Array.from(keysMap.keys()).filter(key => isDifferent(categoryName, key));
          if (differentKeys.length === 0) return null;
@@ -613,7 +605,6 @@ export default function UrunKarsilastirPage() {
      </div>
     </div>
 
-    {/* Mobile & Tablet Card View */}
     <div className="lg:hidden space-y-3 sm:space-y-6">
      {comparisonItems.map((product, index) => {
       const priceInfo = getPrice(product);
@@ -703,7 +694,6 @@ export default function UrunKarsilastirPage() {
         </div>
 
         <div className="p-2 sm:p-4 space-y-2 sm:space-y-3">
-         {/* Ürün Kodu */}
          {(() => {
           const allColors = product.colors || [];
           const validColors = allColors.filter(c => typeof c === 'object' && c.serialNumber);
@@ -719,7 +709,6 @@ export default function UrunKarsilastirPage() {
           ) : null;
          })()}
 
-         {/* Fiyat */}
          {isGeneralInfoDifferent('price') && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-1.5 sm:py-2 border-b border-gray-100 gap-1">
            <span className="font-semibold text-gray-900 text-[11px] sm:text-sm whitespace-nowrap">Fiyat:</span>
@@ -742,7 +731,6 @@ export default function UrunKarsilastirPage() {
           </div>
          )}
 
-         {/* Stok Durumu */}
          {isGeneralInfoDifferent('stock') && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-1.5 sm:py-2 border-b border-gray-100 gap-1">
            <span className="font-semibold text-gray-900 text-[11px] sm:text-sm whitespace-nowrap">Stok Durumu:</span>
@@ -757,7 +745,6 @@ export default function UrunKarsilastirPage() {
           </div>
          )}
 
-         {/* Değerlendirme */}
          {isGeneralInfoDifferent('rating') && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-1.5 sm:py-2 border-b border-gray-100 gap-1 sm:gap-2">
            <span className="font-semibold text-gray-900 text-[11px] sm:text-sm whitespace-nowrap">Değerlendirme:</span>
@@ -778,7 +765,6 @@ export default function UrunKarsilastirPage() {
           </div>
          )}
 
-         {/* Özellikler */}
          {Array.from(allSpecs.entries()).map(([categoryName, keysMap]) => {
           const differentKeys = Array.from(keysMap.keys()).filter(key => isDifferent(categoryName, key));
           if (differentKeys.length === 0) return null;

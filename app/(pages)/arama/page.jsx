@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -42,7 +43,6 @@ export default function AramaPage() {
  return (
   <div className="min-h-screen bg-gray-50 py-8">
    <div className="container mx-auto px-4">
-    {/* Başlık */}
     <div className="mb-8">
      <h1 className="text-3xl font-bold text-gray-800 mb-2">
       Arama Sonuçları
@@ -54,7 +54,6 @@ export default function AramaPage() {
      )}
     </div>
 
-    {/* Sonuçlar */}
     {loading ? (
      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
       {[...Array(9)].map((_, i) => (

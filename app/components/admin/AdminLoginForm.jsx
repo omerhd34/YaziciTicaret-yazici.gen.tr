@@ -54,7 +54,6 @@ export default function AdminLoginForm({ onSuccess }) {
    {error && <AlertMessage message={error} type="error" />}
 
    <div className="space-y-6">
-    {/* Hesap Adı */}
     <div>
      <label htmlFor="admin-login-username" className="block text-sm font-bold text-gray-700 mb-2">
       Hesap Adı
@@ -79,7 +78,6 @@ export default function AdminLoginForm({ onSuccess }) {
      </div>
     </div>
 
-    {/* Şifre */}
     <div>
      <label htmlFor="admin-login-password" className="block text-sm font-bold text-gray-700 mb-2">
       Şifre
@@ -111,7 +109,6 @@ export default function AdminLoginForm({ onSuccess }) {
      </div>
     </div>
 
-    {/* Submit Button */}
     <button
      type="submit"
      disabled={loading}

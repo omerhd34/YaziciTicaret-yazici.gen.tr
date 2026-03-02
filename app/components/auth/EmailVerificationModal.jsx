@@ -30,7 +30,6 @@ export default function EmailVerificationModal({ show, onClose, userId, userEmai
 
    if (data.success) {
     if (data.autoLogin) {
-     // Otomatik giriş yapıldı, hesap sayfasına yönlendir
      window.location.href = "/hesabim";
     } else {
      setSuccess("Email başarıyla doğrulandı!");

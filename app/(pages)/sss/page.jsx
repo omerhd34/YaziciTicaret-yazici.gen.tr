@@ -91,7 +91,6 @@ export default function SSSPage() {
  return (
   <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12">
    <div className="container mx-auto px-4">
-    {/* Header */}
     <div className="text-center mb-8 md:mb-12">
      <div className="flex items-center justify-center gap-3 mb-3 md:mb-4">
       <HiQuestionMarkCircle className="text-indigo-600 shrink-0" size={32} />
@@ -105,7 +104,6 @@ export default function SSSPage() {
      </p>
     </div>
 
-    {/* FAQ List - Accordion */}
     <div className="max-w-5xl mx-auto">
      <Accordion type="single" collapsible className="w-full space-y-3 sm:space-y-4">
       {faqs.map((faq) => (
@@ -124,7 +122,6 @@ export default function SSSPage() {
       ))}
      </Accordion>
 
-     {/* Contact Section */}
      <div className="mt-8 md:mt-12 bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl p-5 sm:p-6 md:p-8 text-white text-center">
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 md:mb-3">
        Sorunuz mu var?

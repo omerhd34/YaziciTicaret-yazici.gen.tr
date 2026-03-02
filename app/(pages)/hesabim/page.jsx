@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -57,7 +58,6 @@ export default function Hesabim() {
  // Auth kontrolü
  useEffect(() => {
   checkAuth();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, []);
 
  const checkAuth = async () => {

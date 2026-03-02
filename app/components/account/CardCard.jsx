@@ -85,7 +85,6 @@ export default function CardCard({ card, onEdit, onDelete, onSetDefault }) {
 ${card.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 border-2 border-indigo-200 shadow-md shadow-indigo-100/50" : "bg-white border border-gray-200/80 hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-50/50"}
 `}
   >
-   {/* Varsayılan badge */}
    {card.isDefault && (
     <div className="absolute top-0 right-0">
      <div className="flex items-center gap-1 bg-indigo-600 text-white text-xs font-semibold pl-3 pr-2.5 py-1 rounded-bl-xl shadow-sm">
@@ -96,7 +95,6 @@ ${card.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 bor
    )}
 
    <div className="p-4 pt-5">
-    {/* Kart başlığı */}
     <div className="flex items-center gap-3 mb-3">
      <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${getCardIconBg(cardType)}`}>
       {renderCardIcon(cardType)}
@@ -111,7 +109,6 @@ ${card.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 bor
      </div>
     </div>
 
-    {/* Kart detayları */}
     <div className="space-y-1.5 text-sm">
      <p className="text-gray-700">
       <span className="text-gray-500 font-medium">Kart Sahibi:</span>{" "}
@@ -128,7 +125,6 @@ ${card.isDefault ? "bg-linear-to-br from-indigo-50 via-white to-violet-50/50 bor
     </div>
    </div>
 
-   {/* Aksiyonlar */}
    <div className="flex flex-wrap justify-between items-center gap-2 px-4 py-3 bg-gray-50/70 border-t border-gray-100">
     {!card.isDefault && (
      <button

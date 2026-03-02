@@ -118,7 +118,6 @@ export default function ProductImageGallery({
     )}
    </div>
 
-   {/* Lightbox Modal */}
    {lightboxOpen && (
     <div
      className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center p-4"

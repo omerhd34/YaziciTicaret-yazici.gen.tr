@@ -176,7 +176,6 @@ export default function ProductRequestsTab() {
     </div>
    )}
 
-   {/* İptal Onay - Alert Dialog */}
    <AlertDialog
     open={cancelConfirm.show}
     onOpenChange={(open) => {

@@ -136,7 +136,6 @@ export default function GirisPage() {
   <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-12">
    <div className="container mx-auto px-4">
     <div className="max-w-lg mx-auto">
-     {/* Logo/Header */}
      <div className="text-center mb-8">
       <Link href="/" className="inline-block">
        <h1 className="text-4xl font-black text-gray-900 mb-2">
@@ -146,7 +145,6 @@ export default function GirisPage() {
       <p className="text-gray-600">Hesabınıza giriş yapın veya yeni hesap oluşturun.</p>
      </div>
 
-     {/* Tab Switcher */}
      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="flex border-b">
        <button
@@ -180,11 +178,9 @@ export default function GirisPage() {
       </div>
 
       <div className="p-8">
-       {/* Error/Success Messages */}
        {error && <AlertMessage message={error} type="error" />}
        {success && <AlertMessage message={success} type="success" />}
 
-       {/* Giriş Formu */}
        {activeTab === "giris" && (
         <LoginForm
          onLogin={() => {
@@ -195,7 +191,6 @@ export default function GirisPage() {
         />
        )}
 
-       {/* Kayıt Formu */}
        {activeTab === "kayit" && (
         <RegisterForm
          onRegister={handleRegisterSuccess}
@@ -205,7 +200,6 @@ export default function GirisPage() {
       </div>
      </div>
 
-     {/* Back to Home */}
      <div className="mt-6 text-center">
       <Link
        href="/"
@@ -218,7 +212,6 @@ export default function GirisPage() {
     </div>
    </div>
 
-   {/* Email Doğrulama Modal */}
    <EmailVerificationModal
     show={showVerificationCode}
     onClose={() => {
@@ -233,7 +226,6 @@ export default function GirisPage() {
     onSuccess={handleVerificationSuccess}
    />
 
-   {/* Şifremi Unuttum Modal */}
    <ForgotPasswordModal
     show={showForgotPassword}
     onClose={() => {

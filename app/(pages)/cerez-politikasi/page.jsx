@@ -14,7 +14,6 @@ export default function CerezPolitikasiPage() {
 
     <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
 
-     {/* GİRİŞ */}
      <PolicySection>
       <p className="text-gray-700 leading-relaxed">
        <strong>Yazıcı Ticaret</strong> olarak, web sitemizin güvenli, verimli ve kullanıcı dostu bir şekilde
@@ -24,7 +23,6 @@ export default function CerezPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* ÇEREZ NEDİR */}
      <PolicySection
       icon={<HiShieldCheck className="text-indigo-600" size={24} />}
       title="Çerez Nedir?"
@@ -48,10 +46,8 @@ export default function CerezPolitikasiPage() {
       </ul>
      </PolicySection>
 
-     {/* ÇEREZ TÜRLERİ */}
      <CookieTypesSection />
 
-     {/* ÜÇÜNCÜ TARAF */}
      <PolicySection title="Üçüncü Taraf Çerezler">
       <p className="leading-relaxed">
        Web sitemizde, hizmet kalitesini artırmak amacıyla bazı üçüncü taraf hizmet sağlayıcıların
@@ -71,10 +67,8 @@ export default function CerezPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* ÇEREZ YÖNETİMİ */}
      <CookieManagementSection />
 
-     {/* SÜRELER */}
      <PolicySection title="Çerezlerin Saklanma Süresi">
       <p className="leading-relaxed">
        Web sitemizde kullanılan çerezler, saklanma sürelerine göre iki gruba ayrılmaktadır:
@@ -95,7 +89,6 @@ export default function CerezPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* YASAL DAYANAK */}
      <PolicySection icon={<HiLockClosed className="text-indigo-600" size={24} />} title="Yasal Dayanak">
       <p className="leading-relaxed">
        Çerez kullanımımız, <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK)</strong> ve{" "}
@@ -107,7 +100,6 @@ export default function CerezPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* GİZLİLİK POLİTİKASI */}
      <PolicySection icon={<HiInformationCircle className="text-indigo-600" size={24} />} title="Gizlilik ve Veri Koruması">
       <p className="leading-relaxed">
        Çerezler aracılığıyla toplanan kişisel verilerin işlenmesi, saklanması ve korunması hakkında
@@ -123,7 +115,6 @@ export default function CerezPolitikasiPage() {
       </p>
      </PolicySection>
 
-     {/* İLETİŞİM */}
      <PolicySection title="İletişim ve Sorularınız">
       <p className="leading-relaxed">
        Çerez politikamız hakkında sorularınız veya görüşleriniz varsa, bizimle iletişime geçebilirsiniz:
@@ -145,7 +136,6 @@ export default function CerezPolitikasiPage() {
       </div>
      </PolicySection>
 
-     {/* GÜNCELLEMELER */}
      <PolicySection title="Çerez Politikası Güncellemeleri">
       <p className="leading-relaxed">
        Bu <strong>Çerez Politikası</strong>, yasal düzenlemelerdeki değişiklikler veya işletme politikalarımızdaki

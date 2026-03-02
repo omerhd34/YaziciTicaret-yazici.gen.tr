@@ -79,7 +79,6 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
     </div>
 
     <div className="p-6 space-y-6 bg-gray-50">
-     {/* İptal edildiyse iptal nedeni / yönetici mesajı */}
      {isCancelled && (
       <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
        <div className="text-xs font-semibold text-red-700 mb-1">İptal nedeni:</div>
@@ -91,7 +90,6 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
       </div>
      )}
 
-     {/* Müşteri ve Tarih ve Saat yan yana */}
      <div className="grid md:grid-cols-2 gap-4">
       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
        <div className="text-xs text-gray-500 font-semibold">Müşteri:</div>
@@ -107,7 +105,6 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
       </div>
      </div>
 
-     {/* Sipariş özeti */}
      <div className="grid md:grid-cols-3 gap-4">
       <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
        <div className="text-xs text-gray-500 mb-1">Durum:</div>
@@ -125,7 +122,6 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
       </div>
      </div>
 
-     {/* Adres */}
      <div className="grid md:grid-cols-2 gap-4">
       <div className={`bg-white border border-gray-200 rounded-xl p-4 shadow-sm ${billingIsSame ? "md:col-span-2" : ""}`}>
        <div className="text-xs text-gray-500 mb-1">{billingIsSame ? "Teslimat Adresi, Fatura Adresi ve İletişim Bilgileri:" : "Teslimat Adresi ve İletişim Bilgileri:"}</div>
@@ -167,7 +163,6 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
       )}
      </div>
 
-     {/* İade Bilgisi - Adres gibi 2 sütun: İade Nedeni sayfanın yarısı */}
      {order?.returnRequest?.status || order?.returnRequest?.note || order?.returnRequest?.imageUrl || (Array.isArray(order?.returnRequest?.imageUrls) && order.returnRequest.imageUrls.length > 0) ? (
       <div className="grid md:grid-cols-2 gap-4">
        {order?.returnRequest?.note ? (
@@ -220,7 +215,6 @@ export default function OrderDetailModal({ show, order, user, onClose, onCancel 
       </div>
      ) : null}
 
-     {/* Ürünler */}
      <div>
       <div className="text-sm font-bold text-gray-900 mb-3">Sipariş Ürünleri:</div>
       <div className="space-y-3">

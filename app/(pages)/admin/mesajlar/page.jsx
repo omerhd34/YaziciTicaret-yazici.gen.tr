@@ -176,7 +176,6 @@ export default function AdminMesajlarPage() {
    <div className="container mx-auto px-4 py-6">
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
      <div className="p-6">
-      {/* Üst Bar - Filtreler */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
        <div className="flex flex-wrap gap-3">
         <button
@@ -210,7 +209,6 @@ export default function AdminMesajlarPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-       {/* Mesaj Listesi */}
        <div className="lg:col-span-1 space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar pr-2">
         {loading ? (
          <div className="text-center py-12">
@@ -284,11 +282,9 @@ export default function AdminMesajlarPage() {
         )}
        </div>
 
-       {/* Mesaj Detayı - E-posta Görünümü */}
        <div className="lg:col-span-2">
         {selectedContact ? (
          <div className="bg-white border-2 border-gray-200 rounded-xl shadow-xl overflow-hidden transition-all duration-300">
-          {/* E-posta Header */}
           <div className="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-5">
            <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shrink-0 shadow-lg">
@@ -316,7 +312,6 @@ export default function AdminMesajlarPage() {
            </div>
           </div>
 
-          {/* E-posta İçeriği */}
           <div className="px-6 py-6">
            <div className="mb-6">
             <div className="bg-linear-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-6 mb-4">
@@ -326,7 +321,6 @@ export default function AdminMesajlarPage() {
              </h2>
 
              <div className="space-y-4">
-              {/* İletişim Bilgileri */}
               <div className="bg-white border-2 border-gray-200 rounded-xl p-5 shadow-sm">
                <div className="space-y-4">
                 <div className="flex items-start gap-4 pb-3 border-b border-gray-100">
@@ -372,7 +366,6 @@ export default function AdminMesajlarPage() {
                </div>
               </div>
 
-              {/* Mesaj İçeriği */}
               <div className="bg-white border-2 border-gray-200 rounded-xl p-5 shadow-sm">
                <h3 className="font-bold mb-4 text-gray-700 text-lg flex items-center gap-2">
 
@@ -386,7 +379,6 @@ export default function AdminMesajlarPage() {
             </div>
            </div>
 
-           {/* Alt Butonlar */}
            <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t-2 border-gray-200">
             <div className="flex flex-wrap gap-3">
              <button

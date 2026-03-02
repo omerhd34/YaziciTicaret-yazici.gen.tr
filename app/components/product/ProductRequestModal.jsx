@@ -168,7 +168,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
  return (
   <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 overflow-x-hidden">
    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
-    {/* Header */}
     <div className="sticky top-0 bg-linear-to-r from-indigo-600 to-purple-600 text-white p-6 flex items-center justify-between">
      <div className="flex items-center gap-3">
       <HiShoppingBag size={24} />
@@ -182,7 +181,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
      </button>
     </div>
 
-    {/* Content */}
     <div className="p-6 md:p-8">
      {success ? (
       <div className="text-center py-8">
@@ -202,7 +200,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
         </div>
        )}
 
-       {/* Bilgilendirme */}
        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
         <div className="flex items-start gap-2 ">
          <HiInformationCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
@@ -212,7 +209,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
         </div>
        </div>
 
-       {/* İletişim Bilgileri - Sadece giriş yapmamış kullanıcılar için */}
        {!isAuthenticated && (
         <div>
          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -276,7 +272,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
         </div>
        )}
 
-       {/* Ürün Bilgileri */}
        <div>
         <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
          <HiShoppingBag size={20} className="text-indigo-600" />
@@ -346,7 +341,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
         </div>
        </div>
 
-       {/* Submit Button */}
        <div className="flex gap-4">
         <button
          type="button"

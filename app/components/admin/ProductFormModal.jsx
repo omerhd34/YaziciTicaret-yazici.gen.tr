@@ -945,9 +945,7 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
               value={color.hexCode || ""}
               onChange={(e) => {
                let hexValue = e.target.value.trim();
-               // # işareti yoksa ekle, varsa olduğu gibi bırak
                if (hexValue && !hexValue.startsWith("#")) {
-                // Sadece hex karakterler varsa # ekle
                 if (/^[0-9a-fA-F]{3,6}$/.test(hexValue)) {
                  hexValue = "#" + hexValue;
                 }
@@ -1077,7 +1075,6 @@ export default function ProductFormModal({ show, editingProduct, onClose, onSucc
             />
            </div>
 
-           {/* Renk Bazlı Özellikler */}
            <div className="mt-4 pt-4 border-t border-gray-300">
             <div className="flex items-center justify-between mb-3">
              <label className="block text-sm font-semibold text-gray-700">Ürün Özellikleri ({color.name || `Renk ${colorIdx + 1}`})</label>

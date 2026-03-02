@@ -76,7 +76,6 @@ export default function ProductSection({ title, description, products, loading, 
 
  return (
   <section className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
-   {/* Header */}
    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
     <div className="flex-1">
      <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-2">
@@ -99,7 +98,6 @@ export default function ProductSection({ title, description, products, loading, 
     )}
    </div>
 
-   {/* Products */}
    <div className="relative">
     {loading ? (
      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 items-stretch">
@@ -115,7 +113,6 @@ export default function ProductSection({ title, description, products, loading, 
      </div>
     ) : (
      <>
-      {/* Scroll Container */}
       <div
        ref={scrollContainerRef}
        onScroll={updateArrows}

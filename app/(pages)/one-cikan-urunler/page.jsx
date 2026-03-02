@@ -155,7 +155,6 @@ export default function OneCikanUrunlerPage() {
 
  return (
   <div className="min-h-screen bg-gray-50">
-   {/* Header */}
    <div className="bg-linear-to-r from-indigo-600 to-purple-600 text-white py-12">
     <div className="container mx-auto px-4">
      <h1 className="text-4xl font-black mb-2">Öne Çıkan Ürünler</h1>
@@ -166,7 +165,6 @@ export default function OneCikanUrunlerPage() {
    </div>
 
    <div className="container mx-auto px-4 py-8">
-    {/* Filter Toggle Button (Mobile) */}
     <div className="lg:hidden mb-6">
      <button
       onClick={() => setShowFilters(!showFilters)}
@@ -182,7 +180,6 @@ export default function OneCikanUrunlerPage() {
     </div>
 
     <div className="flex gap-6">
-     {/* Filters Sidebar */}
      <aside className={`${showFilters ? 'block' : 'hidden'} lg:block w-72 shrink-0 mb-6 lg:mb-0`}>
       <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
        <div className="flex justify-between items-center mb-6">
@@ -197,14 +194,12 @@ export default function OneCikanUrunlerPage() {
         )}
        </div>
 
-       {/* Category Filter */}
        <CategoryFilter
         availableCategories={availableCategories}
         selectedCategories={selectedCategories}
         onCategoryToggle={handleCategoryToggle}
        />
 
-       {/* Price Filter */}
        <PriceFilter
         minPrice={minPrice}
         maxPrice={maxPrice}
@@ -212,14 +207,12 @@ export default function OneCikanUrunlerPage() {
         onMaxPriceChange={setMaxPrice}
        />
 
-       {/* Brand Filter */}
        <BrandFilter
         availableBrands={availableBrands}
         selectedBrands={selectedBrands}
         onBrandToggle={handleBrandToggle}
        />
 
-       {/* Active Filters Display */}
        {activeFilterCount > 0 && (
         <div className="mt-6 pt-6 border-t border-gray-200">
          <h4 className="font-semibold mb-3 text-sm text-gray-700">Aktif Filtreler</h4>
@@ -280,9 +273,7 @@ export default function OneCikanUrunlerPage() {
       </div>
      </aside>
 
-     {/* Products Grid */}
      <div className="flex-1">
-      {/* Sort Toolbar */}
       {!loading && filteredProducts.length > 0 && (
        <CategoryToolbar
         sortBy={sortBy}

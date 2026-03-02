@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/lib/axios";
@@ -99,7 +100,6 @@ export default function SavedCardsSection({ onSelectCard, selectedCardId, title,
 
  useEffect(() => {
   fetchCards();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, []);
 
  const prevRefreshTrigger = useRef(undefined);
@@ -110,14 +110,12 @@ export default function SavedCardsSection({ onSelectCard, selectedCardId, title,
   prevRefreshTrigger.current = refreshTrigger;
   if (isInitial) return;
   fetchCards();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [refreshTrigger]);
 
  useEffect(() => {
   if (showNewCard && selectedCardId && onSelectCard) {
    onSelectCard(null);
   }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [showNewCard]);
 
  const handleCardSelect = (card) => {
@@ -145,7 +143,6 @@ export default function SavedCardsSection({ onSelectCard, selectedCardId, title,
     onSelectCard(defaultCard);
    }
   }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [showNewCard, cards]);
 
  if (loading) {

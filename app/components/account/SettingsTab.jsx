@@ -33,7 +33,6 @@ export default function SettingsTab({
    </div>
 
    <div className="p-6 space-y-6">
-    {/* Şifre Değiştir */}
     <div className="rounded-2xl border border-gray-200 bg-gray-50/50 overflow-hidden">
      <div className="px-5 py-4 border-b border-gray-100 bg-white/80">
       <div className="flex items-center gap-2">
@@ -106,7 +105,6 @@ export default function SettingsTab({
      </form>
     </div>
 
-    {/* Bildirim Tercihleri */}
     <div className="rounded-2xl border border-gray-200 bg-gray-50/50 overflow-hidden">
      <div className="px-5 py-4 border-b border-gray-100 bg-white/80">
       <div className="flex items-center gap-2">
@@ -132,7 +130,6 @@ export default function SettingsTab({
      </div>
     </div>
 
-    {/* Tehlikeli Bölge */}
     <div className="rounded-2xl border-2 border-red-200 bg-red-50/30 overflow-hidden">
      <div className="px-5 py-4 border-b border-red-200/50">
       <div className="flex items-center gap-2">

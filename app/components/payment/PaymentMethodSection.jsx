@@ -15,7 +15,6 @@ const PAYMENT_LOGOS = [
 export default function PaymentMethodSection({ children }) {
  return (
   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-   {/* Header */}
    <div className="bg-linear-to-r from-indigo-600 to-purple-600 px-6 py-4">
     <h2 className="text-xl font-bold text-white flex items-center gap-2">
      <MdPayment className="text-white" size={24} />
@@ -24,11 +23,9 @@ export default function PaymentMethodSection({ children }) {
    </div>
 
    <div className="p-6 space-y-6">
-    {/* Payment Method Card */}
     <div className="relative group">
      <div className="absolute inset-0 bg-linear-to-r from-indigo-500 to-purple-500 rounded-2xl opacity-5 group-hover:opacity-10 transition-opacity duration-300"></div>
      <div className="relative border-2 border-indigo-200 rounded-2xl p-6 bg-linear-to-br from-indigo-50/50 to-purple-50/30 hover:shadow-md transition-all duration-300">
-      {/* Payment Method Header */}
       <div className="flex items-center justify-between mb-4">
        <div className="flex items-center gap-3">
         <div className="bg-indigo-600 p-3 rounded-xl shadow-lg">
@@ -48,7 +45,6 @@ export default function PaymentMethodSection({ children }) {
        </div>
       </div>
 
-      {/* Description */}
       <div className="space-y-2">
        <p className="text-sm text-gray-700 leading-relaxed">
         <span className="font-semibold text-indigo-600">iyzico</span> aracılığıyla banka veya kredi kartı bilgilerinizi girerek{" "}
@@ -58,7 +54,6 @@ export default function PaymentMethodSection({ children }) {
        </p>
       </div>
 
-      {/* Payment Logos */}
       <div className="mt-6 pt-5 border-t border-gray-200">
        <p className="text-xs text-gray-500 font-semibold mb-3 text-center uppercase tracking-wide">
         Güvenli Ödeme Yöntemleri

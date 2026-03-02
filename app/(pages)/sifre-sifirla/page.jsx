@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import axiosInstance from "@/lib/axios";
-import { HiLockClosed, HiMail, HiArrowLeft, HiEye, HiEyeOff } from "react-icons/hi";
+import { HiLockClosed, HiArrowLeft, HiEye, HiEyeOff } from "react-icons/hi";
 import { MdError, MdCheckCircle } from "react-icons/md";
 
 export default function SifreSifirlaPage() {
@@ -105,7 +105,6 @@ export default function SifreSifirlaPage() {
   <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-12">
    <div className="container mx-auto px-4">
     <div className="max-w-md mx-auto">
-     {/* Logo/Header */}
      <div className="text-center mb-8">
       <Link href="/" className="inline-block">
        <h1 className="text-4xl font-black text-gray-900 mb-2">
@@ -116,7 +115,6 @@ export default function SifreSifirlaPage() {
      </div>
 
      <div className="bg-white rounded-xl shadow-lg p-8">
-      {/* Error/Success Messages */}
       {error && (
        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
         <MdError className="text-red-600 shrink-0 mt-0.5" size={20} />

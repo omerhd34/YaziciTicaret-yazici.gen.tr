@@ -215,7 +215,6 @@ export default function AdminUrunIstekleriPage() {
    <div className="container mx-auto px-4 py-6">
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
      <div className="p-6">
-      {/* Üst Bar - Filtreler */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
        <div className="flex flex-wrap gap-3">
         <button
@@ -267,7 +266,6 @@ export default function AdminUrunIstekleriPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-       {/* İstek Listesi */}
        <div className="lg:col-span-1">
         <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar pr-2 pb-8">
          {loading ? (
@@ -332,11 +330,9 @@ export default function AdminUrunIstekleriPage() {
         </div>
        </div>
 
-       {/* İstek Detayı */}
        <div className="lg:col-span-2">
         {selectedRequest ? (
          <div className="bg-white border-2 border-gray-200 rounded-xl shadow-xl overflow-hidden transition-all duration-300 max-h-[calc(100vh-280px)] flex flex-col">
-          {/* Header */}
           <div className="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-5 shrink-0">
            <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shrink-0 shadow-lg">
@@ -361,10 +357,8 @@ export default function AdminUrunIstekleriPage() {
            </div>
           </div>
 
-          {/* İçerik */}
           <div className="px-6 py-6 overflow-y-auto flex-1">
            <div className="space-y-6">
-            {/* Ürün Bilgileri */}
             <div className="bg-linear-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-6">
              <h3 className="text-lg font-bold mb-4 text-gray-900 flex items-center gap-2">
               <HiShoppingBag className="text-indigo-600" size={20} />
@@ -396,7 +390,6 @@ export default function AdminUrunIstekleriPage() {
              </div>
             </div>
 
-            {/* İletişim Bilgileri */}
             <div className="bg-linear-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-6">
              <h3 className="text-lg font-bold mb-4 text-gray-900 flex items-center gap-2">
               <HiUser className="text-indigo-600" size={20} />
@@ -428,7 +421,6 @@ export default function AdminUrunIstekleriPage() {
              </div>
             </div>
 
-            {/* Durum Değiştirme */}
             <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
              <h3 className="text-lg font-bold mb-4 text-gray-900">Durum</h3>
              <div>

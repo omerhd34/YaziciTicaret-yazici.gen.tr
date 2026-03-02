@@ -81,7 +81,6 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        {/* Admin Şifre Doğrulama */}
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <label htmlFor="admin-password" className="block text-sm font-semibold text-gray-700 mb-2">
             Admin Şifresi
@@ -122,7 +121,6 @@ export default function AdminCancelOrderModal({ show, orderId, onConfirm, onCanc
           )}
         </div>
 
-        {/* Müşteriye iletilen iptal mesajı */}
         <div>
           <label
             htmlFor="admin-cancel-message"

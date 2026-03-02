@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import Header from "../components/ui/Header/Header";
 import Footer from "../components/ui/Footer";
 import ScrollToTop from "../components/ui/ScrollToTop";

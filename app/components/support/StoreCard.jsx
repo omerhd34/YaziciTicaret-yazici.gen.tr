@@ -33,14 +33,11 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
 
  return (
   <div className="bg-white rounded-xl shadow-md overflow-hidden">
-   {/* Header */}
    <div className="bg-linear-to-r from-indigo-600 to-purple-600 px-6 py-4">
     <h3 className="text-2xl font-bold text-white">{title}</h3>
    </div>
 
-   {/* Contact Info */}
    <div className="p-6 space-y-4">
-    {/* Phone */}
     <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
      <div className="flex items-center gap-3">
       <div className="bg-indigo-100 p-2 rounded-lg">
@@ -64,7 +61,6 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
      </a>
     </div>
 
-    {/* Email */}
     <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
      <div className="flex items-center gap-3">
       <div className="bg-indigo-100 p-2 rounded-lg">
@@ -86,7 +82,6 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
      </a>
     </div>
 
-    {/* Address */}
     <div className="bg-gray-50 rounded-lg p-4">
      <div className="flex items-start gap-3">
       <div className="bg-indigo-100 p-2 rounded-lg">
@@ -99,7 +94,6 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
      </div>
     </div>
 
-    {/* Working Hours */}
     <div className="bg-gray-50 rounded-lg p-4">
      <div className="flex items-start gap-3">
       <div className="bg-indigo-100 p-2 rounded-lg">
@@ -118,7 +112,6 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
      </div>
     </div>
 
-    {/* Map */}
     <div className="rounded-lg overflow-hidden border border-gray-200">
      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
       <iframe
@@ -152,7 +145,6 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
      </div>
     </div>
 
-    {/* Store Images */}
     {images && images.length > 0 && (
      <div className="grid grid-cols-2 gap-3">
       {images.map((img, idx) => (
@@ -174,7 +166,6 @@ export default function StoreCard({ title, adres, telefon, whatsappLink, email, 
     )}
    </div>
 
-   {/* Lightbox */}
    {lightboxOpen && images && images.length > 0 && (
     <div className="fixed inset-0 bg-black/90 z-100 flex items-center justify-center p-4">
      <button
