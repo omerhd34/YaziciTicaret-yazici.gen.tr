@@ -7,7 +7,7 @@ export async function POST(request) {
  try {
   await dbConnect();
 
-  const { firstName, lastName, email, phone, identityNumber, password } = await request.json();
+  const { firstName, lastName, email, phone, identityNumber, isForeign, password } = await request.json();
 
   // Validasyon
   if (!firstName || !firstName.trim()) {
@@ -103,18 +103,40 @@ export async function POST(request) {
    );
   }
 
-  const tcDigits = String(identityNumber || '').replace(/\D/g, '').trim();
-  if (tcDigits.length !== 11) {
+  const rawIdentity = String(identityNumber || '').trim();
+  if (!rawIdentity) {
    return NextResponse.json(
-    { success: false, message: 'TC Kimlik No 11 haneli olmalıdır.' },
+    { success: false, message: 'Kimlik numarası alanı zorunludur.' },
     { status: 400 }
    );
   }
 
-  const existingUserByTc = await User.findOne({ identityNumber: tcDigits });
-  if (existingUserByTc) {
+  let normalizedIdentity = rawIdentity;
+
+  if (isForeign) {
+   // Yabancı kimlik / pasaport: en az 5 karakter, format serbest
+   if (rawIdentity.length < 5) {
+    return NextResponse.json(
+     { success: false, message: 'Kimlik / pasaport numarası en az 5 karakter olmalıdır.' },
+     { status: 400 }
+    );
+   }
+  } else {
+   // TC kimlik: sadece rakam ve 11 hane
+   const tcDigits = rawIdentity.replace(/\D/g, '').trim();
+   if (tcDigits.length !== 11) {
+    return NextResponse.json(
+     { success: false, message: 'TC Kimlik No 11 haneli olmalıdır.' },
+     { status: 400 }
+    );
+   }
+   normalizedIdentity = tcDigits;
+  }
+
+  const existingUserByIdentity = await User.findOne({ identityNumber: normalizedIdentity });
+  if (existingUserByIdentity) {
    return NextResponse.json(
-    { success: false, message: 'Bu TC Kimlik No ile daha önce hesap oluşturulmuş.' },
+    { success: false, message: 'Bu kimlik numarası ile daha önce hesap oluşturulmuş.' },
     { status: 400 }
    );
   }
@@ -134,7 +156,7 @@ export async function POST(request) {
    name: fullName, // Geriye dönük uyumluluk için
    email: email.toLowerCase(),
    phone,
-   identityNumber: tcDigits,
+   identityNumber: normalizedIdentity,
    password: hashedPassword,
    emailVerificationCode: codeString,
    emailVerificationCodeExpires: verificationCodeExpires,

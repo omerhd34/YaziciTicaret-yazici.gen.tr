@@ -880,11 +880,6 @@ export default function Hesabim() {
    errors.phone = "Telefon numarası 11 haneli olmalıdır! (Örn: 0XXXXXXXXXX)";
   }
 
-  const tcDigits = (userInfo.identityNumber || '').replace(/\D/g, '');
-  if (tcDigits && tcDigits.length !== 11) {
-   errors.identityNumber = "TC Kimlik No 11 haneli olmalıdır.";
-  }
-
   // Hata varsa göster ve dur
   if (Object.keys(errors).length > 0) {
    setProfileErrors(errors);
@@ -900,7 +895,7 @@ export default function Hesabim() {
     name: `${userInfo.firstName.trim()} ${userInfo.lastName.trim()}`.trim(),
     email: userInfo.email.trim(),
     phone: phoneDigits, // Sadece rakamları gönder
-    identityNumber: tcDigits || '', // TC Kimlik No - iyzico ödeme için
+    identityNumber: userInfo.identityNumber || '',
    });
 
    const data = res.data;
@@ -911,7 +906,6 @@ export default function Hesabim() {
    }
 
    showToast("Profil başarıyla güncellendi!", "success");
-   // Geriye dönük uyumluluk için: eğer firstName/lastName yoksa name'den ayır
    let firstName = data.user.firstName || '';
    let lastName = data.user.lastName || '';
    let name = data.user.name || '';

@@ -93,16 +93,15 @@ export default function ProfileTab({ userInfo, setUserInfo, profileErrors, setPr
 
      <div>
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-       TC Kimlik No
+       Kimlik No
       </label>
       <input
        type="text"
-       inputMode="numeric"
+       inputMode="text"
        value={userInfo.identityNumber || ''}
        readOnly
-       title="Üyelik sonrası TC Kimlik No değiştirilemez."
-       maxLength={11}
-       placeholder="11 haneli TC Kimlik No"
+       title="Üyelik sonrası kimlik numarası değiştirilemez."
+       placeholder="Kimlik / Pasaport No"
        className={`w-full border rounded-lg px-4 py-3 bg-gray-50 text-gray-600 cursor-not-allowed ${profileErrors.identityNumber ? 'border-red-500' : 'border-gray-300'
         }`}
       />

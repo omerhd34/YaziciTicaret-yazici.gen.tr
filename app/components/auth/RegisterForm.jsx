@@ -13,8 +13,10 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
   email: "",
   phone: "",
   identityNumber: "",
+  isForeign: false,
   password: "",
   confirmPassword: "",
+
  });
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState("");
@@ -91,11 +93,30 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
    return;
   }
 
-  const tcDigits = (form.identityNumber || "").replace(/\D/g, "");
-  if (tcDigits.length !== 11) {
-   setError("TC Kimlik No 11 haneli olmalıdır");
+  if (!form.identityNumber || !form.identityNumber.trim()) {
+   setError("Kimlik numarası alanı zorunludur");
    setLoading(false);
    return;
+  }
+
+  let identityNumberToSend = "";
+
+  if (form.isForeign) {
+   const foreignId = form.identityNumber.trim();
+   if (foreignId.length < 5) {
+    setError("Kimlik / pasaport numarası en az 5 karakter olmalıdır");
+    setLoading(false);
+    return;
+   }
+   identityNumberToSend = foreignId;
+  } else {
+   const tcDigits = (form.identityNumber || "").replace(/\D/g, "");
+   if (tcDigits.length !== 11) {
+    setError("TC Kimlik No 11 haneli olmalıdır");
+    setLoading(false);
+    return;
+   }
+   identityNumberToSend = tcDigits;
   }
 
   try {
@@ -104,7 +125,8 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
     lastName: form.lastName.trim(),
     email: form.email,
     phone: form.phone,
-    identityNumber: tcDigits,
+    isForeign: form.isForeign,
+    identityNumber: identityNumberToSend,
     password: form.password,
    });
 
@@ -121,6 +143,7 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
       email: "",
       phone: "",
       identityNumber: "",
+      isForeign: false,
       password: "",
       confirmPassword: "",
      });
@@ -237,8 +260,23 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
 
    <div>
     <label className="block text-sm font-bold text-gray-700 mb-2">
-     TC Kimlik No <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
+     Kimlik No <FaAsterisk className="inline text-red-500 align-baseline" size={10} />
     </label>
+    <div className="flex items-center gap-2 mb-2">
+     <input
+      type="checkbox"
+      checked={form.isForeign}
+      onChange={(e) =>
+       setForm({
+        ...form,
+        isForeign: e.target.checked,
+        identityNumber: "",
+       })
+      }
+      className="w-4 h-4 cursor-pointer"
+     />
+     <span className="text-sm text-gray-600">Yabancı uyrukluyum</span>
+    </div>
     <div className="relative">
      <HiIdentification
       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -246,12 +284,21 @@ export default function RegisterForm({ onRegister, onVerificationRequired }) {
      />
      <input
       type="text"
-      inputMode="numeric"
+      inputMode={form.isForeign ? "text" : "numeric"}
       value={form.identityNumber}
-      onChange={(e) => setForm({ ...form, identityNumber: e.target.value.replace(/\D/g, "").slice(0, 11) })}
+      onChange={(e) =>
+       setForm({
+        ...form,
+        identityNumber: form.isForeign
+         ? e.target.value.slice(0, 20)
+         : e.target.value.replace(/\D/g, "").slice(0, 11),
+       })
+      }
       className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-      placeholder="11 haneli TC Kimlik No"
-      maxLength={11}
+      placeholder={
+       form.isForeign ? "Kimlik / Pasaport No" : "T.C. Kimlik Numarası"
+      }
+      maxLength={form.isForeign ? 20 : 11}
       required
      />
     </div>
