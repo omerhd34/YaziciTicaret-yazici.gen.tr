@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -23,9 +24,7 @@ export default function OdemePage() {
   setMounted(true);
  }, []);
 
- // eslint-disable-next-line react-hooks/exhaustive-deps
  const cartTotal = useMemo(() => getCartTotal(), [cart, getCartTotal]);
- // eslint-disable-next-line react-hooks/exhaustive-deps
  const normalCartTotal = useMemo(() => getNormalCartTotal(), [cart, getNormalCartTotal]);
 
  const shippingCost = cartTotal >= 500 ? 0 : 29.99;
