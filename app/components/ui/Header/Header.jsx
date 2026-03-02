@@ -48,15 +48,24 @@ const Header = () => {
   const checkAuth = async () => {
    try {
     const res = await axiosInstance.get("/api/user/check", { cache: 'no-store' });
-    setIsAuthenticated(res.data.authenticated || false);
-    localStorage.setItem('auth_status', (res.data.authenticated || false).toString());
+    const authenticated = res.data?.authenticated || false;
+    setIsAuthenticated(authenticated);
+    localStorage.setItem('auth_status', authenticated.toString());
     localStorage.setItem('auth_status_time', Date.now().toString());
    } catch (error) {
     setIsAuthenticated(false);
+    localStorage.setItem('auth_status', 'false');
+    localStorage.setItem('auth_status_time', Date.now().toString());
    }
   };
 
-  if (!cachedAuth || !cachedAuthTime || (now - parseInt(cachedAuthTime, 10)) >= CACHE_DURATION) {
+  // Eğer cache yoksa, süresi dolduysa veya cachedAuth 'true' değilse mutlaka yeniden kontrol et
+  if (
+   !cachedAuth ||
+   !cachedAuthTime ||
+   (now - parseInt(cachedAuthTime, 10)) >= CACHE_DURATION ||
+   cachedAuth !== 'true'
+  ) {
    checkAuth();
   }
   // ... Event Listener'lar buraya gelecek (kod kalabalığı için kısalttım)
