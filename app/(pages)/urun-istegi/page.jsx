@@ -1,10 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
-import axiosInstance from "@/lib/axios";
-import { HiX, HiShoppingBag, HiInformationCircle, HiMail, HiPhone } from "react-icons/hi";
-import { useEscapeKey } from "@/hooks/useEscapeKey";
 
-export default function ProductRequestModal({ show, onClose, onSuccess }) {
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axiosInstance from "@/lib/axios";
+import { HiShoppingBag, HiInformationCircle, HiMail, HiPhone } from "react-icons/hi";
+
+export default function ProductRequestPage() {
+ const router = useRouter();
  const [isAuthenticated, setIsAuthenticated] = useState(false);
  const [form, setForm] = useState({
   name: "",
@@ -19,11 +21,8 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
  const [loading, setLoading] = useState(false);
  const [success, setSuccess] = useState(false);
 
- useEscapeKey(onClose, { enabled: show });
-
- // Kullanıcı giriş durumunu kontrol et
  useEffect(() => {
-  if (show) {
+  const init = async () => {
    setForm({
     name: "",
     email: "",
@@ -36,51 +35,35 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
    setErrors({});
    setSuccess(false);
 
-   const checkAuth = async () => {
-    try {
-     const res = await axiosInstance.get("/api/user/check");
-     const data = res.data;
-     setIsAuthenticated(data.authenticated || false);
+   try {
+    const res = await axiosInstance.get("/api/user/check");
+    const data = res.data;
+    setIsAuthenticated(data.authenticated || false);
 
-     // Eğer giriş yapmışsa, kullanıcı bilgilerini form'a doldur
-     if (data.authenticated && data.user) {
-      setForm(prev => ({
-       ...prev,
-       name: data.user.name || "",
-       email: data.user.email || "",
-       phone: data.user.phone || "",
-      }));
-     }
-    } catch (error) {
-     setIsAuthenticated(false);
+    if (data.authenticated && data.user) {
+     setForm((prev) => ({
+      ...prev,
+      name: data.user.name || "",
+      email: data.user.email || "",
+      phone: data.user.phone || "",
+     }));
     }
-   };
-   checkAuth();
-  } else {
-   // Modal kapandığında form'u sıfırla
-   setForm({
-    name: "",
-    email: "",
-    phone: "",
-    productName: "",
-    productDescription: "",
-    brand: "",
-    model: "",
-   });
-   setErrors({});
-   setSuccess(false);
-  }
- }, [show]);
+   } catch (error) {
+    setIsAuthenticated(false);
+   }
+  };
+
+  init();
+ }, []);
 
  const handleChange = (e) => {
   const { name, value } = e.target;
-  setForm(prev => ({
+  setForm((prev) => ({
    ...prev,
    [name]: value,
   }));
-  // Hata mesajını temizle
   if (errors[name]) {
-   setErrors(prev => ({
+   setErrors((prev) => ({
     ...prev,
     [name]: "",
    }));
@@ -90,7 +73,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
  const validate = () => {
   const newErrors = {};
 
-  // Giriş yapmamışsa iletişim bilgileri zorunlu
   if (!isAuthenticated) {
    if (!form.name.trim()) {
     newErrors.name = "İsim gereklidir";
@@ -128,11 +110,12 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
 
   try {
    const res = await axiosInstance.post("/api/product-requests", form);
-
    const data = res.data;
 
    if (!data.success) {
-    setErrors({ submit: data.message || "İstek gönderilemedi. Lütfen tekrar deneyin." });
+    setErrors({
+     submit: data.message || "İstek gönderilemedi. Lütfen tekrar deneyin.",
+    });
     setLoading(false);
     return;
    }
@@ -147,15 +130,6 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
     brand: "",
     model: "",
    });
-
-   // 2 saniye sonra modal'ı kapat
-   setTimeout(() => {
-    setSuccess(false);
-    onClose();
-    if (onSuccess) {
-     onSuccess();
-    }
-   }, 2000);
   } catch (error) {
    setErrors({ submit: "Bir hata oluştu. Lütfen tekrar deneyin." });
   } finally {
@@ -163,34 +137,53 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
   }
  };
 
- if (!show) return null;
+ const handleGoToRequests = () => {
+  router.push("/hesabim?tab=urun-istekleri");
+ };
 
  return (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 overflow-x-hidden">
-   <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
-    <div className="sticky top-0 bg-linear-to-r from-indigo-600 to-purple-600 text-white p-6 flex items-center justify-between">
-     <div className="flex items-center gap-3">
-      <HiShoppingBag size={24} />
-      <h2 className="text-xl font-bold">Ürün İsteği</h2>
-     </div>
-     <button
-      onClick={onClose}
-      className="p-2 hover:bg-white/20 rounded-lg transition cursor-pointer"
-     >
-      <HiX size={24} />
-     </button>
+  <div className="min-h-screen bg-gray-50 py-12">
+   <div className="container mx-auto px-4">
+    <div className="text-center mb-12">
+     <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+      Ürün İsteği
+     </h1>
+     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+      Stokta olmayan veya sitede görmediğiniz bir ürünü bizden talep edebilirsiniz.
+     </p>
     </div>
 
-    <div className="p-6 md:p-8">
+    <div className="bg-white rounded-xl shadow-md p-8 mb-8">
      {success ? (
       <div className="text-center py-8">
        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <HiInformationCircle size={32} className="text-green-600" />
        </div>
-       <h3 className="text-xl font-bold text-gray-900 mb-2">İsteğiniz Gönderildi!</h3>
-       <p className="text-gray-600">
-        Ürün isteğiniz başarıyla alındı.
+       <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        İsteğiniz Gönderildi!
+       </h2>
+       <p className="text-gray-600 max-w-xl mx-auto">
+        Ürün isteğiniz başarıyla alındı. Talebiniz değerlendirildikten sonra stok durumu
+        hakkında sizinle iletişime geçeceğiz.
        </p>
+       <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        {isAuthenticated && (
+         <button
+          type="button"
+          onClick={handleGoToRequests}
+          className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition cursor-pointer"
+         >
+          Ürün İsteklerimi Görüntüle
+         </button>
+        )}
+        <button
+         type="button"
+         onClick={() => setSuccess(false)}
+         className="px-6 py-3 rounded-xl border-2 border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold transition cursor-pointer"
+        >
+         Yeni İstek Oluştur
+        </button>
+       </div>
       </div>
      ) : (
       <form onSubmit={handleSubmit} className="space-y-6 max-w-none">
@@ -201,20 +194,28 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
        )}
 
        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-        <div className="flex items-start gap-2 ">
-         <HiInformationCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
+        <div className="flex items-start gap-2">
+         <HiInformationCircle
+          className="text-blue-600 shrink-0 mt-0.5"
+          size={18}
+         />
          <p className="text-sm text-blue-800 leading-relaxed">
-          <span className="font-semibold">Bilgilendirme:</span> Ürün isteğiniz gönderildikten sonra ekibimiz tarafından değerlendirilecektir. İsteğiniz onaylandığında, talep ettiğiniz ürün yakın zamanda şubelerimize gelecektir ve stok durumu hakkında size e-posta veya telefon ile bilgi verilecektir. İsteğiniz iptal edilirse, bu ürün şu anda tedarik edilememektedir veya stokta bulunmamaktadır. Her durumda size en kısa sürede geri dönüş yapılacaktır.
+          <span className="font-semibold">Bilgilendirme:</span> Ürün isteğiniz
+          gönderildikten sonra ekibimiz tarafından değerlendirilecektir. İsteğiniz
+          onaylandığında, talep ettiğiniz ürün yakın zamanda şubelerimize gelecektir ve
+          stok durumu hakkında size e-posta veya telefon ile bilgi verilecektir. İsteğiniz
+          iptal edilirse, bu ürün şu anda tedarik edilememektedir veya stokta
+          bulunmamaktadır. Her durumda size en kısa sürede geri dönüş yapılacaktır.
          </p>
         </div>
        </div>
 
        {!isAuthenticated && (
         <div>
-         <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <HiMail size={20} className="text-indigo-600" />
           İletişim Bilgileri
-         </h3>
+         </h2>
          <div className="space-y-4">
           <div>
            <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -225,7 +226,8 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
             name="name"
             value={form.name || ""}
             onChange={handleChange}
-            className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.name ? "border-red-300" : "border-gray-200"}`}
+            className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.name ? "border-red-300" : "border-gray-200"
+             }`}
             placeholder="Adınız ve soyadınız"
            />
            {errors.name && (
@@ -243,7 +245,8 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
              name="email"
              value={form.email || ""}
              onChange={handleChange}
-             className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.email ? "border-red-300" : "border-gray-200"}`}
+             className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.email ? "border-red-300" : "border-gray-200"
+              }`}
              placeholder="ornek@email.com"
             />
             {errors.email && (
@@ -273,10 +276,10 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
        )}
 
        <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
          <HiShoppingBag size={20} className="text-indigo-600" />
          Ürün Bilgileri
-        </h3>
+        </h2>
         <div className="space-y-4">
          <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -287,11 +290,14 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
            name="productName"
            value={form.productName || ""}
            onChange={handleChange}
-           className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.productName ? "border-red-300" : "border-gray-200"}`}
+           className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition ${errors.productName ? "border-red-300" : "border-gray-200"
+            }`}
            placeholder="Örn: Buzdolabı, Çamaşır Makinesi"
           />
           {errors.productName && (
-           <p className="mt-1 text-sm text-red-600">{errors.productName}</p>
+           <p className="mt-1 text-sm text-red-600">
+            {errors.productName}
+           </p>
           )}
          </div>
 
@@ -306,7 +312,7 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
             value={form.brand || ""}
             onChange={handleChange}
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-            placeholder="Örn: Bosch, Sony, Philips, Samsung, etc."
+            placeholder="Örn: Profilo, LG, ..."
            />
           </div>
 
@@ -341,14 +347,14 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
         </div>
        </div>
 
-       <div className="flex gap-4">
+       <div className="flex flex-col sm:flex-row gap-4 pt-2">
         <button
          type="button"
-         onClick={onClose}
+         onClick={() => router.back()}
          className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition cursor-pointer"
          disabled={loading}
         >
-         İptal
+         Geri Dön
         </button>
         <button
          type="submit"
@@ -359,11 +365,9 @@ export default function ProductRequestModal({ show, onClose, onSuccess }) {
         </button>
        </div>
       </form>
-     )
-     }
-    </div >
-   </div >
-  </div >
+     )}
+    </div>
+   </div>
+  </div>
  );
 }
-

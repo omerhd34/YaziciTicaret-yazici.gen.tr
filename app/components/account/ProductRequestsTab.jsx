@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { HiShoppingBag, HiPlus, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { FaSpinner } from "react-icons/fa";
-import ProductRequestModal from "@/app/components/product/ProductRequestModal";
 import ProductRequestCard from "./ProductRequestCard";
 import Toast from "@/app/components/ui/Toast";
 import {
@@ -18,9 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default function ProductRequestsTab() {
+ const router = useRouter();
  const [requests, setRequests] = useState([]);
  const [loading, setLoading] = useState(true);
- const [showRequestModal, setShowRequestModal] = useState(false);
  const [cancelConfirm, setCancelConfirm] = useState({ show: false, requestId: null });
  const [cancelLoading, setCancelLoading] = useState(false);
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
@@ -119,7 +119,7 @@ export default function ProductRequestsTab() {
      <p className="text-sm text-gray-500 mt-1">Gönderdiğiniz ürün isteklerini takip edin. İsteğiniz onaylanırsa yakın zamanda ürün şubelerimize gelecektir. İptal edilirse ürün bulunmamaktadır.</p>
     </div>
     <button
-     onClick={() => setShowRequestModal(true)}
+     onClick={() => router.push("/urun-istegi")}
      className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition cursor-pointer"
     >
      <HiPlus size={20} />
@@ -135,7 +135,7 @@ export default function ProductRequestsTab() {
      <p className="text-lg font-semibold text-gray-700 mb-2">Henüz ürün isteğiniz yok</p>
      <p className="text-sm text-gray-500 mb-4">Ürün isteğinde bulunmak için aşağıdaki butona tıklayın.</p>
      <button
-      onClick={() => setShowRequestModal(true)}
+      onClick={() => router.push("/urun-istegi")}
       className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition cursor-pointer mx-auto"
      >
       <HiPlus size={20} />
@@ -212,11 +212,6 @@ export default function ProductRequestsTab() {
     </AlertDialogContent>
    </AlertDialog>
 
-   <ProductRequestModal
-    show={showRequestModal}
-    onClose={() => setShowRequestModal(false)}
-    onSuccess={handleRequestSubmitted}
-   />
   </div>
  );
 }

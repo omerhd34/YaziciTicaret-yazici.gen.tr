@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { HiTruck, HiClipboardList, HiPhone } from "react-icons/hi";
 
 const HEADER_MESSAGES = [
@@ -7,7 +8,8 @@ const HEADER_MESSAGES = [
  "Bursa'ya özel ücretsiz kargo fırsatı !"
 ];
 
-export default function TopBar({ setShowProductRequestModal }) {
+export default function TopBar() {
+ const router = useRouter();
  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
  useEffect(() => {
@@ -26,7 +28,7 @@ export default function TopBar({ setShowProductRequestModal }) {
     </p>
     <div className="flex items-center justify-end gap-3 sm:gap-4 lg:gap-5">
      <button
-      onClick={() => setShowProductRequestModal(true)}
+      onClick={() => router.push("/urun-istegi")}
       className="flex items-center gap-1 sm:gap-1.5 hover:text-slate-300 transition cursor-pointer text-xs sm:text-[11px]"
      >
       <HiClipboardList size={18} />

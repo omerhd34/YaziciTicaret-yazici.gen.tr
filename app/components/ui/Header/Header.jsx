@@ -13,14 +13,12 @@ import SearchModal from "./SearchModal";
 import DesktopMenu from "./DesktopMenu";
 import MobileMenu from "./MobileMenu";
 import Logo from "../Logo";
-import ProductRequestModal from "@/app/components/product/ProductRequestModal";
 
 const Header = () => {
  const router = useRouter();
 
  // UI States
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
- const [showProductRequestModal, setShowProductRequestModal] = useState(false);
  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
  // Context & Auth States
@@ -85,7 +83,7 @@ const Header = () => {
 
  return (
   <header className="w-full bg-white shadow-sm sticky top-0 z-50 font-sans">
-   <TopBar setShowProductRequestModal={setShowProductRequestModal} />
+   <TopBar />
 
    <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-5">
     <div className="flex justify-between items-center gap-2 sm:gap-4 lg:gap-6">
@@ -112,11 +110,6 @@ const Header = () => {
     handleSepetClick={handleSepetClick}
     cartCount={isClient ? getCartItemCount() : 0}
     favoriteCount={isClient ? getFavoriteCount() : 0}
-   />
-
-   <ProductRequestModal
-    show={showProductRequestModal}
-    onClose={() => setShowProductRequestModal(false)}
    />
 
    <SearchModal
