@@ -83,12 +83,13 @@ export default function ProductImageGallery({
       </>
      )}
      <Image
-      width={1200}
-      height={1200}
+      width={900}
+      height={900}
       src={images[selectedImage]}
       alt={productName}
       quality={70}
       priority={selectedImage === 0}
+      sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 38vw, (min-width: 768px) 50vw, 100vw"
       className="w-full h-full object-contain p-3 sm:p-4 md:p-6"
      />
     </div>
@@ -105,11 +106,13 @@ export default function ProductImageGallery({
          }`}
        >
         <Image
-         width={300}
-         height={300}
+         width={160}
+         height={160}
          src={img}
          alt={`${productName} ${idx + 1}`}
          quality={70}
+         sizes="64px"
+         loading="lazy"
          className="w-full h-full object-cover"
         />
        </button>

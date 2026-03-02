@@ -196,28 +196,27 @@ export default function ProductCard({ product, priority = false, onColorChange, 
     <Link href={productUrl} className="w-full h-full flex items-center justify-center">
      {images[currentImageIndex] && images[currentImageIndex] !== null ? (
       <Image
-       width={600}
-       height={600}
+       width={400}
+       height={400}
        src={images[currentImageIndex]}
        alt={product.name}
        quality={70}
        priority={priority}
        loading={priority ? "eager" : "lazy"}
+       sizes="(min-width: 1280px) 18vw, (min-width: 1024px) 22vw, (min-width: 768px) 30vw, (min-width: 640px) 45vw, 80vw"
        className={`max-w-full max-h-full object-contain transition-transform duration-500 ${isImageHovered ? "scale-110" : "scale-100"
         }`}
-       onError={(e) => {
-        e.target.src = "/products/beyaz-esya.webp";
-       }}
       />
      ) : (
       <Image
-       width={600}
-       height={600}
+       width={400}
+       height={400}
        src="/products/beyaz-esya.webp"
        alt={product.name}
        quality={70}
        priority={priority}
        loading={priority ? "eager" : "lazy"}
+       sizes="(min-width: 1280px) 18vw, (min-width: 1024px) 22vw, (min-width: 768px) 30vw, (min-width: 640px) 45vw, 80vw"
        className={`max-w-full max-h-full object-contain transition-transform duration-500 ${isImageHovered ? "scale-110" : "scale-100"
         }`}
       />
