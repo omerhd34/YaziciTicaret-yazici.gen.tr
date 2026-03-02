@@ -139,7 +139,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
       }
      }}
      disabled={!canAddCompare && !inComparison}
-     className={`p-2 rounded-full shadow-md transition-all ${(inComparison || canAddCompare)
+     className={`p-2 rounded-full shadow-md transition-colors ${(inComparison || canAddCompare)
       ? "cursor-pointer"
       : "cursor-not-allowed opacity-50"
       } ${inComparison
@@ -165,7 +165,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
        addToFavorites(product);
       }
      }}
-     className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${isFavorite
+     className={`p-2 rounded-full shadow-md transition-colors cursor-pointer ${isFavorite
       ? "bg-red-600 text-white"
       : "bg-white text-gray-400 hover:bg-red-50 hover:text-red-500"
       }`}
@@ -176,7 +176,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
     <button
      onClick={handleAddToCart}
      disabled={stock === 0}
-     className={`p-2 rounded-full shadow-md transition-all cursor-pointer ${isInCart
+     className={`p-2 rounded-full shadow-md transition-colors cursor-pointer ${isInCart
       ? "bg-amber-500 text-white"
       : stock > 0
        ? "bg-white text-gray-400 hover:bg-amber-50 hover:text-amber-500"
@@ -231,7 +231,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
         e.stopPropagation();
         setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
        }}
-       className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all z-20 cursor-pointer"
+       className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-colors z-20 cursor-pointer"
        aria-label="Önceki resim"
       >
        <HiChevronLeft size={20} className="text-gray-700" />
@@ -242,7 +242,7 @@ export default function ProductCard({ product, priority = false, onColorChange, 
         e.stopPropagation();
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
        }}
-       className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all z-20 cursor-pointer"
+       className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-colors z-20 cursor-pointer"
        aria-label="Sonraki resim"
       >
        <HiChevronRight size={20} className="text-gray-700" />
