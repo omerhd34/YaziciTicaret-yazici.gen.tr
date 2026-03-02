@@ -521,7 +521,7 @@ export default function OdemePage() {
        />
        {selectedCardId && (
         <div className="mt-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-         <label className="block text-sm font-semibold text-gray-800 mb-1">Güvenlik kodu (CVC)</label>
+         <label className="block text-sm font-semibold text-gray-800 mb-1">Güvenlik kodu (CVV/CVC)</label>
          <p className="text-xs text-gray-500 mb-3">
           {selectedCardIsAmex ? "Kartınızın ön yüzündeki 4 haneli numara" : "Kartınızın arka yüzündeki 3 haneli numara"}
          </p>
