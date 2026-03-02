@@ -1,27 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { HiSparkles, HiTag } from "react-icons/hi";
-import {
- Carousel,
- CarouselContent,
- CarouselItem,
-} from "@/components/ui/carousel";
-
-const AUTOPLAY_INTERVAL_MS = 10000;
+import HeroCarouselClient from "./HeroCarouselClient";
 
 export default function HeroSection() {
- const [carouselApi, setCarouselApi] = useState(null);
-
- useEffect(() => {
-  if (!carouselApi) return;
-  const id = setInterval(() => {
-   carouselApi.scrollNext();
-  }, AUTOPLAY_INTERVAL_MS);
-  return () => clearInterval(id);
- }, [carouselApi]);
-
  return (
   <section className="relative bg-linear-to-r from-indigo-600 to-purple-600 text-white overflow-hidden">
    <div className="absolute inset-0 bg-black/10"></div>
@@ -50,47 +32,7 @@ export default function HeroSection() {
        </Link>
       </div>
      </div>
-     <div className="hidden lg:flex flex-1 max-w-2xl xl:max-w-3xl ml-auto w-full lg:items-center lg:justify-end">
-      <div className="relative w-full max-w-2xl xl:max-w-3xl">
-       <Carousel
-        opts={{ loop: true, align: "center", duration: 150, draggable: false }}
-        setApi={setCarouselApi}
-        interactive={false}
-        className="w-full"
-       >
-        <CarouselContent>
-         <CarouselItem>
-          <Image
-           src="/products/ankastre/ankastre.jpg"
-           alt="Ankastre ürünler"
-           width={1200}
-           height={800}
-           className="w-full h-auto object-contain border-4 border-white/20 rounded-2xl lg:rounded-3xl xl:rounded-4xl"
-           priority
-          />
-         </CarouselItem>
-         <CarouselItem>
-          <Image
-           src="/products/beyaz-esya.webp"
-           alt="Beyaz eşya"
-           width={1200}
-           height={800}
-           className="w-full h-auto object-contain border-4 border-white/20 rounded-2xl lg:rounded-3xl xl:rounded-4xl"
-          />
-         </CarouselItem>
-         <CarouselItem>
-          <Image
-           src="/products/fix.webp"
-           alt="Kampanyalı ürünler"
-           width={1200}
-           height={800}
-           className="w-full h-auto object-contain border-4 border-white/20 rounded-2xl lg:rounded-3xl xl:rounded-4xl"
-          />
-         </CarouselItem>
-        </CarouselContent>
-       </Carousel>
-      </div>
-     </div>
+     <HeroCarouselClient />
     </div>
    </div>
 

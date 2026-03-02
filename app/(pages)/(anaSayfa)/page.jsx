@@ -1,37 +1,35 @@
-"use client";
-import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
 import HeroSection from "@/app/components/home/HeroSection";
 import FeaturesSection from "@/app/components/home/FeaturesSection";
 import ProductSection from "@/app/components/home/ProductSection";
 import FAQSection from "@/app/components/home/FAQSection";
 
-export default function AnaSayfa() {
- const [featuredProducts, setFeaturedProducts] = useState([]);
- const [newProducts, setNewProducts] = useState([]);
- const [discountedProducts, setDiscountedProducts] = useState([]);
- const [loading, setLoading] = useState(true);
+export const revalidate = 60;
 
- useEffect(() => {
-  fetchProducts();
- }, []);
+async function fetchProducts() {
+ try {
+  const [featuredRes, newRes, discountedRes] = await Promise.all([
+   axiosInstance.get("/api/products?isFeatured=true"),
+   axiosInstance.get("/api/products?isNewProduct=true"),
+   axiosInstance.get("/api/products?category=İndirimler"),
+  ]);
 
- const fetchProducts = async () => {
-  try {
-   const [featuredRes, newRes, discountedRes] = await Promise.all([
-    axiosInstance.get("/api/products?isFeatured=true"),
-    axiosInstance.get("/api/products?isNewProduct=true"),
-    axiosInstance.get("/api/products?category=İndirimler"),
-   ]);
+  return {
+   featuredProducts: featuredRes.data?.success ? featuredRes.data.data : [],
+   newProducts: newRes.data?.success ? newRes.data.data : [],
+   discountedProducts: discountedRes.data?.success ? discountedRes.data.data : [],
+  };
+ } catch {
+  return {
+   featuredProducts: [],
+   newProducts: [],
+   discountedProducts: [],
+  };
+ }
+}
 
-   if (featuredRes.data.success) setFeaturedProducts(featuredRes.data.data);
-   if (newRes.data.success) setNewProducts(newRes.data.data);
-   if (discountedRes.data.success) setDiscountedProducts(discountedRes.data.data);
-  } catch (error) {
-  } finally {
-   setLoading(false);
-  }
- };
+export default async function AnaSayfa() {
+ const { featuredProducts, newProducts, discountedProducts } = await fetchProducts();
 
  return (
   <div className="min-h-screen bg-gray-50 overflow-x-hidden">
@@ -41,7 +39,7 @@ export default function AnaSayfa() {
     title="Öne Çıkan Ürünler"
     description="En çok tercih edilen ürünlerimiz"
     products={featuredProducts}
-    loading={loading}
+    loading={false}
     viewAllLink="/one-cikan-urunler"
     viewAllLabel="Öne çıkan ürünleri tümünü gör"
    />
@@ -49,7 +47,7 @@ export default function AnaSayfa() {
     title="Yeni Ürünler"
     description="Son eklenen ürünlerle en yenileri keşfedin"
     products={newProducts}
-    loading={loading}
+    loading={false}
     viewAllLink="/kategori/yeniler"
     viewAllLabel="Yeni ürünleri tümünü gör"
    />
@@ -57,7 +55,7 @@ export default function AnaSayfa() {
     title="İndirimli Ürünler"
     description="Özel fiyatlarla kaçırılmayacak fırsatlar"
     products={discountedProducts}
-    loading={loading}
+    loading={false}
     viewAllLink="/kategori/indirim"
     viewAllLabel="İndirimli ürünleri tümünü gör"
    />

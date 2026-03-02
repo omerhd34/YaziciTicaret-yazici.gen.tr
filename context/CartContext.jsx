@@ -8,6 +8,10 @@ const CartContext = createContext();
 const getCartKey = (uid) => (uid ? `cart_${uid}` : "cart");
 const getFavKey = (uid) => (uid ? `favorites_${uid}` : "favorites");
 
+let cachedProducts = null;
+let lastProductsFetchTime = 0;
+const PRODUCTS_FETCH_COOLDOWN = 10_000;
+
 export function CartProvider({ children }) {
  const pathname = usePathname();
  const [userId, setUserId] = useState(null);
@@ -322,17 +326,25 @@ export function CartProvider({ children }) {
   };
  }, [userId, hasLoaded, isAdminPage]);
 
- const updateCartPrices = async () => {
-  if (cart.length === 0) return;
+ const updateCartPrices = useCallback(async () => {
+  if (typeof globalThis.window === "undefined" || cart.length === 0 || isAdminPage) return;
 
   try {
-   const productsRes = await axiosInstance.get("/api/products?limit=1000");
-   const productsData = productsRes.data;
+   let allProducts = cachedProducts;
+   const now = Date.now();
 
-   if (!productsData.success) return;
+   if (!allProducts || now - lastProductsFetchTime > PRODUCTS_FETCH_COOLDOWN) {
+    const productsRes = await axiosInstance.get("/api/products?limit=1000");
+    const productsData = productsRes.data;
 
-   const allProducts = productsData.data || productsData.products || [];
-   if (allProducts.length === 0) return;
+    if (!productsData.success) return;
+
+    allProducts = productsData.data || productsData.products || [];
+    if (allProducts.length === 0) return;
+
+    cachedProducts = allProducts;
+    lastProductsFetchTime = now;
+   }
 
    setCart((prevCart) => {
     const updatedCart = prevCart.map((cartItem) => {
@@ -368,7 +380,7 @@ export function CartProvider({ children }) {
    });
   } catch (error_) {
   }
- };
+ }, [cart.length, isAdminPage]);
 
  useEffect(() => {
   if (typeof globalThis.window === "undefined" || cart.length === 0 || isAdminPage) return;
@@ -401,8 +413,7 @@ export function CartProvider({ children }) {
    globalThis.removeEventListener("focus", handleFocus);
    globalThis.removeEventListener("cartUpdated", handleCartUpdate);
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [cart.length, isAdminPage]);
+ }, [cart.length, isAdminPage, updateCartPrices]);
 
  useEffect(() => {
   if (typeof globalThis.window === "undefined" || !hasLoaded || isAdminPage) return;
@@ -819,84 +830,6 @@ export function CartProvider({ children }) {
   const productIdStr = String(productId);
   return favorites.some((item) => String(item._id || item.id) === productIdStr);
  };
-
- useEffect(() => {
-  if (typeof globalThis.window === "undefined" || cart.length === 0) return;
-
-  const updateCartPrices = async () => {
-   try {
-    const productsRes = await axiosInstance.get("/api/products?limit=1000");
-    const productsData = productsRes.data;
-
-    if (!productsData.success) return;
-
-    const allProducts = productsData.data || productsData.products || [];
-    if (allProducts.length === 0) return;
-
-    setCart((prevCart) => {
-     const updatedCart = prevCart.map((cartItem) => {
-      const productId = String(cartItem._id || cartItem.id);
-      const currentProduct = allProducts.find((p) => String(p._id) === productId);
-
-      if (currentProduct) {
-       return {
-        ...cartItem,
-        ...currentProduct,
-        selectedColor: cartItem.selectedColor,
-        quantity: cartItem.quantity,
-        addedAt: cartItem.addedAt,
-       };
-      }
-      return cartItem;
-     });
-
-     const hasChanges = prevCart.some((oldItem, index) => {
-      const newItem = updatedCart[index];
-      if (!newItem) return true;
-      const oldPrice = oldItem.discountPrice && oldItem.discountPrice < oldItem.price
-       ? oldItem.discountPrice
-       : oldItem.price;
-      const newPrice = newItem.discountPrice && newItem.discountPrice < newItem.price
-       ? newItem.discountPrice
-       : newItem.price;
-      return oldPrice !== newPrice || oldItem.stock !== newItem.stock;
-     });
-
-     return hasChanges ? updatedCart : prevCart;
-    });
-   } catch (error_) {
-   }
-  };
-
-  const timeoutId = setTimeout(() => {
-   updateCartPrices();
-  }, 1000);
-
-  const handleVisibilityChange = () => {
-   if (!document.hidden) {
-    updateCartPrices();
-   }
-  };
-
-  const handleFocus = () => {
-   updateCartPrices();
-  };
-
-  const handleCartUpdate = () => {
-   updateCartPrices();
-  };
-
-  globalThis.addEventListener("visibilitychange", handleVisibilityChange);
-  globalThis.addEventListener("focus", handleFocus);
-  globalThis.addEventListener("cartUpdated", handleCartUpdate);
-
-  return () => {
-   clearTimeout(timeoutId);
-   globalThis.removeEventListener("visibilitychange", handleVisibilityChange);
-   globalThis.removeEventListener("focus", handleFocus);
-   globalThis.removeEventListener("cartUpdated", handleCartUpdate);
-  };
- }, [cart.length]);
 
 
  const value = {
