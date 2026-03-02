@@ -50,7 +50,7 @@ export default function KullanimKosullariPage() {
      >
       <>
        <p className="leading-relaxed">
-        Bu web sitesi <strong>Yazıcı Ticaret</strong> (<strong>Profilo</strong> markasının yetkili bayisi, 2 şube) tarafından işletilmektedir. Web sitemizi kullanarak:
+        Bu web sitesi <strong>Yazıcı Ticaret</strong> (<strong>Profilo</strong> ve <strong>LG</strong> markalarının yetkili bayisi, 2 şube) tarafından işletilmektedir. Web sitemizi kullanarak:
        </p>
        <ul className="list-disc list-inside space-y-1.5 sm:space-y-2 ml-3 sm:ml-4">
         <li>18 yaşında veya daha büyük olduğunuzu onaylarsınız.</li>
@@ -94,7 +94,7 @@ export default function KullanimKosullariPage() {
       </>
      </PolicySection>
 
-     <PolicySection title="Mesafeli Satış Sözleşmesi">
+     <PolicySection title="Mesafeli Satış Sözleşmesi" id="mesafeli-satis-sozlesmesi">
       <>
        <p className="leading-relaxed">
         6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca düzenlenen bu sözleşme,
@@ -107,7 +107,7 @@ export default function KullanimKosullariPage() {
       </>
      </PolicySection>
 
-     <PolicySection title="Ön Bilgilendirme">
+     <PolicySection title="Ön Bilgilendirme" id="on-bilgilendirme-kosullari">
       <>
        <p className="leading-relaxed">
         Sipariş vermeden önce aşağıdaki bilgileri size sunuyoruz:

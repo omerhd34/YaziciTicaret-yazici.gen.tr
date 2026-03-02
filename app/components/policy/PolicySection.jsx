@@ -1,8 +1,8 @@
 "use client";
 
-export default function PolicySection({ icon, title, children }) {
+export default function PolicySection({ icon, title, children, id }) {
  return (
-  <section>
+  <section id={id} className="scroll-mt-50">
    {title && (
     <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
      {icon}
