@@ -3,7 +3,7 @@ import "./globals.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Header from "./components/ui/Header";
+import Header from "./components/ui/Header/Header";
 import Footer from "./components/ui/Footer";
 import { HiSearch, HiSparkles, HiExclamationCircle } from "react-icons/hi";
 

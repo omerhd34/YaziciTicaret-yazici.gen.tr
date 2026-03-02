@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import Header from "../components/ui/Header";
+import Header from "../components/ui/Header/Header";
 import Footer from "../components/ui/Footer";
 import ScrollToTop from "../components/ui/ScrollToTop";
 import ComparisonWidget from "../components/ui/ComparisonWidget";

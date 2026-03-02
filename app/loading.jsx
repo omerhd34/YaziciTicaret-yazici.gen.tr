@@ -1,6 +1,6 @@
 "use client";
 import "./globals.css";
-import Header from "./components/ui/Header";
+import Header from "./components/ui/Header/Header";
 import Footer from "./components/ui/Footer";
 import { HiSparkles } from "react-icons/hi";
 
