@@ -100,8 +100,8 @@ export async function generateMetadata(props) {
   (slugParts.length === 2 && /^[A-Z0-9]+$/.test(slugParts[1] || ""));
 
  const title = isProductDetailPage
-  ? `${displayCategoryName} Ürün Detayı - Yazıcı Ticaret`
-  : `${displayCategoryName} - Yazıcı Ticaret`;
+  ? `Yazıcı Ticaret - ${displayCategoryName} Ürün Detayı`
+  : `Yazıcı Ticaret - ${displayCategoryName}`;
 
  const description = isProductDetailPage
   ? `${displayCategoryName} ürünlerinin detaylarını, özelliklerini ve güncel fiyatlarını Yazıcı Ticaret güvencesiyle inceleyin. Uygun fiyat, hızlı teslimat ve montaj fırsatlarıyla hemen sipariş verin.`
