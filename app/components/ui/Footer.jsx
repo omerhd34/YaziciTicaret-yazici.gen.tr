@@ -23,6 +23,7 @@ const POLICY_LINKS = [
  { name: "Biz Kimiz", href: "/biz-kimiz" },
  { name: "Gizlilik Politikası", href: "/gizlilik-politikasi" },
  { name: "Kullanım Koşulları", href: "/kullanim-kosullari" },
+ { name: "Mesafeli Satış Sözleşmesi", href: "/mesafeli-satis-sozlesmesi" },
  { name: "Çerez Politikası", href: "/cerez-politikasi" },
 ];
 

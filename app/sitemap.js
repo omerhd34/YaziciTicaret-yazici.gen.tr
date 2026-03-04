@@ -25,6 +25,8 @@ export default async function sitemap() {
   toEntry('/iade-degisim', { changeFrequency: 'monthly', priority: 0.6 }),
   toEntry('/gizlilik-politikasi', { changeFrequency: 'yearly', priority: 0.3 }),
   toEntry('/kullanim-kosullari', { changeFrequency: 'yearly', priority: 0.3 }),
+  toEntry('/mesafeli-satis-sozlesmesi', { changeFrequency: 'yearly', priority: 0.3 }),
+  toEntry('/on-bilgilendirme-kosullari', { changeFrequency: 'yearly', priority: 0.3 }),
   toEntry('/cerez-politikasi', { changeFrequency: 'yearly', priority: 0.3 }),
   toEntry('/one-cikan-urunler', { changeFrequency: 'weekly', priority: 0.9 }),
  ];

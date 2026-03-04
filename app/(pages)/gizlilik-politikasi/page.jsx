@@ -234,11 +234,7 @@ export default function GizlilikPolitikasiPage() {
       </p>
       <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
        <p className="text-sm text-gray-600">
-        <strong>Son Güncelleme Tarihi:</strong> {new Date().toLocaleDateString('tr-TR', {
-         year: 'numeric',
-         month: 'long',
-         day: 'numeric'
-        })}
+        <strong>Son Güncelleme Tarihi:</strong>{" "} 01.02.2026
        </p>
       </div>
      </PolicySection>

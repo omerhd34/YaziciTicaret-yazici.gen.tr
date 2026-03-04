@@ -93,19 +93,6 @@ export default function KullanimKosullariPage() {
       </>
      </PolicySection>
 
-     <PolicySection title="Mesafeli Satış Sözleşmesi" id="mesafeli-satis-sozlesmesi">
-      <>
-       <p className="leading-relaxed">
-        6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca düzenlenen bu sözleşme,
-        <strong>Yazıcı Ticaret</strong> ile tüketici arasında yapılan mesafeli satış sözleşmesidir.
-       </p>
-       <p className="leading-relaxed mt-3">
-        Bu sözleşme, web sitemiz üzerinden yapılan satış işlemlerinin tüm koşullarını kapsar.
-        Sipariş vererek bu sözleşmeyi kabul etmiş sayılırsınız.
-       </p>
-      </>
-     </PolicySection>
-
      <PolicySection title="Ön Bilgilendirme" id="on-bilgilendirme-kosullari">
       <>
        <p className="leading-relaxed">
@@ -299,11 +286,8 @@ export default function KullanimKosullariPage() {
        </p>
        <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
         <p className="text-sm text-gray-600">
-         <strong>Son Güncelleme Tarihi:</strong> {new Date().toLocaleDateString('tr-TR', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-         })}
+         <strong>Son Güncelleme Tarihi:</strong>{" "}
+         01.02.2026
         </p>
        </div>
       </>

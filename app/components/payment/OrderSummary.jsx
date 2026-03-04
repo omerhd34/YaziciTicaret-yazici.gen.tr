@@ -62,11 +62,11 @@ export default function OrderSummary({
      className="mt-1 cursor-pointer"
     />
     <span>
-     <Link href="/kullanim-kosullari#on-bilgilendirme-kosullari" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
+     <Link href="/on-bilgilendirme-kosullari" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
       Ön Bilgilendirme Koşulları
      </Link>
      {" "}ve{" "}
-     <Link href="/kullanim-kosullari#mesafeli-satis-sozlesmesi" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
+     <Link href="/mesafeli-satis-sozlesmesi" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
       Mesafeli Satış Sözleşmesi
      </Link>
      {"'"}ni okudum, onaylıyorum.
