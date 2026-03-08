@@ -3,7 +3,7 @@ import CartItemCard from "./CartItemCard";
 
 export default function CartItemsList({ cartItems, onUpdateQuantity, onRemove, onClearCart }) {
  return (
-  <div className="lg:col-span-2 space-y-4">
+  <div className="lg:col-span-2 space-y-4 overflow-x-hidden px-1 sm:px-0">
    <button
     onClick={onClearCart}
     className="text-red-600 hover:text-red-800 font-semibold text-sm cursor-pointer"
