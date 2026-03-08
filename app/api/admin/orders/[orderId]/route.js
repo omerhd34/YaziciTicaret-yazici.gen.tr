@@ -4,7 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import Product from "@/models/Product";
 import normalizeText from "@/lib/normalizeText";
-import { sendUserReturnApprovedEmail, sendUserReturnRejectedEmail, sendUserOrderStatusUpdateEmail } from "@/lib/notifications";
+import { sendUserReturnApprovedEmail, sendUserReturnRejectedEmail, sendUserOrderStatusUpdateEmail, sendUserInvoiceEmail } from "@/lib/notifications";
 import { isAdminAuthenticated } from "@/lib/adminSession";
 
 async function requireAdmin() {
@@ -251,6 +251,18 @@ export async function PATCH(request, { params }) {
       addressSummary: updatedOrder?.addressSummary || "",
       statusMessageOverride: statusNorm.includes("iptal") && adminMsg ? adminMsg : undefined,
      });
+     if (statusNorm.includes("kargoya") || statusNorm.includes("kargoda")) {
+      await sendUserInvoiceEmail({
+       userEmail: user.email,
+       userName: user.name,
+       orderId: String(orderId),
+       orderDate: updatedOrder?.date || updatedOrder?.createdAt,
+       total: updatedOrder?.total || 0,
+       paymentMethod: updatedOrder?.paymentMethod || "Kart ile Ödeme",
+       addressSummary: updatedOrder?.addressSummary || "",
+       items: updatedOrder?.items || [],
+      });
+     }
     }
    } catch (e) {
     // mail hatası sipariş güncellemesini bozmasın

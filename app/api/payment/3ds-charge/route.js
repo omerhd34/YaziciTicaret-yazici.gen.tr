@@ -4,7 +4,7 @@ import { createIyzicoClient } from '@/lib/iyzico';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Product from '@/models/Product';
-import { sendAdminNewOrderEmail, sendUserOrderConfirmationEmail } from '@/lib/notifications';
+import { sendAdminNewOrderEmail, sendUserOrderConfirmationEmail, sendUserInvoiceEmail } from '@/lib/notifications';
 
 export async function POST(request) {
  try {
@@ -253,6 +253,16 @@ export async function POST(request) {
      const pmText = 'Kart ile Ödeme (3D Secure)';
 
      await sendUserOrderConfirmationEmail({
+      userEmail: userRefresh.email,
+      userName: userRefresh.name,
+      orderId: orderRefresh.orderId,
+      orderDate: orderRefresh.date,
+      total: orderRefresh.total,
+      paymentMethod: pmText,
+      addressSummary: addrSummary,
+      items: orderRefresh.items,
+     });
+     await sendUserInvoiceEmail({
       userEmail: userRefresh.email,
       userName: userRefresh.name,
       orderId: orderRefresh.orderId,
