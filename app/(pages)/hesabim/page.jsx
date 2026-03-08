@@ -41,7 +41,13 @@ export default function Hesabim() {
    setActiveTab(tab);
    didInitTabFromUrl.current = true;
   }
- }, [searchParams, activeTab]);
+ }, [searchParams]);
+
+ // Sidebar'dan tab değişince hem state hem URL güncellenir; böylece URL ile state senkron kalır ve effect tab'ı geri almaz
+ const handleTabChange = useCallback((newTab) => {
+  setActiveTab(newTab);
+  router.replace(`/hesabim?tab=${newTab}`, { scroll: false });
+ }, [router]);
 
  // Toast bildirim state'i
  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
@@ -1242,7 +1248,7 @@ export default function Hesabim() {
      <AccountSidebar
       userInfo={userInfo}
       activeTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={handleTabChange}
      />
 
      <div className="lg:col-span-3" aria-label="Hesap içeriği">
