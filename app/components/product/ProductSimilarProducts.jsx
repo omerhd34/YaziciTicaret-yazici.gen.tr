@@ -134,12 +134,13 @@ export default function ProductSimilarProducts({ product }) {
     </Link>
    </div>
 
-   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+   <div className="flex overflow-x-auto scrollbar-hide gap-4 sm:gap-5 md:gap-6 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:overflow-visible sm:snap-none">
     {similarProducts.map((similarProduct, index) => (
-     <ProductCard key={similarProduct._id} product={similarProduct} priority={index < 4} />
+     <div key={similarProduct._id} className="flex-none w-full sm:w-auto max-w-[360px] snap-center sm:snap-none">
+      <ProductCard product={similarProduct} priority={index < 4} />
+     </div>
     ))}
    </div>
   </div>
  );
 }
-

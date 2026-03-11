@@ -95,12 +95,12 @@ export default function ProductImageGallery({
     </div>
 
     {images.length > 1 && (
-     <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3">
+     <div className="flex overflow-x-auto scrollbar-hide gap-2 sm:gap-3 sm:grid sm:grid-cols-5 md:grid-cols-6 sm:overflow-visible">
       {images.map((img, idx) => (
        <button
         key={idx}
         onClick={() => onImageSelect(idx)}
-        className={`aspect-square rounded-lg overflow-hidden border-2 bg-white transition cursor-pointer ${selectedImage === idx
+        className={`flex-none w-1/4 sm:w-auto aspect-square rounded-lg overflow-hidden border-2 bg-white transition cursor-pointer ${selectedImage === idx
          ? "border-indigo-600"
          : "border-gray-200 hover:border-gray-300"
          }`}
