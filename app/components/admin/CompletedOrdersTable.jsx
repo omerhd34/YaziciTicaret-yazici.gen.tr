@@ -1,7 +1,15 @@
+/* eslint-disable react-hooks/static-components */
 "use client";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import normalizeText from "@/lib/normalizeText";
 import ReturnStatusDropdown from "./ReturnStatusDropdown";
+import {
+ Select,
+ SelectContent,
+ SelectItem,
+ SelectTrigger,
+ SelectValue,
+} from "@/components/ui/select";
 
 export default function CompletedOrdersTable({
  orders,
@@ -28,31 +36,31 @@ export default function CompletedOrdersTable({
  ];
 
  const getCount = (key) => filterCounts[key] ?? 0;
+ const activeLabel = filterOptions.find((f) => f.key === filter)?.label ?? "Tümü";
+
+ const FilterSelect = () => (
+  <Select value={filter} onValueChange={onFilterChange}>
+   <SelectTrigger className="w-[200px] text-sm">
+    <SelectValue>
+     {activeLabel} ({getCount(filter ?? "all")})
+    </SelectValue>
+   </SelectTrigger>
+   <SelectContent>
+    {filterOptions.map((f) => (
+     <SelectItem key={f.key} value={f.key}>
+      {f.label} ({getCount(f.key)})
+     </SelectItem>
+    ))}
+   </SelectContent>
+  </Select>
+ );
 
  if (orders.length === 0) {
   return (
    <div className="bg-white rounded-xl shadow-md p-6">
     <div className="flex items-center justify-between mb-4">
      <h2 className="text-xl font-bold">Siparişler</h2>
-     <div className="flex flex-wrap items-center justify-end gap-2">
-      {filterOptions.map((f) => {
-       const active = filter === f.key;
-       return (
-        <button
-         key={f.key}
-         type="button"
-         onClick={() => onFilterChange(f.key)}
-         className={`px-3 py-2 rounded-full text-xs font-semibold border transition cursor-pointer
-          ${active
-           ? "bg-indigo-600 border-indigo-600 text-white shadow-sm"
-           : "bg-white border-gray-200 text-gray-700 hover:border-slate-300 hover:bg-gray-50"
-          }`}
-        >
-         {f.label} ({getCount(f.key)})
-        </button>
-       );
-      })}
-     </div>
+     <FilterSelect />
     </div>
     <div className="text-sm text-gray-500">Tamamlanan sipariş yok.</div>
    </div>
@@ -63,25 +71,7 @@ export default function CompletedOrdersTable({
   <div className="bg-white rounded-xl shadow-md p-6">
    <div className="flex items-center justify-between mb-4">
     <h2 className="text-xl font-bold">Siparişler</h2>
-    <div className="flex flex-wrap items-center justify-end gap-2">
-     {filterOptions.map((f) => {
-      const active = filter === f.key;
-      return (
-       <button
-        key={f.key}
-        type="button"
-        onClick={() => onFilterChange(f.key)}
-        className={`px-3 py-2 rounded-full text-xs font-semibold border transition cursor-pointer
-         ${active
-          ? "bg-indigo-600 border-indigo-600 text-white shadow-sm"
-          : "bg-white border-gray-200 text-gray-700 hover:border-slate-300 hover:bg-gray-50"
-         }`}
-       >
-        {f.label} ({getCount(f.key)})
-       </button>
-      );
-     })}
-    </div>
+    <FilterSelect />
    </div>
 
    <div className="overflow-x-auto border rounded-lg">
@@ -115,13 +105,14 @@ export default function CompletedOrdersTable({
        const rrNorm = normalizeText(rrStatus).replace(/\s+/g, "");
        const isReturnRequested = rrNorm === "talepedildi";
        const isReturnApproved = rrNorm === "onaylandi";
-       const rrBadgeClass = {
-        talepedildi: "bg-amber-100 text-amber-800 border-amber-200",
-        onaylandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
-        reddedildi: "bg-red-100 text-red-800 border-red-200",
-        iptaledildi: "bg-gray-100 text-gray-700 border-gray-200",
-        tamamlandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
-       }[rrNorm] || "bg-gray-100 text-gray-800 border-gray-200";
+       const rrBadgeClass =
+        {
+         talepedildi: "bg-amber-100 text-amber-800 border-amber-200",
+         onaylandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
+         reddedildi: "bg-red-100 text-red-800 border-red-200",
+         iptaledildi: "bg-gray-100 text-gray-700 border-gray-200",
+         tamamlandi: "bg-emerald-100 text-emerald-800 border-emerald-200",
+        }[rrNorm] || "bg-gray-100 text-gray-800 border-gray-200";
        const statusNorm = normalizeText(o?.status || "");
        const isCancelled = statusNorm.includes("iptal");
        return (
@@ -157,16 +148,14 @@ export default function CompletedOrdersTable({
              ) : null}
             </div>
            </div>
+          ) : isCancelled ? (
+           <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">
+            İptal Edildi
+           </span>
           ) : (
-           isCancelled ? (
-            <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">
-             İptal Edildi
-            </span>
-           ) : (
-            <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">
-             Teslim Edildi
-            </span>
-           )
+           <span className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white border border-gray-900">
+            Teslim Edildi
+           </span>
           )}
          </td>
          <td className="pl-4 pr-16 py-3 text-right font-bold text-indigo-600">
@@ -177,7 +166,8 @@ export default function CompletedOrdersTable({
            type="button"
            onClick={() => onDetailClick(row)}
            disabled={!o.orderId}
-           className={`px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer ${!o.orderId ? "opacity-50 cursor-not-allowed" : ""}`}
+           className={`px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer ${!o.orderId ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
            Detay
           </button>

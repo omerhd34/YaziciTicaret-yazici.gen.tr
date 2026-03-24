@@ -14,11 +14,11 @@ export default function AdminStats({
 
  return (
   <div className="container mx-auto px-4 -mt-6">
-   <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-8">
+   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
     {stats.map((stat, idx) => (
-     <div key={idx} className="bg-white rounded-xl shadow-md p-6 flex items-center gap-4">
-      <div className={`${stat.color} p-4 rounded-lg text-white`}>
-       <stat.icon size={28} />
+     <div key={idx} className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex items-center gap-4">
+      <div className={`${stat.color} p-3 sm:p-4 rounded-lg text-white shrink-0`}>
+       <stat.icon size={24} />
       </div>
       <div>
        <p className="text-gray-500 text-sm">{stat.label}</p>
