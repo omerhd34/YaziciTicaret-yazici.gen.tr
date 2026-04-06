@@ -59,7 +59,6 @@ const categoryBrands = {
  "Set Üstü Ocak": ["Profilo", "LG"],
  "Derin Dondurucu": ["Profilo", "LG"],
  "Bulaşık Makinesi": ["Profilo", "LG"],
- "Mikrodalga Fırın": ["Profilo", "LG"],
  "Çamaşır Makinesi": ["Profilo", "LG"],
  "Fırın": ["Profilo", "LG"],
 
@@ -68,7 +67,6 @@ const categoryBrands = {
  "Süpürge": ["Profilo", "LG"],
 
  "Ankastre Fırın": ["Profilo", "LG"],
- "Ankastre Mikrodalga Fırın": ["Profilo", "LG"],
  "Ankastre Ocak": ["Profilo", "LG"],
  "Ankastre Aspiratör / Davlumbaz": ["Profilo", "LG"],
  "Ankastre Bulaşık Makinesi": ["Profilo", "LG"],

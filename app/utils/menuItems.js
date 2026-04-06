@@ -13,7 +13,6 @@ export const MENU_ITEMS = [
    { name: "Bulaşık Makinesi", path: "/kategori/beyaz-esya/bulasik-makinesi" },
    { name: "Set Üstü Ocak", path: "/kategori/beyaz-esya/set-ustu-ocak" },
    { name: "Fırın", path: "/kategori/beyaz-esya/firin" },
-   { name: "Mikrodalga Fırın", path: "/kategori/beyaz-esya/mikrodalga-firin" },
   ]
  },
  {
@@ -26,7 +25,6 @@ export const MENU_ITEMS = [
    { name: "Ankastre Aspiratör / Davlumbaz", path: "/kategori/ankastre/ankastre-aspirator-davlumbaz" },
    { name: "Ankastre Bulaşık Makinesi", path: "/kategori/ankastre/ankastre-bulasik-makinesi" },
    { name: "Ankastre Fırın", path: "/kategori/ankastre/ankastre-firin" },
-   { name: "Ankastre Mikrodalga Fırın", path: "/kategori/ankastre/ankastre-mikrodalga-firin" },
    { name: "Ankastre Setler", path: "/kategori/ankastre/ankastre-setler" },
   ]
  },

@@ -93,11 +93,9 @@ Bu proje, Profilo markası beyaz eşya ve elektronik ürünlerinin satışını 
 - Bulaşık Makinesi
 - Fırın
 - Set Üstü Ocak
-- Mikrodalga Fırın
 
 ### Ankastre Koleksiyonu
 - Ankastre Fırın
-- Ankastre Mikrodalga Fırın
 - Ankastre Ocak
 - Ankastre Aspiratör / Davlumbaz
 - Ankastre Bulaşık Makinesi

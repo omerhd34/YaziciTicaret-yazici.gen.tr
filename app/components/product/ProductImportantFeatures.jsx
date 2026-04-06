@@ -31,7 +31,6 @@ export default function ProductImportantFeatures({ product, selectedColor = null
  const isWashingMachine = product.subCategory === "Çamaşır Makinesi";
  const isDryer = product.subCategory === "Kurutma Makinesi";
  const isDishwasher = product.subCategory === "Bulaşık Makinesi";
- const isMicrowave = product.subCategory === "Mikrodalga Fırın";
  const isOven = product.subCategory === "Fırın";
  const isCooktop = product.subCategory === "Set Üstü Ocak";
  const isTV = product.category === "Televizyon";
@@ -237,46 +236,6 @@ export default function ProductImportantFeatures({ product, selectedColor = null
   const modSayisi = findSpecValue("kombinasyon modları");
   if (modSayisi) {
    importantFeatures.push({ key: "Isıtma ve Kombinasyon Modlarının Sayısı", value: modSayisi });
-  }
- } else if (isMicrowave) {
-  // Mikrodalga Fırınlar için 2 özellik: 
-  for (const spec of allSpecifications) {
-   if (spec.items) {
-    const hacimItem = spec.items.find(item => {
-     if (!item.key) return false;
-     return item.key.trim() === "Hacim" || item.key.toLowerCase().trim() === "hacim";
-    });
-    if (hacimItem) {
-     importantFeatures.push({ key: "Hacim", value: hacimItem.value });
-     break;
-    }
-   }
-  }
-  for (const spec of allSpecifications) {
-   if (spec.items) {
-    const gucItem = spec.items.find(item => {
-     if (!item.key) return false;
-     const keyLower = item.key.toLowerCase();
-     const normalized = keyLower
-      .replace(/ü/g, 'u')
-      .replace(/ş/g, 's')
-      .replace(/ı/g, 'i')
-      .replace(/ğ/g, 'g')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c');
-     return normalized.includes("mikrodalga") &&
-      normalized.includes("guc") &&
-      normalized.includes("kademe");
-    });
-    if (gucItem) {
-     importantFeatures.push({ key: "Mikrodalga güç kademeleri (W)", value: gucItem.value });
-     break;
-    }
-   }
-  }
-  const temizlik = findSpecValue("temizlik");
-  if (temizlik) {
-   importantFeatures.push({ key: "Temizlik", value: temizlik });
   }
  } else if (isCooktop) {
   // Set Üstü Ocak için 8 özellik: 
