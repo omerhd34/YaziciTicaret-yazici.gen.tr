@@ -20,20 +20,50 @@ if (fs.existsSync(envPath)) {
 const axios = require('axios');
 const BASE_URL = (process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://yazici.gen.tr").replace(/\/+$/, "");
 
-let products;
-(async () => {
- try {
-  const productsModule = await import('./products.js');
-  products = productsModule.products;
- } catch (importError) {
+function describeApiFailure(status, data) {
+ if (data == null) return `HTTP ${status} (yanıt gövdesi yok)`;
+ if (typeof data === 'string') {
+  const s = data.replace(/\s+/g, ' ').trim();
+  return s.length > 240 ? `${s.slice(0, 240)}…` : s || `HTTP ${status}`;
+ }
+ if (typeof data === 'object') {
+  if (data.error != null) return String(data.error);
+  if (data.message != null) return String(data.message);
   try {
-   const productsModule = require('./products.js');
-   products = productsModule.products;
-  } catch (requireError) {
-   process.exit(1);
+   return JSON.stringify(data);
+  } catch {
+   return `HTTP ${status}`;
   }
  }
-})();
+ return `HTTP ${status}`;
+}
+
+async function ensureApiReachable() {
+ try {
+  const res = await axios.get(`${BASE_URL}/api/products`, {
+   params: { limit: 1 },
+   timeout: 10000,
+   validateStatus: () => true,
+  });
+  if (res.status >= 400) {
+   const hint =
+    typeof res.data === 'object' && res.data && (res.data.error || res.data.message)
+     ? String(res.data.error || res.data.message)
+     : typeof res.data === 'string' && res.data.includes('<!DOCTYPE')
+      ? 'HTML yanıt (.env.local MONGODB_URI/DATABASE_URL, ardından next dev yeniden başlatın)'
+      : `HTTP ${res.status}`;
+   console.error('API hazır değil:', hint);
+   process.exit(1);
+  }
+ } catch (err) {
+  const code = err.code || '';
+  if (code === 'ECONNREFUSED' || code === 'ECONNRESET' || code === 'EHOSTUNREACH' || code === 'ETIMEDOUT') {
+   console.error(`Sunucuya bağlanılamadı (${code || err.message}): ${BASE_URL}`);
+   process.exit(1);
+  }
+  throw err;
+ }
+}
 
 const normalizeColorName = (v) =>
  String(v || "")
@@ -134,21 +164,27 @@ async function addProduct(product) {
   const response = await axios.post(`${BASE_URL}/api/products`, payload, {
    headers: {
     "Content-Type": "application/json",
-    // Admin paneli yerine script ile ürün eklemek için gizli anahtar
     "x-admin-script-secret": process.env.ADMIN_SCRIPT_SECRET || "",
-   }
+   },
+   validateStatus: () => true,
+   timeout: 120000,
   });
 
+  const status = response.status;
   const data = response.data;
 
-  if (data.success) {
+  if (status >= 200 && status < 300 && data && data.success) {
    return { success: true, data: data.data };
-  } else {
-   return { success: false, error: data.error };
   }
+
+  const msg = describeApiFailure(status, data);
+  return { success: false, error: msg };
  } catch (error) {
-  const errorMessage = error.response?.data?.error || error.message;
-  return { success: false, error: errorMessage };
+  const code = error.code ? ` (${error.code})` : '';
+  const net = !error.response
+   ? `${error.message || 'Ağ hatası'}${code} — ${BASE_URL} erişilebilir mi? (next dev / next start açık mı?)`
+   : (error.response?.data?.error || error.response?.data?.message || error.message);
+  return { success: false, error: String(net) };
  }
 }
 
@@ -165,6 +201,7 @@ async function addMultipleProducts(productsArray) {
    continue;
   }
 
+  process.stdout.write(`\r[${i + 1}/${productsArray.length}] ${product.name.slice(0, 60)}${product.name.length > 60 ? '…' : ''}          `);
 
   const result = await addProduct(product);
   results.push({ product: product.name, ...result });
@@ -184,18 +221,40 @@ async function addMultipleProducts(productsArray) {
 
 if (typeof require !== 'undefined' && require.main === module) {
  (async () => {
-  let attempts = 0;
-  while (!products && attempts < 50) {
-   await new Promise(resolve => setTimeout(resolve, 100));
-   attempts++;
+  let products;
+  try {
+   console.log('products.js yükleniyor (büyük dosyalar birkaç saniye sürebilir)...');
+   const productsModule = await import('./products.js');
+   products = productsModule.products;
+  } catch (e) {
+   console.error('products.js yüklenemedi:', e.message || e);
+   process.exit(1);
   }
 
-  if (!products) {
+  if (!Array.isArray(products) || products.length === 0) {
+   console.error('Ürün listesi boş veya geçersiz.');
+   process.exit(1);
+  }
+
+  console.log(`${products.length} ürün bulundu. API: ${BASE_URL}`);
+  const secret = (process.env.ADMIN_SCRIPT_SECRET || '').trim();
+  if (!secret) {
+   console.warn(
+    '! UYARI: ADMIN_SCRIPT_SECRET boş. .env.local içinde tanımlayın; Next sunucusu da aynı değeri görmeli (kaydettikten sonra next dev / next start yeniden başlatın).\n'
+   );
+  }
+  console.log('Not: Her ürün arasında 500 ms bekleme var; tamamlanması uzun sürebilir.\n');
+
+  try {
+   await ensureApiReachable();
+  } catch (e) {
+   console.error('API kontrolü başarısız:', e.message || e);
    process.exit(1);
   }
 
   addMultipleProducts(products)
    .then(results => {
+    console.log('');
     const successCount = results.filter(r => r.success).length;
     const errorCount = results.filter(r => !r.success).length;
     console.log(`\nSonuçlar:`);
@@ -216,6 +275,7 @@ if (typeof require !== 'undefined' && require.main === module) {
     }, 200);
    })
    .catch(error => {
+    console.error('Çalıştırma hatası:', error.message || error);
     setTimeout(() => {
      process.exit(1);
     }, 200);
@@ -225,6 +285,5 @@ if (typeof require !== 'undefined' && require.main === module) {
  if (typeof window !== 'undefined') {
   window.addProduct = addProduct;
   window.addMultipleProducts = addMultipleProducts;
-  window.products = products;
  }
 }
