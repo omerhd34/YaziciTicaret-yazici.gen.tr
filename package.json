@@ -9,7 +9,10 @@
     "lint": "eslint",
     "reset-orders": "node scripts/reset-orders.js",
     "reset-ratings": "node scripts/reset-ratings.mjs",
-    "reset-user": "node scripts/reset-user.js"
+    "reset-user": "node scripts/reset-user.js",
+    "urun-ekle": "node urun-ekle.js",
+    "clear-products": "node scripts/clear-products.mjs",
+    "seed-admin": "node scripts/seed-admin.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
