@@ -183,18 +183,22 @@ export default function AdminUrunYonetimiPage() {
      return count;
     })()}
     outOfStockProducts={(() => {
-     // Stokta olmayan ürünleri say (renk varyantları dahil)
      let count = 0;
      products.forEach((product) => {
       if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
-       product.colors.forEach((color) => {
-        if (typeof color === 'object' && color.serialNumber) {
-         const stock = color.stock !== undefined ? color.stock : product.stock;
-         if (stock <= 0) count++;
-        }
-       });
+       const colorVariants = product.colors.filter(c => typeof c === 'object' && c.serialNumber);
+       if (colorVariants.length > 0) {
+        const maxStock = Math.max(
+         ...colorVariants.map(c => (c.stock !== undefined ? Number(c.stock) || 0 : 0))
+        );
+        if (maxStock <= 0) count++;
+       } else {
+        const productStock = product.stock !== undefined ? Number(product.stock) || 0 : 0;
+        if (productStock <= 0) count++;
+       }
       } else {
-       if (!product.stock || product.stock <= 0) count++;
+       const productStock = product.stock !== undefined ? Number(product.stock) || 0 : 0;
+       if (productStock <= 0) count++;
       }
      });
      return count;
@@ -206,27 +210,22 @@ export default function AdminUrunYonetimiPage() {
      return products.filter((product) => product.isNewProduct === true).length;
     })()}
     discountedProducts={(() => {
-     // İndirimli ürünleri say
      let count = 0;
      products.forEach((product) => {
       let hasDiscount = false;
 
-      // Renk varyantları varsa kontrol et
       if (product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
        const colorVariants = product.colors.filter(c => typeof c === 'object' && c.serialNumber);
        if (colorVariants.length > 0) {
-        // En az bir renk varyantında indirim varsa ürün indirimli sayılır
         hasDiscount = colorVariants.some(color => {
          const colorPrice = color.price !== undefined ? Number(color.price) : product.price;
          const colorDiscountPrice = color.discountPrice !== undefined ? color.discountPrice : null;
          return colorDiscountPrice !== null && colorDiscountPrice < colorPrice;
         });
        } else {
-        // Renk varyantı yoksa ana ürünün indirimini kontrol et
         hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined && product.discountPrice < product.price;
        }
       } else {
-       // Renk yoksa ana ürünün indirimini kontrol et
        hasDiscount = product.discountPrice !== null && product.discountPrice !== undefined && product.discountPrice < product.price;
       }
 
