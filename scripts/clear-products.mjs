@@ -22,9 +22,9 @@ function loadEnv() {
 
 async function main() {
  loadEnv();
- const uri = process.env.MONGODB_URI || process.env.DATABASE_URL || '';
+ const uri = process.env.MONGODB_URI || '';
  if (!uri) {
-  console.error('MONGODB_URI veya DATABASE_URL yok (.env.local).');
+  console.error('MONGODB_URI yok (.env.local).');
   process.exit(1);
  }
 
