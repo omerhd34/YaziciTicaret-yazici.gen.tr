@@ -4,14 +4,15 @@ import FeaturesSection from "@/app/components/home/FeaturesSection";
 import ProductSection from "@/app/components/home/ProductSection";
 import FAQSection from "@/app/components/home/FAQSection";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 async function fetchProducts() {
  try {
+  // limit=50 ile API'nin varsayilan limit=50000'i devre disi birakiyoruz.
   const [featuredRes, newRes, discountedRes] = await Promise.all([
-   axiosInstance.get("/api/products?isFeatured=true"),
-   axiosInstance.get("/api/products?isNewProduct=true"),
-   axiosInstance.get("/api/products?category=İndirimler"),
+   axiosInstance.get("/api/products?isFeatured=true&limit=50"),
+   axiosInstance.get("/api/products?isNewProduct=true&limit=50"),
+   axiosInstance.get("/api/products?category=İndirimler&limit=50"),
   ]);
 
   return {

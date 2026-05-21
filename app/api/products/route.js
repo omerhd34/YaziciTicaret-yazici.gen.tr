@@ -14,6 +14,14 @@ function addCorsHeaders(response) {
  return response;
 }
 
+function addCacheHeaders(response, { sMaxAge = 60, swr = 300 } = {}) {
+ response.headers.set(
+  'Cache-Control',
+  `public, s-maxage=${sMaxAge}, stale-while-revalidate=${swr}`
+ );
+ return response;
+}
+
 // OPTIONS - Preflight request için
 export async function OPTIONS() {
  const response = new NextResponse(null, { status: 200 });
@@ -105,6 +113,9 @@ export async function GET(request) {
   });
 
   const response = NextResponse.json({ success: true, data: normalizedProducts });
+  if (!(search && search.trim())) {
+   addCacheHeaders(response, { sMaxAge: 60, swr: 600 });
+  }
   return addCorsHeaders(response);
  } catch (error) {
   const response = NextResponse.json(

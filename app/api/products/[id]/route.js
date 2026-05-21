@@ -15,7 +15,11 @@ export async function GET(request, { params }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  const product = await Product.findById(id);
+  const product = await Product.findByIdAndUpdate(
+   id,
+   { $inc: { viewCount: 1 } },
+   { new: true }
+  );
 
   if (!product) {
    return NextResponse.json(
@@ -23,10 +27,6 @@ export async function GET(request, { params }) {
     { status: 404 }
    );
   }
-
-  // Görüntülenme sayısını artır
-  product.viewCount += 1;
-  await product.save();
 
   return NextResponse.json({ success: true, data: product });
  } catch (error) {

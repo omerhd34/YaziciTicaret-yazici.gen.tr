@@ -71,13 +71,13 @@ export default function ProductBundleItems({ product, selectedColor }) {
   const fetchBundleProducts = async () => {
    setLoadingBundleProducts(true);
    try {
-    const res = await axiosInstance.get("/api/products?limit=1000");
+    const serialsParam = productsInside.map((s) => encodeURIComponent(s)).join(',');
+    const res = await axiosInstance.get(`/api/products/by-serial?serials=${serialsParam}`);
     const data = res.data;
 
-    if (data.success) {
+    if (data.success && Array.isArray(data.data)) {
      const foundProducts = [];
      for (const serialNumber of productsInside) {
-      // Tüm ürünlerde bu serial number'ı ara
       const foundProduct = data.data.find((p) => {
        if (!p.colors || !Array.isArray(p.colors)) return false;
        return p.colors.some(c => {
@@ -89,7 +89,6 @@ export default function ProductBundleItems({ product, selectedColor }) {
       });
 
       if (foundProduct) {
-       // Serial number'a sahip rengi bul
        const colorWithSerial = foundProduct.colors.find(c => {
         if (typeof c === 'object' && c.serialNumber) {
          return c.serialNumber === serialNumber;
@@ -156,8 +155,8 @@ export default function ProductBundleItems({ product, selectedColor }) {
      const productUrl = getProductUrl(p, serialNumber);
 
      return (
-      <Link 
-       key={index} 
+      <Link
+       key={index}
        href={productUrl}
        className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden h-full flex flex-col hover:shadow-xl transition-shadow duration-300 cursor-pointer"
       >

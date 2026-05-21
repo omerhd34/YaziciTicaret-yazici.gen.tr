@@ -95,9 +95,10 @@ export async function generateMetadata(props) {
  const categoryName = getCategoryNameFromSlug(slugParts);
  const displayCategoryName = getDisplayCategoryName(categoryName);
 
+ const lastSlug = decodeURIComponent(slugParts[1] || "");
  const isProductDetailPage =
   slugParts.length === 3 ||
-  (slugParts.length === 2 && /^[A-Z0-9]+$/.test(slugParts[1] || ""));
+  (slugParts.length === 2 && /^[A-Z0-9-]+$/.test(lastSlug) && /[A-Z]/.test(lastSlug));
 
  const title = isProductDetailPage
   ? `Yazıcı Ticaret - ${displayCategoryName} Ürün Detayı`

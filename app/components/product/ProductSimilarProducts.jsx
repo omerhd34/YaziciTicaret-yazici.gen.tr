@@ -20,7 +20,7 @@ export default function ProductSimilarProducts({ product }) {
    try {
     setLoading(true);
 
-    let url = "/api/products?limit=1000";
+    let url = "/api/products?limit=20";
 
     if (product.subCategory && product.subCategory.trim()) {
      url += `&subCategory=${encodeURIComponent(product.subCategory)}`;

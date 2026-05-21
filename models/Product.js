@@ -209,6 +209,14 @@ const ProductSchema = new mongoose.Schema({
 
 ProductSchema.index({ name: 'text', description: 'text', tags: 'text' });
 
+ProductSchema.index({ category: 1 });
+ProductSchema.index({ subCategory: 1 });
+ProductSchema.index({ isNewProduct: 1 });
+ProductSchema.index({ isFeatured: 1 });
+ProductSchema.index({ 'colors.serialNumber': 1 });
+ProductSchema.index({ serialNumber: 1 });
+ProductSchema.index({ createdAt: -1 });
+
 if (mongoose.models.Product) {
  delete mongoose.models.Product;
 }

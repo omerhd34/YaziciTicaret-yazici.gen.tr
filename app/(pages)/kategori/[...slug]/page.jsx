@@ -3,8 +3,6 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 
-// Force dynamic rendering - tamamen client-side
-export const dynamic = 'force-dynamic';
 import { MENU_ITEMS } from "@/app/utils/menuItems";
 import { useCart } from "@/context/CartContext";
 import { useComparison } from "@/context/ComparisonContext";
@@ -83,9 +81,9 @@ export default function KategoriPage() {
   if (slug.length === 3) {
    return true;
   } else if (slug.length === 2) {
-   const lastPart = slug[1];
-   const serialNumberPattern = /^[A-Z0-9]+$/;
-   return serialNumberPattern.test(lastPart);
+   const lastPart = decodeURIComponent(slug[1] || "");
+   const serialNumberPattern = /^[A-Z0-9-]+$/;
+   return serialNumberPattern.test(lastPart) && /[A-Z]/.test(lastPart);
   }
   return false;
  }, [slug]);
@@ -499,47 +497,38 @@ export default function KategoriPage() {
   }
  }, [slug, filters.sortBy, filters.brands, filters.categories, filters.bagTypes, filters.screenSizes, filters.coolingCapacities, filters.minPrice, filters.maxPrice, filters.specialFilters]);
 
- // Ürün detay sayfası için fetch
  const fetchProductBySerialNumber = useCallback(async (serialNumber) => {
   setLoading(true);
   try {
-   const res = await axiosInstance.get("/api/products?limit=1000");
+   const res = await axiosInstance.get(
+    `/api/products/by-serial?serial=${encodeURIComponent(serialNumber)}`
+   );
    const data = res.data;
 
-   if (data.success) {
-    // Renk seviyesinde seri numarasına göre ürün bul
-    const foundProduct = data.data.find((p) => {
-     if (!p.colors || !Array.isArray(p.colors)) return false;
-     return p.colors.some(c => {
-      if (typeof c === 'object' && c.serialNumber) {
-       return c.serialNumber === serialNumber;
-      }
-      return false;
-     });
+   if (data?.success && data.data) {
+    const foundProduct = data.data;
+
+    const colorWithSerial = (foundProduct.colors || []).find(c => {
+     if (typeof c === 'object' && c.serialNumber) {
+      return c.serialNumber === serialNumber;
+     }
+     return false;
     });
 
-    if (foundProduct) {
-     // Seri numarasına sahip rengi bul
-     const colorWithSerial = foundProduct.colors.find(c => {
-      if (typeof c === 'object' && c.serialNumber) {
-       return c.serialNumber === serialNumber;
-      }
-      return false;
-     });
-
-     setProduct(foundProduct);
-     if (colorWithSerial) {
-      setSelectedColor(colorWithSerial.name);
-      setSelectedColorObj(colorWithSerial);
-      setSelectedImage(0);
-     } else if (foundProduct.colors && foundProduct.colors.length > 0) {
-      const firstColor = typeof foundProduct.colors[0] === 'object' ? foundProduct.colors[0] : { name: foundProduct.colors[0] };
-      setSelectedColor(firstColor.name);
-      setSelectedColorObj(firstColor);
-      setSelectedImage(0);
-     }
-     checkCanRate(foundProduct._id);
+    setProduct(foundProduct);
+    if (colorWithSerial) {
+     setSelectedColor(colorWithSerial.name);
+     setSelectedColorObj(colorWithSerial);
+     setSelectedImage(0);
+    } else if (foundProduct.colors && foundProduct.colors.length > 0) {
+     const firstColor = typeof foundProduct.colors[0] === 'object'
+      ? foundProduct.colors[0]
+      : { name: foundProduct.colors[0] };
+     setSelectedColor(firstColor.name);
+     setSelectedColorObj(firstColor);
+     setSelectedImage(0);
     }
+    checkCanRate(foundProduct._id);
    }
   } catch (error) {
   } finally {
