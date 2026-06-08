@@ -92,8 +92,12 @@ export default function SearchModal({ isOpen, onClose }) {
          const productUrl = getProductUrl(product);
          return (
           <Link key={product._id} href={productUrl} onClick={onClose} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition">
-           <div className="w-16 h-16 rounded-lg bg-white shrink-0 relative flex items-center justify-center p-1">
-            {product.images?.[0] && <Image src={product.images[0]} alt={product.name} width={64} height={64} className="object-contain" />}
+           <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-white shrink-0 border border-gray-100">
+            {product.images?.[0] ? (
+             <Image src={product.images[0]} alt={product.name} fill className="object-contain p-1" sizes="64px" />
+            ) : (
+             <Image src="/products/beyaz-esya.webp" alt={product.name} fill className="object-contain p-1" sizes="64px" />
+            )}
            </div>
            <div className="flex-1 min-w-0">
             <h4 className="font-semibold text-gray-800 truncate">{product.name}</h4>
