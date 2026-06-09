@@ -122,11 +122,13 @@ export async function generateMetadata(props) {
    siteName: "Yazıcı Ticaret",
    locale: "tr_TR",
    type: "website",
+   images: [{ url: "/opengraph-image.png", width: 1921, height: 911, alt: "Yazıcı Ticaret" }],
   },
   twitter: {
    card: "summary_large_image",
    title,
    description,
+   images: ["/opengraph-image.png"],
   },
   alternates: {
    canonical: fullUrl,

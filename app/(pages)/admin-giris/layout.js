@@ -15,12 +15,14 @@ export const metadata = {
   siteName: "Yazıcı Ticaret",
   locale: "tr_TR",
   type: "website",
+  images: [{ url: "/opengraph-image.png", width: 1921, height: 911, alt: "Yazıcı Ticaret" }],
  },
  twitter: {
   card: "summary_large_image",
   title: "Yazıcı Ticaret - Admin Giriş",
   description:
    "Yazıcı Ticaret admin giriş sayfası. Admin paneline giriş yapın.",
+  images: ["/opengraph-image.png"],
  },
 };
 

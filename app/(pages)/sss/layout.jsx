@@ -11,12 +11,14 @@ export const metadata = {
   siteName: "Yazıcı Ticaret",
   locale: "tr_TR",
   type: "website",
+  images: [{ url: "/opengraph-image.png", width: 1921, height: 911, alt: "Yazıcı Ticaret" }],
  },
  twitter: {
   card: "summary_large_image",
   title: "Yazıcı Ticaret - Sıkça Sorulan Sorular",
   description:
    "Yazıcı Ticaret sıkça sorulan sorular sayfası. Sıkça sorulan soruları görüntüleyin.",
+  images: ["/opengraph-image.png"],
  },
  alternates: {
   canonical:

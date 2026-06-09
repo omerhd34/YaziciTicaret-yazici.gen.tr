@@ -1,25 +1,25 @@
+import { BASE_URL, buildOpenGraph, buildTwitter } from "@/lib/siteMetadata";
+
+const description =
+ 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.';
+
 export const metadata = {
  title: 'Yazıcı Ticaret',
- description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
- openGraph: {
+ description,
+ openGraph: buildOpenGraph({
   title: 'Yazıcı Ticaret',
-  description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
-  url: process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr',
-  siteName: 'Yazıcı Ticaret',
-  locale: 'tr_TR',
-  type: 'website',
- },
- twitter: {
-  card: 'summary_large_image',
+  description,
+  url: BASE_URL,
+ }),
+ twitter: buildTwitter({
   title: 'Yazıcı Ticaret',
-  description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
- },
+  description,
+ }),
  alternates: {
-  canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr',
+  canonical: BASE_URL,
  },
 };
 
 export default function AnaSayfaLayout({ children }) {
  return children;
 }
-

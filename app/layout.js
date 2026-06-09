@@ -1,8 +1,9 @@
 import "./globals.css";
 import ClientProviders from "./ClientProviders";
+import { BASE_URL, buildOpenGraph, buildTwitter } from "@/lib/siteMetadata";
 
 export const metadata = {
- metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr'),
+ metadataBase: new URL(BASE_URL),
  title: {
   default: 'Yazıcı Ticaret',
  },
@@ -28,20 +29,17 @@ export const metadata = {
   'beyaz eşya satış',
   'elektronik ürünler'
  ],
+ authors: [{ name: 'Ömer Halis Demir' }],
  creator: 'Ömer Halis Demir',
- openGraph: {
-  type: 'website',
-  locale: 'tr_TR',
-  url: process.env.NEXT_PUBLIC_BASE_URL || 'https://yazici.gen.tr',
-  siteName: 'Yazıcı Ticaret',
+ openGraph: buildOpenGraph({
   title: 'Yazıcı Ticaret',
   description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
- },
- twitter: {
-  card: 'summary_large_image',
+  url: BASE_URL,
+ }),
+ twitter: buildTwitter({
   title: 'Yazıcı Ticaret',
   description: 'Yazıcı Ticaret\'e hoş geldiniz! Profilo ve LG markası beyaz eşya ve elektronik ürünlerinde en uygun fiyatlar. Buzdolabı, çamaşır makinesi, bulaşık makinesi, klima ve daha fazlası. Tüm Türkiye\'ye nakliye ve montaj hizmeti.',
- },
+ }),
  robots: {
   index: true,
   follow: true,
